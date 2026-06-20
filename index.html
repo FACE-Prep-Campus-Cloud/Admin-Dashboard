@@ -169,7 +169,11 @@
   .ticket-row {
     background: var(--paper); border: 1px solid var(--line);
     border-radius: 16px; overflow: hidden; margin-bottom: 12px;
+    transition: background .15s, border-color .15s;
   }
+  .ticket-row.status-open     { background: rgba(191,78,44,0.09);  border-color: rgba(191,78,44,0.35); }
+  .ticket-row.status-progress { background: rgba(184,120,15,0.10); border-color: rgba(184,120,15,0.35); }
+  .ticket-row.status-resolved { background: rgba(79,120,88,0.09);  border-color: rgba(79,120,88,0.35); }
   .ticket-toggle {
     width: 100%; text-align: left;
     padding: 20px;
@@ -458,7 +462,7 @@ function renderTickets(){
         </div>
       </div>` : '';
 
-    return `<div class="ticket-row" id="row-${t.id}">
+    return `<div class="ticket-row status-${t.status}" id="row-${t.id}">
       <button class="ticket-toggle" onclick="toggleRow('${t.id}')">
         <div class="info-grid">
           <div class="roll-no">${escHTML(t.roll_number)}</div>
