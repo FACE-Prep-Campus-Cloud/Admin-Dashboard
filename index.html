@@ -269,7 +269,7 @@ const ADMIN_PIN = 'ADMIN2026';
 
 let tickets = [];
 let currentFilter = 'all';
-let expandedId = null;
+let rowExpand = {}; // ticket id -> boolean; absent/undefined defaults to expanded
 let editState = {};
 let refreshTimer = null;
 
@@ -336,11 +336,19 @@ function stampHTML(status){
   return `<span class="stamp stamp-${status}">${l[status]||status}</span>`;
 }
 
+function ensureEditState(t){
+  if(!editState[t.id]){
+    editState[t.id] = { status: t.status, note: t.admin_note||'' };
+  }
+}
+
 function toggleRow(id){
-  expandedId = expandedId === id ? null : id;
+  const isExpanded = rowExpand[id] !== false; // default = expanded
+  rowExpand[id] = !isExpanded;
   const t = tickets.find(x=>x.id===id);
-  if(t && !editState[id]){
-    editState[id] = { status: t.status, note: t.admin_note||'' };
+  if(t && !isExpanded){
+    // about to expand — make sure edit state exists
+    ensureEditState(t);
   }
   renderTickets();
 }
@@ -422,7 +430,8 @@ function renderTickets(){
   }
 
   list.innerHTML = filtered.map(t => {
-    const exp = expandedId === t.id;
+    const exp = rowExpand[t.id] !== false; // default = expanded
+    if(exp) ensureEditState(t);
     const es  = editState[t.id] || { status: t.status, note: t.admin_note||'' };
 
     const bodyHTML = exp ? `
