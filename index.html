@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Campus Help Desk — Admin Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
@@ -81,6 +82,7 @@
   }
   .btn-primary:hover  { opacity: 0.85; }
   .btn-primary:active { transform: scale(0.98); }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 
   input, select, textarea {
     background: var(--paper-dark);
@@ -258,18 +260,18 @@
 </div>
 
 <script>
+/* ── Supabase setup ── */
+const SUPABASE_URL = 'https://rysajbwcuieovbsllaas.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5c2FqYndjdWllb3Zic2xsYWFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0NjI3MjgsImV4cCI6MjA5NjAzODcyOH0.2WenjYKsfQYAeUJxVJcEVQwqYUlfwrYltrMuC9Ggu4A';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 const ADMIN_PIN = 'ADMIN2026';
-const STORAGE_KEY_TICKETS = 'chd-tickets';
 
 let tickets = [];
 let currentFilter = 'all';
 let expandedId = null;
 let editState = {};
-
-function loadData(){
-  try { const r = localStorage.getItem(STORAGE_KEY_TICKETS); if(r) tickets = JSON.parse(r); } catch(e){}
-}
-function saveTickets(){ localStorage.setItem(STORAGE_KEY_TICKETS, JSON.stringify(tickets)); }
+let refreshTimer = null;
 
 function show(id){ document.getElementById(id).classList.remove('hidden'); }
 function hide(id){ document.getElementById(id).classList.add('hidden'); }
@@ -295,7 +297,9 @@ function submitPin(){
   if(pin !== ADMIN_PIN){ err.textContent='Incorrect PIN.'; show('pin-error'); return; }
   hide('auth-screen');
   show('admin-screen');
-  renderTickets();
+  loadTickets();
+  // Refresh ticket list periodically so new student tickets show up without a manual reload
+  refreshTimer = setInterval(loadTickets, 15000);
 }
 
 function logout(){
@@ -303,6 +307,7 @@ function logout(){
   show('auth-screen');
   document.getElementById('pin-input').value = '';
   hide('pin-error');
+  if(refreshTimer){ clearInterval(refreshTimer); refreshTimer = null; }
 }
 
 function setFilter(f){
@@ -319,11 +324,11 @@ function getFiltered(){
     .filter(t => currentFilter === 'all' ? true : t.status === currentFilter)
     .filter(t => {
       if(!q) return true;
-      return (t.rollNumber||'').toLowerCase().includes(q)
-          || (t.studentName||'').toLowerCase().includes(q)
+      return (t.roll_number||'').toLowerCase().includes(q)
+          || (t.student_name||'').toLowerCase().includes(q)
           || (t.subject||'').toLowerCase().includes(q);
     })
-    .sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+    .sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
 }
 
 function stampHTML(status){
@@ -335,21 +340,39 @@ function toggleRow(id){
   expandedId = expandedId === id ? null : id;
   const t = tickets.find(x=>x.id===id);
   if(t && !editState[id]){
-    editState[id] = { status: t.status, note: t.adminNote||'' };
+    editState[id] = { status: t.status, note: t.admin_note||'' };
   }
   renderTickets();
 }
 
-function saveTicket(id){
+async function saveTicket(id){
   const s = editState[id];
   if(!s) return;
-  tickets = tickets.map(t => t.id===id
-    ? {...t, status: s.status, adminNote: s.note, updatedAt: new Date().toISOString()}
-    : t);
-  saveTickets();
-  const saved = document.getElementById('saved-'+id);
-  if(saved){ saved.style.display='inline'; setTimeout(()=>{ if(saved) saved.style.display='none'; }, 2000); }
-  renderStats();
+
+  const btn = document.querySelector(`#row-${id} .btn-primary`);
+  if(btn){ btn.disabled = true; btn.textContent = 'Saving…'; }
+
+  try {
+    const { error } = await sb
+      .from('tickets')
+      .update({ status: s.status, admin_note: s.note, updated_at: new Date().toISOString() })
+      .eq('id', id);
+
+    if(error) throw error;
+
+    tickets = tickets.map(t => t.id===id
+      ? {...t, status: s.status, admin_note: s.note, updated_at: new Date().toISOString()}
+      : t);
+
+    renderStats();
+    const saved = document.getElementById('saved-'+id);
+    if(saved){ saved.style.display='inline'; setTimeout(()=>{ if(saved) saved.style.display='none'; }, 2000); }
+  } catch(e){
+    console.error(e);
+    alert('Could not save changes. Please try again.');
+  } finally {
+    if(btn){ btn.disabled = false; btn.textContent = 'Save changes'; }
+  }
 }
 
 function onStatusChange(id, val){
@@ -368,6 +391,25 @@ function renderStats(){
   document.getElementById('cnt-res').textContent  = tickets.filter(t=>t.status==='resolved').length;
 }
 
+async function loadTickets(){
+  try {
+    const { data, error } = await sb
+      .from('tickets')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if(error) throw error;
+    tickets = data || [];
+    renderTickets();
+  } catch(e){
+    console.error(e);
+    const list = document.getElementById('ticket-list');
+    if(list && list.innerHTML === '') {
+      list.innerHTML = `<div class="empty-state">Couldn't load tickets. Please refresh.</div>`;
+    }
+  }
+}
+
 function renderTickets(){
   renderStats();
   const filtered = getFiltered();
@@ -381,7 +423,7 @@ function renderTickets(){
 
   list.innerHTML = filtered.map(t => {
     const exp = expandedId === t.id;
-    const es  = editState[t.id] || { status: t.status, note: t.adminNote||'' };
+    const es  = editState[t.id] || { status: t.status, note: t.admin_note||'' };
 
     const bodyHTML = exp ? `
       <div class="ticket-body ticket-stub">
@@ -407,13 +449,13 @@ function renderTickets(){
         </div>
       </div>` : '';
 
-    return `<div class="ticket-row">
+    return `<div class="ticket-row" id="row-${t.id}">
       <button class="ticket-toggle" onclick="toggleRow('${t.id}')">
         <div class="info-grid">
-          <div class="roll-no">${escHTML(t.rollNumber)}</div>
+          <div class="roll-no">${escHTML(t.roll_number)}</div>
           <div>
             <div class="subj">${escHTML(t.subject)}</div>
-            <div class="sub-meta">${escHTML(t.studentName)} · ${escHTML(t.category)} · ${fmtRel(t.createdAt)}</div>
+            <div class="sub-meta">${escHTML(t.student_name)} · ${escHTML(t.college||'')} · ${escHTML(t.category)} · ${fmtRel(t.created_at)}</div>
           </div>
         </div>
         ${stampHTML(t.status)}
@@ -422,8 +464,6 @@ function renderTickets(){
     </div>`;
   }).join('');
 }
-
-loadData();
 </script>
 </body>
 </html>
