@@ -3,429 +3,427 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Campus Helpdesk — Admin Dashboard</title>
-
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
+<title>Campus Help Desk — Admin Dashboard</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
   :root {
-    --bg: #F6F4EF;
-    --panel: #FFFFFF;
-    --ink: #1F2A24;
-    --ink-soft: #5B6760;
-    --line: #DCD6C8;
-    --accent: #7A2E2E;
-    --accent-soft: #F1E3DC;
-    --good: #36664A;
-    --good-soft: #E3EEE3;
-    --warn: #9C6B14;
-    --warn-soft: #F6ECD8;
-    --font-display: Georgia, 'Iowan Old Style', serif;
-    --font-body: 'Helvetica Neue', Arial, sans-serif;
-    --font-mono: Menlo, Consolas, monospace;
+    --ink: #1C2B3A;
+    --ink-light: #5B6B7C;
+    --paper: #FBF7EE;
+    --paper-dark: #F0E8D6;
+    --line: #D8CFB8;
+    --rust: #BF4E2C;
+    --amber: #B8780F;
+    --sage: #4F7858;
   }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); font-family: var(--font-body); color: var(--ink); }
-  button { cursor: pointer; font-family: var(--font-body); }
-  input, select, textarea { font-family: var(--font-body); font-size: 14px; }
-  button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
-    outline: 2px solid var(--accent); outline-offset: 2px;
+
+  body {
+    font-family: 'Inter', sans-serif;
+    color: var(--ink);
+    background: var(--paper-dark);
+    min-height: 100vh;
   }
-  .topbar { display: flex; align-items: center; gap: 10px; padding: 18px 28px; border-bottom: 1px solid var(--line); background: var(--panel); }
-  .brand-mark { width: 34px; height: 34px; border-radius: 7px; background: var(--accent); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; }
-  .brand-text { font-family: var(--font-display); font-size: 19px; }
-  .brand-sub { font-size: 11px; color: var(--ink-soft); letter-spacing: 0.5px; text-transform: uppercase; }
-  .shell { max-width: 420px; margin: 0 auto; padding: 60px 24px 80px; }
-  .wide-shell { max-width: 1180px; margin: 0 auto; padding: 32px 24px 80px; }
-  .hero-title { font-family: var(--font-display); font-size: 26px; margin: 0 0 8px; }
-  .hero-sub { color: var(--ink-soft); font-size: 14px; margin: 0 0 24px; }
-  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 28px; }
-  label.field-label { display: block; font-size: 12px; letter-spacing: 0.3px; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 6px; font-weight: 600; }
-  .field-input { width: 100%; padding: 11px 13px; border: 1px solid var(--line); border-radius: 7px; background: #fff; color: var(--ink); }
-  .field-block { margin-bottom: 20px; }
-  .primary-btn { background: var(--accent); color: #fff; border: none; border-radius: 7px; padding: 12px 22px; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
-  .primary-btn:hover { background: #5f2424; }
-  .primary-btn:disabled { background: #b9aba2; cursor: not-allowed; }
-  .ghost-btn { background: transparent; border: 1px solid var(--line); color: var(--ink-soft); border-radius: 7px; padding: 10px 16px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }
-  .ghost-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .error-box { background: var(--warn-soft); border: 1px solid #e8d2a0; color: var(--warn); border-radius: 7px; padding: 12px 14px; font-size: 13px; margin-bottom: 18px; display: none; }
-  .error-box.show { display: block; }
-  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 24px; align-items: center; }
-  .tab-btn { background: none; border: none; padding: 10px 16px; font-size: 13px; color: var(--ink-soft); border-bottom: 2px solid transparent; font-weight: 600; }
-  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
-  .filter-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; align-items: center; }
-  .filter-row .field-input { width: auto; min-width: 200px; }
-  .stat-row { display: flex; gap: 14px; margin-bottom: 22px; flex-wrap: wrap; }
-  .stat-card { border: 1px solid var(--line); border-radius: 9px; padding: 14px 18px; background: var(--panel); min-width: 120px; }
-  .stat-num { font-family: var(--font-display); font-size: 24px; }
-  .stat-label { font-size: 11px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.4px; }
-  table.ticket-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  table.ticket-table th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3px; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding: 10px; font-weight: 600; }
-  table.ticket-table td { padding: 12px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
-  .row-expand-btn { background: none; border: none; color: var(--ink-soft); font-size: 12px; }
-  .empty-state { text-align: center; padding: 60px 20px; color: var(--ink-soft); }
-  .csv-help { font-size: 12px; color: var(--ink-soft); margin-bottom: 10px; line-height: 1.6; }
-  code.inline-code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-family: var(--font-mono); font-size: 12px; }
-  .view { display: none; }
-  .view.active { display: block; }
-  .desc-row { background: var(--bg); font-size: 13px; color: var(--ink-soft); display: none; }
-  .desc-row.show { display: table-row; }
-  textarea.field-input { resize: vertical; min-height: 120px; font-family: var(--font-mono); font-size: 12px; }
+
+  .font-display { font-family: 'Fraunces', serif; }
+  .font-mono    { font-family: 'IBM Plex Mono', monospace; }
+
+  .stamp {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 12px;
+    border: 2px solid currentColor;
+    border-radius: 999px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transform: rotate(-3deg);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .stamp-open    { color: var(--rust);  background: rgba(191,78,44,0.08); }
+  .stamp-progress{ color: var(--amber); background: rgba(184,120,15,0.10); }
+  .stamp-resolved{ color: var(--sage);  background: rgba(79,120,88,0.10); }
+
+  .ticket-stub { position: relative; border-top: 2px dashed var(--line); }
+  .ticket-stub::before, .ticket-stub::after {
+    content: ''; position: absolute; top: -8px; width: 16px; height: 16px;
+    border-radius: 50%; background: var(--paper-dark);
+  }
+  .ticket-stub::before { left: -1px; }
+  .ticket-stub::after  { right: -1px; }
+
+  header {
+    padding: 20px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--ink); color: var(--paper);
+  }
+  header .title { font-family: 'Fraunces', serif; font-size: 20px; }
+  .btn-logout {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 14px; padding: 6px 12px; border-radius: 8px;
+    background: rgba(251,247,238,0.12); color: var(--paper);
+    border: none; cursor: pointer; font-family: inherit; transition: opacity .15s;
+  }
+  .btn-logout:hover { opacity: 0.8; }
+
+  .btn-primary {
+    padding: 10px 20px;
+    background: var(--ink); color: var(--paper);
+    border: none; border-radius: 8px;
+    font-family: inherit; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: opacity .15s, transform .15s;
+  }
+  .btn-primary:hover  { opacity: 0.85; }
+  .btn-primary:active { transform: scale(0.98); }
+
+  input, select, textarea {
+    background: var(--paper-dark);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 14px;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color .15s;
+    width: 100%;
+  }
+  input:focus, select:focus { border-color: var(--ink); }
+  input::placeholder { color: var(--ink-light); opacity: 0.6; }
+
+  label.field-label {
+    display: block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--ink-light); margin-bottom: 6px;
+  }
+  .field { margin-bottom: 0; }
+
+  /* Auth */
+  .auth-wrap {
+    min-height: 100vh; display: flex;
+    align-items: center; justify-content: center; padding: 24px;
+  }
+  .auth-box { width: 100%; max-width: 400px; }
+  .auth-header { text-align: center; margin-bottom: 28px; }
+  .auth-header h1 { font-family: 'Fraunces', serif; font-size: 32px; margin-top: 12px; }
+  .auth-header p  { font-size: 14px; color: var(--ink-light); margin-top: 8px; }
+  .auth-panel {
+    background: var(--paper); border: 1px solid var(--line);
+    border-radius: 16px; padding: 28px;
+  }
+  .error-msg { font-size: 13px; color: var(--rust); margin: 10px 0; }
+  .btn-primary-full { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; }
+  .hidden { display: none !important; }
+
+  /* Dashboard */
+  main { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px; margin-bottom: 32px;
+  }
+  .stat-card {
+    background: var(--paper); border: 1px solid var(--line);
+    border-radius: 16px; padding: 20px;
+  }
+  .stat-card .val {
+    font-family: 'Fraunces', serif; font-size: 32px;
+  }
+  .stat-card .lbl {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--ink-light); margin-top: 4px;
+  }
+
+  .controls {
+    display: flex; flex-wrap: wrap; gap: 12px;
+    align-items: center; margin-bottom: 24px;
+  }
+  .filter-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .filter-btn {
+    padding: 8px 16px; border-radius: 999px; font-size: 14px;
+    font-family: inherit; font-weight: 500; border: 1px solid var(--line);
+    cursor: pointer; transition: background .15s, color .15s;
+  }
+  .filter-btn.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .filter-btn:not(.active) { background: var(--paper); color: var(--ink-light); }
+
+  .search-wrap { position: relative; flex: 1; min-width: 200px; max-width: 320px; margin-left: auto; }
+  .search-wrap input { padding-left: 36px; }
+  .search-wrap .search-icon {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    color: var(--ink-light); pointer-events: none; font-size: 15px;
+  }
+
+  .ticket-row {
+    background: var(--paper); border: 1px solid var(--line);
+    border-radius: 16px; overflow: hidden; margin-bottom: 12px;
+  }
+  .ticket-toggle {
+    width: 100%; text-align: left;
+    padding: 20px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    background: transparent; border: none; cursor: pointer; font-family: inherit;
+  }
+  .ticket-toggle .info-grid {
+    display: grid; gap: 4px; flex: 1; min-width: 0;
+  }
+  @media(min-width: 600px){
+    .ticket-toggle .info-grid { grid-template-columns: 110px 1fr; align-items: baseline; gap: 16px; }
+  }
+  .ticket-toggle .roll-no { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--ink-light); }
+  .ticket-toggle .subj { font-size: 15px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ticket-toggle .sub-meta { font-size: 12px; color: var(--ink-light); margin-top: 2px; }
+
+  .ticket-body {
+    padding: 0 20px 20px; padding-top: 16px;
+  }
+  .ticket-body .desc { font-size: 14px; white-space: pre-wrap; margin-bottom: 16px; }
+  .edit-grid {
+    display: grid; gap: 16px;
+  }
+  @media(min-width: 600px){ .edit-grid { grid-template-columns: 1fr 1fr; } }
+  .edit-actions { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
+  .saved-msg { font-size: 13px; color: var(--sage); }
+
+  .empty-state {
+    background: var(--paper); border: 1px dashed var(--line);
+    border-radius: 16px; padding: 48px; text-align: center;
+    color: var(--ink-light); font-size: 14px;
+  }
+
+  .stamp-header { color: var(--amber); background: rgba(184,120,15,0.10); transform: none; }
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div class="brand-mark">A</div>
-  <div>
-    <div class="brand-text">Campus Helpdesk</div>
-    <div class="brand-sub">Admin Dashboard</div>
-  </div>
-</div>
-
-<!-- LOGIN VIEW -->
-<div class="view active" id="view-login">
-  <div class="shell">
-    <h1 class="hero-title">Admin sign-in</h1>
-    <p class="hero-sub">Enter the admin passcode to open the dashboard.</p>
-    <div class="card">
-      <div class="error-box" id="login-error"></div>
-      <div class="field-block">
-        <label class="field-label">Passcode</label>
-        <input type="password" class="field-input" id="passcode-input" />
+<!-- AUTH -->
+<div id="auth-screen" class="auth-wrap">
+  <div class="auth-box">
+    <div class="auth-header">
+      <span class="stamp stamp-header">🛡 Admin Access</span>
+      <h1 class="font-display">Campus Help Desk</h1>
+      <p>Enter your admin PIN to manage tickets and update statuses.</p>
+    </div>
+    <div class="auth-panel">
+      <div class="field" style="margin-bottom:16px">
+        <label class="field-label">Admin PIN</label>
+        <input id="pin-input" type="password" placeholder="Enter PIN" onkeydown="if(event.key==='Enter')submitPin()" />
       </div>
-      <button class="primary-btn" id="login-btn">Enter dashboard</button>
+      <div id="pin-error" class="error-msg hidden"></div>
+      <button class="btn-primary btn-primary-full" onclick="submitPin()">Enter dashboard →</button>
     </div>
   </div>
 </div>
 
-<!-- DASHBOARD VIEW -->
-<div class="view" id="view-dashboard">
-  <div class="wide-shell">
-    <div class="tabs">
-      <button class="tab-btn active" id="tab-tickets-btn">Tickets</button>
-      <button class="tab-btn" id="tab-students-btn">Manage Students</button>
-      <div style="flex:1;"></div>
-      <button class="ghost-btn" id="refresh-btn">Refresh</button>
+<!-- DASHBOARD -->
+<div id="admin-screen" class="hidden">
+  <header>
+    <div class="title font-display">Campus Help Desk · Admin</div>
+    <button class="btn-logout" onclick="logout()">↩ Log out</button>
+  </header>
+
+  <main>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="val font-display" id="cnt-all" style="color:var(--ink)">0</div><div class="lbl">Total</div></div>
+      <div class="stat-card"><div class="val font-display" id="cnt-open" style="color:var(--rust)">0</div><div class="lbl">Open</div></div>
+      <div class="stat-card"><div class="val font-display" id="cnt-prog" style="color:var(--amber)">0</div><div class="lbl">In Progress</div></div>
+      <div class="stat-card"><div class="val font-display" id="cnt-res" style="color:var(--sage)">0</div><div class="lbl">Resolved</div></div>
     </div>
 
-    <!-- TICKETS TAB -->
-    <div id="tab-tickets">
-      <div class="stat-row" id="stat-row"></div>
-      <div class="filter-row">
-        <select class="field-input" id="college-filter"><option value="All">All colleges</option></select>
-        <select class="field-input" id="status-filter">
-          <option value="All">All statuses</option>
-          <option>Open</option>
-          <option>In Progress</option>
-          <option>Resolved</option>
-          <option>Closed</option>
-        </select>
-        <input class="field-input" id="ticket-search" placeholder="Search ref, roll no, name, subject" />
+    <div class="controls">
+      <div class="filter-btns">
+        <button class="filter-btn active" data-filter="all"      onclick="setFilter('all')">All</button>
+        <button class="filter-btn"        data-filter="open"     onclick="setFilter('open')">Open</button>
+        <button class="filter-btn"        data-filter="progress" onclick="setFilter('progress')">In Progress</button>
+        <button class="filter-btn"        data-filter="resolved" onclick="setFilter('resolved')">Resolved</button>
       </div>
-      <div id="tickets-table-wrap"></div>
+      <div class="search-wrap">
+        <span class="search-icon">⌕</span>
+        <input id="search-input" type="text" placeholder="Search roll no., name, subject" oninput="renderTickets()" />
+      </div>
     </div>
 
-    <!-- STUDENTS TAB -->
-    <div id="tab-students" style="display:none;">
-      <div class="card" style="margin-bottom:28px;">
-        <h3 style="font-family: var(--font-display); margin: 0 0 10px;">Import student records</h3>
-        <p class="csv-help">
-          Paste one student per line as <code class="inline-code">rollNo, email, name, college, passcode</code>.
-          College name must match one of the 22 colleges exactly (case-insensitive). Re-importing a roll
-          number already on file for that college updates the record.
-        </p>
-        <textarea class="field-input" id="csv-input" placeholder="21UCS045, jane@kamarajcollege.edu, Jane Doe, Kamaraj College, JD4521"></textarea>
-        <div style="margin-top:12px;">
-          <button class="primary-btn" id="import-btn">Import students</button>
-        </div>
-        <div id="import-result" style="margin-top:16px; font-size:13px;"></div>
-      </div>
-
-      <div class="filter-row">
-        <h3 style="font-family: var(--font-display); margin:0; flex:1;" id="directory-count">Directory (0)</h3>
-        <input class="field-input" id="student-search" placeholder="Search roll no, name, college" />
-        <button class="ghost-btn" id="toggle-passcodes-btn">Show passcodes</button>
-      </div>
-      <div id="students-table-wrap"></div>
-    </div>
-  </div>
+    <div id="ticket-list"></div>
+  </main>
 </div>
 
 <script>
-  // ============ 1. PASTE YOUR FIREBASE CONFIG HERE (same project as student.html) ============
-  const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  // ============ 2. CHANGE THIS PASSCODE BEFORE SHARING THE LINK ============
-  const ADMIN_PASSCODE = "admin2026";
-  // ===========================================================================
+const ADMIN_PIN = 'ADMIN2026';
+const STORAGE_KEY_TICKETS = 'chd-tickets';
 
-  const COLLEGES = [
-    "Kamaraj College", "Kamaraj Women's College", "SDNB Vaishnav College for Women",
-    "Patrician College of Arts & Science", "TERF's College of Arts and Science",
-    "Sree Saraswathi Thyagaraja College", "TJS College of Arts and Science",
-    "Bharathidasan College of Arts & Science", "Nagarathinam Angalammal Arts & Science College",
-    "Vinayaga Mission's Research Foundation School of Arts & Science",
-    "Sri Amaraavathi College of Arts & Science", "Takshashila University",
-    "Study World Group of Institution", "Rathinam College of Arts & Science",
-    "Noorul Islam Centre for Higher Education (NICHE)", "AMET University", "Joy University",
-    "Sasurie College of Arts and Science", "Alliance University", "Kristu Jayathi University",
-    "S-VYASA University", "Asian School of Business"
-  ];
+let tickets = [];
+let currentFilter = 'all';
+let expandedId = null;
+let editState = {};
 
-  function normalize(s) { return (s || "").trim().toLowerCase(); }
-  function showView(id) {
-    document.querySelectorAll(".view").forEach((v) => v.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
-  }
+function loadData(){
+  try { const r = localStorage.getItem(STORAGE_KEY_TICKETS); if(r) tickets = JSON.parse(r); } catch(e){}
+}
+function saveTickets(){ localStorage.setItem(STORAGE_KEY_TICKETS, JSON.stringify(tickets)); }
 
-  // ---------- LOGIN ----------
-  document.getElementById("login-btn").addEventListener("click", () => {
-    const val = document.getElementById("passcode-input").value;
-    const errBox = document.getElementById("login-error");
-    if (val === ADMIN_PASSCODE) {
-      showView("view-dashboard");
-      initDashboard();
-    } else {
-      errBox.textContent = "That passcode isn't correct. Try again.";
-      errBox.classList.add("show");
-    }
+function show(id){ document.getElementById(id).classList.remove('hidden'); }
+function hide(id){ document.getElementById(id).classList.add('hidden'); }
+function escHTML(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function fmtRel(iso){
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(diff/60000);
+  if(m<1) return 'just now';
+  if(m<60) return m+'m ago';
+  const h = Math.floor(m/60);
+  if(h<24) return h+'h ago';
+  const d = Math.floor(h/24);
+  if(d<30) return d+'d ago';
+  return new Date(iso).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+}
+
+function submitPin(){
+  const pin = document.getElementById('pin-input').value;
+  const err = document.getElementById('pin-error');
+  if(!pin){ err.textContent='Enter the admin PIN.'; show('pin-error'); return; }
+  if(pin !== ADMIN_PIN){ err.textContent='Incorrect PIN.'; show('pin-error'); return; }
+  hide('auth-screen');
+  show('admin-screen');
+  renderTickets();
+}
+
+function logout(){
+  hide('admin-screen');
+  show('auth-screen');
+  document.getElementById('pin-input').value = '';
+  hide('pin-error');
+}
+
+function setFilter(f){
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.filter === f);
   });
+  renderTickets();
+}
 
-  // ---------- DASHBOARD INIT ----------
-  let allTickets = [];
-  let allStudents = [];
-  let showPasscodes = false;
+function getFiltered(){
+  const q = (document.getElementById('search-input')?.value || '').toLowerCase().trim();
+  return tickets
+    .filter(t => currentFilter === 'all' ? true : t.status === currentFilter)
+    .filter(t => {
+      if(!q) return true;
+      return (t.rollNumber||'').toLowerCase().includes(q)
+          || (t.studentName||'').toLowerCase().includes(q)
+          || (t.subject||'').toLowerCase().includes(q);
+    })
+    .sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+}
 
-  function initDashboard() {
-    const collegeFilter = document.getElementById("college-filter");
-    COLLEGES.forEach((c) => {
-      const opt = document.createElement("option");
-      opt.value = c; opt.textContent = c;
-      collegeFilter.appendChild(opt);
-    });
+function stampHTML(status){
+  const l = {open:'Open',progress:'In Progress',resolved:'Resolved'};
+  return `<span class="stamp stamp-${status}">${l[status]||status}</span>`;
+}
 
-    document.getElementById("tab-tickets-btn").addEventListener("click", () => switchTab("tickets"));
-    document.getElementById("tab-students-btn").addEventListener("click", () => switchTab("students"));
-    document.getElementById("refresh-btn").addEventListener("click", loadAll);
-    document.getElementById("college-filter").addEventListener("change", renderTickets);
-    document.getElementById("status-filter").addEventListener("change", renderTickets);
-    document.getElementById("ticket-search").addEventListener("input", renderTickets);
-    document.getElementById("student-search").addEventListener("input", renderStudents);
-    document.getElementById("toggle-passcodes-btn").addEventListener("click", () => {
-      showPasscodes = !showPasscodes;
-      document.getElementById("toggle-passcodes-btn").textContent = showPasscodes ? "Hide passcodes" : "Show passcodes";
-      renderStudents();
-    });
-    document.getElementById("import-btn").addEventListener("click", importCsv);
+function toggleRow(id){
+  expandedId = expandedId === id ? null : id;
+  const t = tickets.find(x=>x.id===id);
+  if(t && !editState[id]){
+    editState[id] = { status: t.status, note: t.adminNote||'' };
+  }
+  renderTickets();
+}
 
-    loadAll();
+function saveTicket(id){
+  const s = editState[id];
+  if(!s) return;
+  tickets = tickets.map(t => t.id===id
+    ? {...t, status: s.status, adminNote: s.note, updatedAt: new Date().toISOString()}
+    : t);
+  saveTickets();
+  const saved = document.getElementById('saved-'+id);
+  if(saved){ saved.style.display='inline'; setTimeout(()=>{ if(saved) saved.style.display='none'; }, 2000); }
+  renderStats();
+}
+
+function onStatusChange(id, val){
+  if(!editState[id]) editState[id] = {};
+  editState[id].status = val;
+}
+function onNoteChange(id, val){
+  if(!editState[id]) editState[id] = {};
+  editState[id].note = val;
+}
+
+function renderStats(){
+  document.getElementById('cnt-all').textContent  = tickets.length;
+  document.getElementById('cnt-open').textContent = tickets.filter(t=>t.status==='open').length;
+  document.getElementById('cnt-prog').textContent = tickets.filter(t=>t.status==='progress').length;
+  document.getElementById('cnt-res').textContent  = tickets.filter(t=>t.status==='resolved').length;
+}
+
+function renderTickets(){
+  renderStats();
+  const filtered = getFiltered();
+  const list = document.getElementById('ticket-list');
+  if(!list) return;
+
+  if(filtered.length === 0){
+    list.innerHTML = `<div class="empty-state">No tickets match this view.</div>`;
+    return;
   }
 
-  function switchTab(tab) {
-    document.getElementById("tab-tickets").style.display = tab === "tickets" ? "block" : "none";
-    document.getElementById("tab-students").style.display = tab === "students" ? "block" : "none";
-    document.getElementById("tab-tickets-btn").classList.toggle("active", tab === "tickets");
-    document.getElementById("tab-students-btn").classList.toggle("active", tab === "students");
-  }
+  list.innerHTML = filtered.map(t => {
+    const exp = expandedId === t.id;
+    const es  = editState[t.id] || { status: t.status, note: t.adminNote||'' };
 
-  async function loadAll() {
-    const [ticketsSnap, studentsSnap] = await Promise.all([
-      db.collection("tickets").orderBy("createdAt", "desc").get(),
-      db.collection("students").get()
-    ]);
-    allTickets = ticketsSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
-    allStudents = studentsSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
-    renderTickets();
-    renderStudents();
-  }
+    const bodyHTML = exp ? `
+      <div class="ticket-body ticket-stub">
+        <p class="desc">${escHTML(t.description)}</p>
+        <div class="edit-grid">
+          <div>
+            <label class="field-label">Status</label>
+            <select onchange="onStatusChange('${t.id}', this.value)">
+              <option value="open"     ${es.status==='open'?'selected':''}>Open</option>
+              <option value="progress" ${es.status==='progress'?'selected':''}>In Progress</option>
+              <option value="resolved" ${es.status==='resolved'?'selected':''}>Resolved</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label">Response to student (optional)</label>
+            <input type="text" value="${escHTML(es.note)}" placeholder="e.g. Forwarded to exam cell"
+              oninput="onNoteChange('${t.id}', this.value)" />
+          </div>
+        </div>
+        <div class="edit-actions">
+          <button class="btn-primary" onclick="saveTicket('${t.id}')">Save changes</button>
+          <span id="saved-${t.id}" style="display:none;font-size:13px;color:var(--sage)">✓ Saved</span>
+        </div>
+      </div>` : '';
 
-  // ---------- TICKETS ----------
-  function renderTickets() {
-    const collegeFilter = document.getElementById("college-filter").value;
-    const statusFilter = document.getElementById("status-filter").value;
-    const search = normalize(document.getElementById("ticket-search").value);
+    return `<div class="ticket-row">
+      <button class="ticket-toggle" onclick="toggleRow('${t.id}')">
+        <div class="info-grid">
+          <div class="roll-no">${escHTML(t.rollNumber)}</div>
+          <div>
+            <div class="subj">${escHTML(t.subject)}</div>
+            <div class="sub-meta">${escHTML(t.studentName)} · ${escHTML(t.category)} · ${fmtRel(t.createdAt)}</div>
+          </div>
+        </div>
+        ${stampHTML(t.status)}
+      </button>
+      ${bodyHTML}
+    </div>`;
+  }).join('');
+}
 
-    const filtered = allTickets.filter((t) => {
-      if (collegeFilter !== "All" && t.college !== collegeFilter) return false;
-      if (statusFilter !== "All" && t.status !== statusFilter) return false;
-      if (search) {
-        const hay = normalize(`${t.ref} ${t.rollNo} ${t.email} ${t.name} ${t.subject}`);
-        if (!hay.includes(search)) return false;
-      }
-      return true;
-    });
-
-    const counts = { Open: 0, "In Progress": 0, Resolved: 0, Closed: 0 };
-    allTickets.forEach((t) => { if (counts[t.status] !== undefined) counts[t.status]++; });
-
-    document.getElementById("stat-row").innerHTML = `
-      <div class="stat-card"><div class="stat-num">${allTickets.length}</div><div class="stat-label">Total</div></div>
-      <div class="stat-card"><div class="stat-num">${counts.Open}</div><div class="stat-label">Open</div></div>
-      <div class="stat-card"><div class="stat-num">${counts["In Progress"]}</div><div class="stat-label">In Progress</div></div>
-      <div class="stat-card"><div class="stat-num">${counts.Resolved}</div><div class="stat-label">Resolved</div></div>
-      <div class="stat-card"><div class="stat-num">${counts.Closed}</div><div class="stat-label">Closed</div></div>
-    `;
-
-    const wrap = document.getElementById("tickets-table-wrap");
-    if (filtered.length === 0) {
-      wrap.innerHTML = `<div class="empty-state">No tickets match these filters yet.</div>`;
-      return;
-    }
-
-    const rows = filtered.map((t) => {
-      const dateStr = t.createdAt && t.createdAt.toDate ? t.createdAt.toDate().toLocaleDateString() : "";
-      const statusOptions = ["Open", "In Progress", "Resolved", "Closed"]
-        .map((s) => `<option value="${s}" ${s === t.status ? "selected" : ""}>${s}</option>`).join("");
-      return `
-        <tr>
-          <td style="font-family: var(--font-mono); font-size:12px;">${t.ref}</td>
-          <td>${t.college}</td>
-          <td>${t.name || t.rollNo || t.email}</td>
-          <td>${t.category}</td>
-          <td>${t.subject}</td>
-          <td><select class="field-input status-select" style="padding:5px 8px; font-size:12px;" data-id="${t.id}">${statusOptions}</select></td>
-          <td style="font-size:12px; color: var(--ink-soft);">${dateStr}</td>
-          <td><button class="row-expand-btn expand-btn" data-id="${t.id}">Details ▾</button></td>
-        </tr>
-        <tr class="desc-row" id="desc-${t.id}">
-          <td colspan="8">
-            <strong style="color: var(--ink);">Description: </strong>${t.description}<br/>
-            <strong style="color: var(--ink);">Contact: </strong>${t.rollNo ? "Roll No " + t.rollNo : ""}${t.rollNo && t.email ? " · " : ""}${t.email || ""}
-          </td>
-        </tr>
-      `;
-    }).join("");
-
-    wrap.innerHTML = `
-      <table class="ticket-table">
-        <thead><tr><th>Ref</th><th>College</th><th>Student</th><th>Category</th><th>Subject</th><th>Status</th><th>Filed</th><th></th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
-    `;
-
-    wrap.querySelectorAll(".status-select").forEach((sel) => {
-      sel.addEventListener("change", async (e) => {
-        const id = e.target.dataset.id;
-        const newStatus = e.target.value;
-        await db.collection("tickets").doc(id).update({ status: newStatus });
-        const t = allTickets.find((x) => x.id === id);
-        if (t) t.status = newStatus;
-      });
-    });
-    wrap.querySelectorAll(".expand-btn").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        document.getElementById(`desc-${e.target.dataset.id}`).classList.toggle("show");
-      });
-    });
-  }
-
-  // ---------- STUDENTS ----------
-  function renderStudents() {
-    const search = normalize(document.getElementById("student-search").value);
-    const filtered = allStudents.filter((s) =>
-      !search || normalize(`${s.rollNo} ${s.email} ${s.name} ${s.college}`).includes(search)
-    );
-
-    document.getElementById("directory-count").textContent = `Directory (${allStudents.length})`;
-    const wrap = document.getElementById("students-table-wrap");
-
-    if (filtered.length === 0) {
-      wrap.innerHTML = `<div class="empty-state">No student records yet. Import a list above to get started.</div>`;
-      return;
-    }
-
-    const rows = filtered.map((s) => `
-      <tr>
-        <td>${s.rollNo}</td>
-        <td>${s.name || ""}</td>
-        <td>${s.email || ""}</td>
-        <td>${s.college}</td>
-        <td style="font-family: var(--font-mono);">${showPasscodes ? s.passcode : "••••••"}</td>
-        <td><button class="row-expand-btn remove-btn" data-id="${s.id}">Remove</button></td>
-      </tr>
-    `).join("");
-
-    wrap.innerHTML = `
-      <table class="ticket-table">
-        <thead><tr><th>Roll No</th><th>Name</th><th>Email</th><th>College</th><th>Passcode</th><th></th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
-    `;
-
-    wrap.querySelectorAll(".remove-btn").forEach((btn) => {
-      btn.addEventListener("click", async (e) => {
-        const id = e.target.dataset.id;
-        await db.collection("students").doc(id).delete();
-        allStudents = allStudents.filter((s) => s.id !== id);
-        renderStudents();
-      });
-    });
-  }
-
-  async function importCsv() {
-    const csv = document.getElementById("csv-input").value;
-    const lines = csv.split("\n").map((l) => l.trim()).filter(Boolean);
-    const added = [];
-    const skipped = [];
-
-    lines.forEach((line) => {
-      const parts = line.split(",").map((p) => p.trim());
-      if (parts.length < 5) {
-        skipped.push({ line, reason: "Needs 5 columns: roll no, email, name, college, passcode" });
-        return;
-      }
-      const [rollNo, email, name, collegeRaw, passcode] = parts;
-      const college = COLLEGES.find((c) => normalize(c) === normalize(collegeRaw));
-      if (!college) {
-        skipped.push({ line, reason: `College "${collegeRaw}" doesn't match the list` });
-        return;
-      }
-      if (!passcode) {
-        skipped.push({ line, reason: "Passcode is missing" });
-        return;
-      }
-      added.push({ rollNo, email, name, college, passcode });
-    });
-
-    const btn = document.getElementById("import-btn");
-    btn.disabled = true;
-    btn.textContent = "Importing...";
-
-    const batch = db.batch();
-    added.forEach((a) => {
-      const docId = `${normalize(a.college)}__${normalize(a.rollNo)}`;
-      const ref = db.collection("students").doc(docId);
-      batch.set(ref, { ...a, rollNoLower: normalize(a.rollNo) });
-    });
-    await batch.commit();
-
-    btn.disabled = false;
-    btn.textContent = "Import students";
-    document.getElementById("csv-input").value = "";
-
-    const resultBox = document.getElementById("import-result");
-    let html = `<div style="color: var(--good); margin-bottom:6px;">Added/updated ${added.length} student${added.length === 1 ? "" : "s"}.</div>`;
-    if (skipped.length > 0) {
-      html += `<div class="error-box show" style="display:block;"><div style="margin-bottom:6px; font-weight:600;">Skipped ${skipped.length} line(s):</div>`;
-      skipped.forEach((s) => {
-        html += `<div style="margin-bottom:4px;"><code class="inline-code">${s.line}</code> — ${s.reason}</div>`;
-      });
-      html += `</div>`;
-    }
-    resultBox.innerHTML = html;
-
-    await loadAll();
-  }
+loadData();
 </script>
 </body>
 </html>
