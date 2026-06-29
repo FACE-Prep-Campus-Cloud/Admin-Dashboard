@@ -336,7 +336,7 @@
   <div class="auth-box">
     <div class="auth-header">
       <div class="auth-badge">🛡 Admin Access</div>
-      <h1 class="font-display">FACE Prep Campus Help Desk</h1>
+      <h1 class="font-display">Campus Help Desk</h1>
       <p>Enter your admin PIN to manage tickets and update statuses.</p>
     </div>
     <div class="auth-panel">
@@ -357,7 +357,7 @@
     <!-- Sidebar -->
     <aside class="sidebar">
       <div class="sidebar-top">
-        <div class="sidebar-logo font-display">FACE Prep Campus<br>Help Desk Dashboard</div>
+        <div class="sidebar-logo font-display">Campus<br>Help Desk</div>
         <div class="sidebar-sub">Admin Console</div>
       </div>
       <nav class="sidebar-nav">
@@ -733,26 +733,39 @@ function modalEdit(field, val){
 async function saveModal(){
   if(!modalId) return;
   const saveBtn = document.querySelector('#ticket-modal .btn-dark');
-  saveBtn.disabled = true; saveBtn.textContent = 'Saving…';
-  try {
-    const payload = {
-      status:     modalDraft.status,
-      admin_note: modalDraft.note,
-      reviewed:   !!modalDraft.reviewed,
-      updated_at: new Date().toISOString()
-    };
-    const { error } = await sb.from('tickets').update(payload).eq('id', modalId);
-    if(error) throw error;
-    tickets = tickets.map(t => t.id===modalId ? {...t, ...payload} : t);
-    renderTickets();
+  const savedMsg = $('modal-saved');
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Saving…';
+  hide('modal-saved');
+
+  const payload = {
+    status:     modalDraft.status,
+    admin_note: modalDraft.note,
+    reviewed:   !!modalDraft.reviewed,
+    updated_at: new Date().toISOString()
+  };
+
+  const { error } = await sb.from('tickets').update(payload).eq('id', modalId);
+
+  if(error){
+    console.error(error);
+    savedMsg.style.color = 'var(--rust)';
+    savedMsg.textContent = '✗ ' + (error.message || 'Save failed — check console.');
     show('modal-saved');
-    setTimeout(()=>{ hide('modal-saved'); closeModal(); }, 1200);
-  } catch(e){
-    console.error(e);
-    alert('Could not save changes. Please try again.');
-  } finally {
-    saveBtn.disabled = false; saveBtn.textContent = 'Save changes';
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save changes';
+    return;
   }
+
+  tickets = tickets.map(t => t.id === modalId ? { ...t, ...payload } : t);
+  renderTickets();
+
+  savedMsg.style.color = 'var(--sage)';
+  savedMsg.textContent = '✓ Saved';
+  show('modal-saved');
+  saveBtn.disabled = false;
+  saveBtn.textContent = 'Save changes';
+  setTimeout(() => { hide('modal-saved'); closeModal(); }, 1200);
 }
 
 /* ── keyboard shortcuts ── */
