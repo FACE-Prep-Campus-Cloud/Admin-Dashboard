@@ -21,267 +21,543 @@
     --sage: #4F7858;
   }
 
-  body {
-    font-family: 'Inter', sans-serif;
-    color: var(--ink);
-    background: var(--paper-dark);
-    min-height: 100vh;
-  }
-
+  body { font-family: 'Inter', sans-serif; color: var(--ink); background: var(--paper-dark); min-height: 100vh; }
   .font-display { font-family: 'Fraunces', serif; }
   .font-mono    { font-family: 'IBM Plex Mono', monospace; }
-
-  .stamp {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 12px;
-    border: 2px solid currentColor;
-    border-radius: 999px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10.5px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    transform: rotate(-3deg);
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-  .stamp-open    { color: var(--rust);  background: rgba(191,78,44,0.08); }
-  .stamp-progress{ color: var(--amber); background: rgba(184,120,15,0.10); }
-  .stamp-resolved{ color: var(--sage);  background: rgba(79,120,88,0.10); }
-
-  .ticket-stub { position: relative; border-top: 2px dashed var(--line); }
-  .ticket-stub::before, .ticket-stub::after {
-    content: ''; position: absolute; top: -8px; width: 16px; height: 16px;
-    border-radius: 50%; background: var(--paper-dark);
-  }
-  .ticket-stub::before { left: -1px; }
-  .ticket-stub::after  { right: -1px; }
-
-  header {
-    padding: 20px 24px;
-    display: flex; align-items: center; justify-content: space-between;
-    background: var(--ink); color: var(--paper);
-  }
-  header .title { font-family: 'Fraunces', serif; font-size: 20px; }
-  .btn-logout {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 14px; padding: 6px 12px; border-radius: 8px;
-    background: rgba(251,247,238,0.12); color: var(--paper);
-    border: none; cursor: pointer; font-family: inherit; transition: opacity .15s;
-  }
-  .btn-logout:hover { opacity: 0.8; }
-
-  .btn-primary {
-    padding: 10px 20px;
-    background: var(--ink); color: var(--paper);
-    border: none; border-radius: 8px;
-    font-family: inherit; font-size: 14px; font-weight: 600;
-    cursor: pointer; transition: opacity .15s, transform .15s;
-  }
-  .btn-primary:hover  { opacity: 0.85; }
-  .btn-primary:active { transform: scale(0.98); }
-  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
-
-  input, select, textarea {
-    background: var(--paper-dark);
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    color: var(--ink);
-    font-family: inherit;
-    font-size: 14px;
-    padding: 10px 14px;
-    outline: none;
-    transition: border-color .15s;
-    width: 100%;
-  }
-  input:focus, select:focus { border-color: var(--ink); }
-  input::placeholder { color: var(--ink-light); opacity: 0.6; }
-
-  label.field-label {
-    display: block;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10.5px; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 0.08em;
-    color: var(--ink-light); margin-bottom: 6px;
-  }
-  .field { margin-bottom: 0; }
-
-  /* Auth */
-  .auth-wrap {
-    min-height: 100vh; display: flex;
-    align-items: center; justify-content: center; padding: 24px;
-  }
-  .auth-box { width: 100%; max-width: 400px; }
-  .auth-header { text-align: center; margin-bottom: 28px; }
-  .auth-header h1 { font-family: 'Fraunces', serif; font-size: 32px; margin-top: 12px; }
-  .auth-header p  { font-size: 14px; color: var(--ink-light); margin-top: 8px; }
-  .auth-panel {
-    background: var(--paper); border: 1px solid var(--line);
-    border-radius: 16px; padding: 28px;
-  }
-  .error-msg { font-size: 13px; color: var(--rust); margin: 10px 0; }
-  .btn-primary-full { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; }
   .hidden { display: none !important; }
 
-  /* Dashboard */
-  main { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
+  /* ── STAMPS ── */
+  .stamp {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px; border: 1.5px solid currentColor; border-radius: 999px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase; transform: rotate(-2deg);
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .stamp-open     { color: var(--rust);  background: rgba(191,78,44,0.08); }
+  .stamp-progress { color: var(--amber); background: rgba(184,120,15,0.10); }
+  .stamp-resolved { color: var(--sage);  background: rgba(79,120,88,0.10); }
 
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 16px; margin-bottom: 32px;
+  .review-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 9px; border-radius: 999px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap;
+  }
+  .review-yes { background: rgba(79,120,88,0.12); color: var(--sage); border: 1.5px solid rgba(79,120,88,0.35); }
+  .review-no  { background: rgba(91,107,124,0.10); color: var(--ink-light); border: 1.5px solid var(--line); }
+
+  /* ── AUTH ── */
+  .auth-wrap {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;
+  }
+  .auth-box { width: 100%; max-width: 380px; }
+  .auth-header { text-align: center; margin-bottom: 28px; }
+  .auth-badge {
+    display: inline-block; padding: 4px 14px;
+    border: 1.5px solid var(--amber); border-radius: 999px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--amber); background: rgba(184,120,15,0.10);
+    margin-bottom: 12px;
+  }
+  .auth-header h1 { font-family: 'Fraunces', serif; font-size: 30px; margin-top: 0; }
+  .auth-header p  { font-size: 13px; color: var(--ink-light); margin-top: 8px; }
+  .auth-panel { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 28px; }
+  .field-label {
+    display: block; font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--ink-light); margin-bottom: 6px;
+  }
+  .error-msg { font-size: 13px; color: var(--rust); margin: 8px 0; }
+  input, select, textarea {
+    background: var(--paper-dark); border: 1px solid var(--line); border-radius: 8px;
+    color: var(--ink); font-family: inherit; font-size: 14px; padding: 10px 14px;
+    outline: none; transition: border-color .15s; width: 100%;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--ink); }
+  input::placeholder { color: var(--ink-light); opacity: 0.55; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+    padding: 9px 18px; border-radius: 8px; font-family: inherit;
+    font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity .15s, transform .12s;
+    border: none; white-space: nowrap;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-dark  { background: var(--ink);  color: var(--paper); }
+  .btn-dark:hover  { opacity: 0.85; }
+  .btn-dark:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-ghost { background: transparent; color: var(--ink-light); border: 1px solid var(--line); }
+  .btn-ghost:hover { background: var(--paper); color: var(--ink); border-color: var(--ink-light); }
+  .btn-full { width: 100%; }
+
+  /* ── SHELL ── */
+  .shell { display: flex; min-height: 100vh; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 220px; flex-shrink: 0;
+    background: var(--ink); color: var(--paper);
+    display: flex; flex-direction: column;
+    padding: 0;
+    position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  }
+  .sidebar-top {
+    padding: 24px 20px 20px;
+    border-bottom: 1px solid rgba(251,247,238,0.1);
+  }
+  .sidebar-logo { font-family: 'Fraunces', serif; font-size: 17px; line-height: 1.3; }
+  .sidebar-sub { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(251,247,238,0.45); margin-top: 4px; }
+  .sidebar-nav { padding: 16px 12px; flex: 1; }
+  .nav-section-label {
+    font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: rgba(251,247,238,0.35); padding: 0 8px; margin-bottom: 6px; margin-top: 12px;
+  }
+  .nav-btn {
+    display: flex; align-items: center; gap: 10px; width: 100%;
+    padding: 9px 10px; border-radius: 8px; border: none; cursor: pointer;
+    font-family: inherit; font-size: 13px; font-weight: 500;
+    color: rgba(251,247,238,0.65); background: transparent;
+    transition: background .15s, color .15s; text-align: left;
+  }
+  .nav-btn svg { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.7; }
+  .nav-btn:hover { background: rgba(251,247,238,0.08); color: var(--paper); }
+  .nav-btn:hover svg { opacity: 1; }
+  .nav-btn.active { background: rgba(251,247,238,0.13); color: var(--paper); font-weight: 600; }
+  .nav-btn.active svg { opacity: 1; }
+  .nav-count {
+    margin-left: auto; font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    background: rgba(251,247,238,0.15); color: rgba(251,247,238,0.75);
+    border-radius: 999px; padding: 1px 7px; min-width: 20px; text-align: center;
+  }
+  .nav-count.urgent { background: rgba(191,78,44,0.45); color: #F7C0A8; }
+  .sidebar-foot {
+    padding: 16px 12px;
+    border-top: 1px solid rgba(251,247,238,0.1);
+  }
+  .btn-logout {
+    display: flex; align-items: center; gap: 8px; width: 100%;
+    padding: 9px 10px; border-radius: 8px; border: none; cursor: pointer;
+    font-family: inherit; font-size: 13px; color: rgba(251,247,238,0.5);
+    background: transparent; transition: background .15s, color .15s;
+  }
+  .btn-logout:hover { background: rgba(251,247,238,0.08); color: rgba(251,247,238,0.85); }
+  .btn-logout svg { width: 15px; height: 15px; }
+
+  /* ── MAIN CONTENT ── */
+  .main-content { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 28px; background: var(--paper); border-bottom: 1px solid var(--line);
+    gap: 16px; position: sticky; top: 0; z-index: 10;
+  }
+  .topbar-left { display: flex; flex-direction: column; gap: 2px; }
+  .topbar-title { font-family: 'Fraunces', serif; font-size: 20px; }
+  .topbar-sub { font-size: 12px; color: var(--ink-light); }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+  .search-wrap { position: relative; }
+  .search-wrap input { padding-left: 34px; width: 240px; font-size: 13px; }
+  .search-icon {
+    position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+    color: var(--ink-light); font-size: 14px; pointer-events: none;
+  }
+
+  /* ── PAGE BODY ── */
+  .page-body { padding: 28px; flex: 1; }
+
+  /* ── STATS ROW ── */
+  .stats-row {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 28px;
   }
   .stat-card {
-    background: var(--paper); border: 1px solid var(--line);
-    border-radius: 16px; padding: 20px;
+    background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px;
+    display: flex; flex-direction: column; gap: 4px;
   }
-  .stat-card .val {
-    font-family: 'Fraunces', serif; font-size: 32px;
-  }
-  .stat-card .lbl {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10.5px; text-transform: uppercase;
-    letter-spacing: 0.08em; color: var(--ink-light); margin-top: 4px;
-  }
+  .stat-card .s-val { font-family: 'Fraunces', serif; font-size: 30px; line-height: 1; }
+  .stat-card .s-lbl { font-family: 'IBM Plex Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-light); }
+  .stat-card .s-sub { font-size: 11px; color: var(--ink-light); margin-top: 2px; }
+  .stat-card.s-open     { border-left: 3px solid var(--rust); }
+  .stat-card.s-progress { border-left: 3px solid var(--amber); }
+  .stat-card.s-resolved { border-left: 3px solid var(--sage); }
+  .stat-card.s-review   { border-left: 3px solid #5B6B7C; }
 
-  .controls {
-    display: flex; flex-wrap: wrap; gap: 12px;
-    align-items: center; margin-bottom: 24px;
+  /* ── TOOLBAR ── */
+  .toolbar {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 18px; flex-wrap: wrap;
   }
-  .filter-btns { display: flex; gap: 8px; flex-wrap: wrap; }
-  .filter-btn {
-    padding: 8px 16px; border-radius: 999px; font-size: 14px;
-    font-family: inherit; font-weight: 500; border: 1px solid var(--line);
-    cursor: pointer; transition: background .15s, color .15s;
+  .filter-pill {
+    padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 500;
+    font-family: inherit; cursor: pointer; transition: background .12s, color .12s;
+    border: 1px solid var(--line);
   }
-  .filter-btn.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-  .filter-btn:not(.active) { background: var(--paper); color: var(--ink-light); }
+  .filter-pill.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .filter-pill:not(.active) { background: var(--paper); color: var(--ink-light); }
+  .filter-pill:not(.active):hover { background: var(--paper-dark); color: var(--ink); }
 
-  .search-wrap { position: relative; flex: 1; min-width: 200px; max-width: 320px; margin-left: auto; }
-  .search-wrap input { padding-left: 36px; }
-  .search-wrap .search-icon {
-    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
-    color: var(--ink-light); pointer-events: none; font-size: 15px;
-  }
+  .toolbar-sep { width: 1px; height: 24px; background: var(--line); margin: 0 4px; }
 
-  .ticket-row {
-    background: var(--paper); border: 1px solid var(--line);
-    border-radius: 16px; overflow: hidden; margin-bottom: 12px;
-    transition: background .15s, border-color .15s;
+  /* ── TABLE ── */
+  .table-wrap {
+    background: var(--paper); border: 1px solid var(--line); border-radius: 14px; overflow: hidden;
   }
-  .ticket-row.status-open     { background: rgba(191,78,44,0.09);  border-color: rgba(191,78,44,0.35); }
-  .ticket-row.status-progress { background: rgba(184,120,15,0.10); border-color: rgba(184,120,15,0.35); }
-  .ticket-row.status-resolved { background: rgba(79,120,88,0.09);  border-color: rgba(79,120,88,0.35); }
-  .ticket-toggle {
-    width: 100%; text-align: left;
-    padding: 20px;
-    display: flex; align-items: center; justify-content: space-between; gap: 16px;
-    background: transparent; border: none; cursor: pointer; font-family: inherit;
+  .tbl { width: 100%; border-collapse: collapse; }
+  .tbl thead tr { border-bottom: 1px solid var(--line); background: var(--paper-dark); }
+  .tbl th {
+    padding: 10px 16px; text-align: left;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-light);
+    white-space: nowrap;
   }
-  .ticket-toggle .info-grid {
-    display: grid; gap: 4px; flex: 1; min-width: 0;
-  }
-  @media(min-width: 600px){
-    .ticket-toggle .info-grid { grid-template-columns: 110px 1fr; align-items: baseline; gap: 16px; }
-  }
-  .ticket-toggle .roll-no { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--ink-light); }
-  .ticket-toggle .subj { font-size: 15px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .ticket-toggle .sub-meta { font-size: 12px; color: var(--ink-light); margin-top: 2px; }
+  .tbl td { padding: 14px 16px; font-size: 13px; vertical-align: middle; }
+  .tbl tbody tr { border-bottom: 1px solid var(--line); transition: background .1s; }
+  .tbl tbody tr:last-child { border-bottom: none; }
+  .tbl tbody tr:hover { background: var(--paper-dark); }
+  .tbl tbody tr.status-open     { background: rgba(191,78,44,0.05); }
+  .tbl tbody tr.status-open:hover { background: rgba(191,78,44,0.09); }
+  .tbl tbody tr.status-progress { background: rgba(184,120,15,0.05); }
+  .tbl tbody tr.status-progress:hover { background: rgba(184,120,15,0.09); }
+  .tbl tbody tr.status-resolved { background: rgba(79,120,88,0.04); }
+  .tbl tbody tr.status-resolved:hover { background: rgba(79,120,88,0.08); }
 
-  .ticket-body {
-    padding: 0 20px 20px; padding-top: 16px;
+  .roll-mono { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--ink-light); }
+  .subj-text { font-weight: 500; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .meta-text { font-size: 11px; color: var(--ink-light); margin-top: 2px; }
+  .cat-pill {
+    display: inline-block; padding: 2px 9px; border-radius: 999px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    background: rgba(91,107,124,0.12); color: var(--ink-light); border: 1px solid var(--line);
   }
-  .ticket-body .desc { font-size: 14px; white-space: pre-wrap; margin-bottom: 16px; }
-  .edit-grid {
-    display: grid; gap: 16px;
+  .time-text { font-size: 12px; color: var(--ink-light); white-space: nowrap; }
+  .action-btn {
+    padding: 6px 12px; border-radius: 6px; font-family: inherit; font-size: 12px; font-weight: 500;
+    border: 1px solid var(--line); background: transparent; color: var(--ink-light); cursor: pointer;
+    transition: background .12s, color .12s, border-color .12s;
   }
-  @media(min-width: 600px){ .edit-grid { grid-template-columns: 1fr 1fr; } }
-  .edit-actions { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
-  .saved-msg { font-size: 13px; color: var(--sage); }
+  .action-btn:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 
+  /* ── EMPTY STATE ── */
   .empty-state {
-    background: var(--paper); border: 1px dashed var(--line);
-    border-radius: 16px; padding: 48px; text-align: center;
-    color: var(--ink-light); font-size: 14px;
+    padding: 60px 24px; text-align: center; color: var(--ink-light); font-size: 14px;
   }
+  .empty-icon { font-size: 28px; margin-bottom: 12px; opacity: 0.4; }
+  .empty-state p { margin-top: 6px; font-size: 12px; }
 
-  .stamp-header { color: var(--amber); background: rgba(184,120,15,0.10); transform: none; }
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(28,43,58,0.5);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px; z-index: 100; backdrop-filter: blur(2px);
+  }
+  .modal-box {
+    background: var(--paper); border: 1px solid var(--line); border-radius: 20px;
+    width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto;
+  }
+  .modal-header {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+    padding: 24px 24px 0;
+  }
+  .modal-title { font-family: 'Fraunces', serif; font-size: 20px; line-height: 1.3; }
+  .modal-meta  { font-size: 12px; color: var(--ink-light); margin-top: 4px; }
+  .modal-close {
+    width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+    border-radius: 8px; border: 1px solid var(--line); background: transparent; cursor: pointer;
+    font-size: 16px; color: var(--ink-light); flex-shrink: 0; transition: background .12s;
+  }
+  .modal-close:hover { background: var(--paper-dark); color: var(--ink); }
+
+  /* dashed tear line */
+  .tear-line {
+    border: none; border-top: 2px dashed var(--line); margin: 20px 0; position: relative;
+  }
+  .tear-line::before, .tear-line::after {
+    content: ''; position: absolute; top: -9px;
+    width: 16px; height: 16px; border-radius: 50%; background: var(--paper-dark);
+  }
+  .tear-line::before { left: -1px; }
+  .tear-line::after  { right: -1px; }
+
+  .modal-body { padding: 0 24px 24px; }
+  .desc-block {
+    font-size: 13.5px; line-height: 1.65; white-space: pre-wrap;
+    color: var(--ink); padding: 14px 16px; background: var(--paper-dark);
+    border-radius: 10px; border: 1px solid var(--line); margin-bottom: 20px;
+  }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.full { grid-column: 1 / -1; }
+
+  .review-toggle-wrap {
+    grid-column: 1 / -1;
+    background: var(--paper-dark); border: 1px solid var(--line);
+    border-radius: 10px; padding: 14px 16px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .review-toggle-info strong { font-size: 13px; display: block; margin-bottom: 2px; }
+  .review-toggle-info span { font-size: 11.5px; color: var(--ink-light); }
+  .toggle-switch {
+    position: relative; width: 44px; height: 24px; flex-shrink: 0;
+  }
+  .toggle-switch input { opacity: 0; width: 0; height: 0; }
+  .toggle-track {
+    position: absolute; inset: 0; border-radius: 999px;
+    background: var(--line); cursor: pointer; transition: background .2s;
+  }
+  .toggle-thumb {
+    position: absolute; left: 3px; top: 3px; width: 18px; height: 18px;
+    border-radius: 50%; background: white; transition: transform .2s; pointer-events: none;
+  }
+  .toggle-switch input:checked ~ .toggle-track { background: var(--sage); }
+  .toggle-switch input:checked ~ .toggle-thumb { transform: translateX(20px); }
+
+  .modal-actions {
+    display: flex; align-items: center; gap: 10px; padding-top: 4px;
+  }
+  .saved-msg { font-size: 12px; color: var(--sage); }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .form-grid { grid-template-columns: 1fr; }
+    .tbl th:nth-child(3), .tbl td:nth-child(3),
+    .tbl th:nth-child(5), .tbl td:nth-child(5) { display: none; }
+  }
 </style>
 </head>
 <body>
 
-<!-- AUTH -->
+<!-- ── AUTH ── -->
 <div id="auth-screen" class="auth-wrap">
   <div class="auth-box">
     <div class="auth-header">
-      <span class="stamp stamp-header">🛡 Admin Access</span>
+      <div class="auth-badge">🛡 Admin Access</div>
       <h1 class="font-display">Campus Help Desk</h1>
       <p>Enter your admin PIN to manage tickets and update statuses.</p>
     </div>
     <div class="auth-panel">
-      <div class="field" style="margin-bottom:16px">
+      <div style="margin-bottom:16px">
         <label class="field-label">Admin PIN</label>
         <input id="pin-input" type="password" placeholder="Enter PIN" onkeydown="if(event.key==='Enter')submitPin()" />
       </div>
       <div id="pin-error" class="error-msg hidden"></div>
-      <button class="btn-primary btn-primary-full" onclick="submitPin()">Enter dashboard →</button>
+      <button class="btn btn-dark btn-full" onclick="submitPin()">Enter dashboard →</button>
     </div>
   </div>
 </div>
 
-<!-- DASHBOARD -->
+<!-- ── DASHBOARD ── -->
 <div id="admin-screen" class="hidden">
-  <header>
-    <div class="title font-display">Campus Help Desk · Admin</div>
-    <button class="btn-logout" onclick="logout()">↩ Log out</button>
-  </header>
+  <div class="shell">
 
-  <main>
-    <div class="stats-grid">
-      <div class="stat-card"><div class="val font-display" id="cnt-all" style="color:var(--ink)">0</div><div class="lbl">Total</div></div>
-      <div class="stat-card"><div class="val font-display" id="cnt-open" style="color:var(--rust)">0</div><div class="lbl">Open</div></div>
-      <div class="stat-card"><div class="val font-display" id="cnt-prog" style="color:var(--amber)">0</div><div class="lbl">In Progress</div></div>
-      <div class="stat-card"><div class="val font-display" id="cnt-res" style="color:var(--sage)">0</div><div class="lbl">Resolved</div></div>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="sidebar-logo font-display">Campus<br>Help Desk</div>
+        <div class="sidebar-sub">Admin Console</div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Tickets</div>
+        <button class="nav-btn active" data-filter="all" onclick="navFilter('all', this)">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="13" height="13" rx="2"/><line x1="4.5" y1="5.5" x2="11.5" y2="5.5"/><line x1="4.5" y1="8" x2="11.5" y2="8"/><line x1="4.5" y1="10.5" x2="8" y2="10.5"/></svg>
+          All tickets
+          <span class="nav-count" id="nav-cnt-all">0</span>
+        </button>
+        <button class="nav-btn" data-filter="open" onclick="navFilter('open', this)">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><line x1="8" y1="5" x2="8" y2="8.5"/><circle cx="8" cy="10.5" r="0.5" fill="currentColor"/></svg>
+          Open
+          <span class="nav-count urgent" id="nav-cnt-open">0</span>
+        </button>
+        <button class="nav-btn" data-filter="progress" onclick="navFilter('progress', this)">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 4v4l2.5 2.5"/></svg>
+          In Progress
+          <span class="nav-count" id="nav-cnt-prog">0</span>
+        </button>
+        <button class="nav-btn" data-filter="resolved" onclick="navFilter('resolved', this)">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><polyline points="5.5,8.5 7.5,10.5 10.5,5.5"/></svg>
+          Resolved
+          <span class="nav-count" id="nav-cnt-res">0</span>
+        </button>
+
+        <div class="nav-section-label">Reviews</div>
+        <button class="nav-btn" data-filter="review-pending" onclick="navFilter('review-pending', this)">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="2.5"/><path d="M2.5 13.5c0-3.04 2.46-5.5 5.5-5.5s5.5 2.46 5.5 5.5"/><line x1="12" y1="4" x2="14" y2="6"/><line x1="12" y1="6" x2="14" y2="4"/></svg>
+          Review Pending
+          <span class="nav-count urgent" id="nav-cnt-review">0</span>
+        </button>
+        <button class="nav-btn" data-filter="review-done" onclick="navFilter('review-done', this)">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="2.5"/><path d="M2.5 13.5c0-3.04 2.46-5.5 5.5-5.5s5.5 2.46 5.5 5.5"/><polyline points="11,3 12.5,4.5 14.5,2"/></svg>
+          Review Done
+          <span class="nav-count" id="nav-cnt-reviewed">0</span>
+        </button>
+      </nav>
+      <div class="sidebar-foot">
+        <button class="btn-logout" onclick="logout()">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2.5H3.5a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1H6"/><polyline points="10.5,5 13.5,8 10.5,11"/><line x1="13.5" y1="8" x2="6" y2="8"/></svg>
+          Log out
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <div class="main-content">
+
+      <!-- Top bar -->
+      <div class="topbar">
+        <div class="topbar-left">
+          <div class="topbar-title font-display" id="topbar-title">All Tickets</div>
+          <div class="topbar-sub" id="topbar-sub">Showing all submitted tickets</div>
+        </div>
+        <div class="topbar-right">
+          <div class="search-wrap">
+            <span class="search-icon">⌕</span>
+            <input id="search-input" type="text" placeholder="Search roll no., name, subject…" oninput="renderTickets()" />
+          </div>
+          <button class="btn btn-ghost" onclick="loadTickets()" title="Refresh">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13.5 2.5A6.5 6.5 0 1 1 8 1.5"/><polyline points="13.5,2.5 13.5,6 10,6"/></svg>
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      <!-- Page body -->
+      <div class="page-body">
+
+        <!-- Stats -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="s-val font-display" id="cnt-all" style="color:var(--ink)">0</div>
+            <div class="s-lbl">Total</div>
+          </div>
+          <div class="stat-card s-open">
+            <div class="s-val font-display" id="cnt-open" style="color:var(--rust)">0</div>
+            <div class="s-lbl">Open</div>
+          </div>
+          <div class="stat-card s-progress">
+            <div class="s-val font-display" id="cnt-prog" style="color:var(--amber)">0</div>
+            <div class="s-lbl">In Progress</div>
+          </div>
+          <div class="stat-card s-resolved">
+            <div class="s-val font-display" id="cnt-res" style="color:var(--sage)">0</div>
+            <div class="s-lbl">Resolved</div>
+          </div>
+        </div>
+
+        <!-- Filter pills + sort -->
+        <div class="toolbar">
+          <button class="filter-pill active" data-filter="all"      onclick="setPill('all',this)">All</button>
+          <button class="filter-pill"        data-filter="open"     onclick="setPill('open',this)">Open</button>
+          <button class="filter-pill"        data-filter="progress" onclick="setPill('progress',this)">In Progress</button>
+          <button class="filter-pill"        data-filter="resolved" onclick="setPill('resolved',this)">Resolved</button>
+          <div class="toolbar-sep"></div>
+          <button class="filter-pill"        data-filter="review-pending" onclick="setPill('review-pending',this)">Review Pending</button>
+          <button class="filter-pill"        data-filter="review-done"    onclick="setPill('review-done',this)">Review Done</button>
+        </div>
+
+        <!-- Table -->
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Roll No.</th>
+                <th>Subject / Student</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>1-on-1 Review</th>
+                <th>Submitted</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="ticket-tbody"></tbody>
+          </table>
+          <div id="empty-state" class="empty-state hidden">
+            <div class="empty-icon">📭</div>
+            <strong>No tickets found</strong>
+            <p>Try a different filter or search term.</p>
+          </div>
+        </div>
+
+      </div><!-- /page-body -->
+    </div><!-- /main-content -->
+  </div><!-- /shell -->
+</div><!-- /admin-screen -->
+
+<!-- ── TICKET MODAL ── -->
+<div id="ticket-modal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title font-display" id="modal-title"></div>
+        <div class="modal-meta" id="modal-meta"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
 
-    <div class="controls">
-      <div class="filter-btns">
-        <button class="filter-btn active" data-filter="all"      onclick="setFilter('all')">All</button>
-        <button class="filter-btn"        data-filter="open"     onclick="setFilter('open')">Open</button>
-        <button class="filter-btn"        data-filter="progress" onclick="setFilter('progress')">In Progress</button>
-        <button class="filter-btn"        data-filter="resolved" onclick="setFilter('resolved')">Resolved</button>
+    <div class="modal-body">
+      <hr class="tear-line">
+
+      <div class="desc-block" id="modal-desc"></div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="field-label">Status</label>
+          <select id="modal-status" onchange="modalEdit('status', this.value)">
+            <option value="open">Open</option>
+            <option value="progress">In Progress</option>
+            <option value="resolved">Resolved</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Admin Note (shown to student)</label>
+          <input id="modal-note" type="text" placeholder="e.g. Forwarded to exam cell" oninput="modalEdit('note', this.value)" />
+        </div>
+
+        <!-- 1-on-1 Review Toggle -->
+        <div class="review-toggle-wrap">
+          <div class="review-toggle-info">
+            <strong>1-on-1 review with student</strong>
+            <span>Has a personal review session taken place with this student?</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="modal-review" onchange="modalEdit('reviewed', this.checked)" />
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+        </div>
       </div>
-      <div class="search-wrap">
-        <span class="search-icon">⌕</span>
-        <input id="search-input" type="text" placeholder="Search roll no., name, subject" oninput="renderTickets()" />
+
+      <div class="modal-actions">
+        <button class="btn btn-dark" onclick="saveModal()">Save changes</button>
+        <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+        <span id="modal-saved" class="saved-msg hidden">✓ Saved</span>
       </div>
     </div>
-
-    <div id="ticket-list"></div>
-  </main>
+  </div>
 </div>
 
 <script>
-/* ── Supabase setup ── */
-const SUPABASE_URL = 'https://rysajbwcuieovbsllaas.supabase.co';
+/* ── Supabase ── */
+const SUPABASE_URL     = 'https://rysajbwcuieovbsllaas.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5c2FqYndjdWllb3Zic2xsYWFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0NjI3MjgsImV4cCI6MjA5NjAzODcyOH0.2WenjYKsfQYAeUJxVJcEVQwqYUlfwrYltrMuC9Ggu4A';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const ADMIN_PIN = '1212';
 
-let tickets = [];
-let currentFilter = 'all';
-let rowExpand = {}; // ticket id -> boolean; absent/undefined defaults to expanded
-let editState = {};
+let tickets      = [];
+let activeFilter = 'all';
 let refreshTimer = null;
+let modalId      = null;
+let modalDraft   = {};
 
-function show(id){ document.getElementById(id).classList.remove('hidden'); }
-function hide(id){ document.getElementById(id).classList.add('hidden'); }
-function escHTML(s){
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+/* ── helpers ── */
+const $  = id => document.getElementById(id);
+const show = id => $(id).classList.remove('hidden');
+const hide = id => $(id).classList.add('hidden');
+function escHTML(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function fmtRel(iso){
   const diff = Date.now() - new Date(iso).getTime();
   const m = Math.floor(diff/60000);
@@ -294,189 +570,195 @@ function fmtRel(iso){
   return new Date(iso).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
 }
 
+/* ── Auth ── */
 function submitPin(){
-  const pin = document.getElementById('pin-input').value;
-  const err = document.getElementById('pin-error');
+  const pin = $('pin-input').value;
+  const err = $('pin-error');
   if(!pin){ err.textContent='Enter the admin PIN.'; show('pin-error'); return; }
   if(pin !== ADMIN_PIN){ err.textContent='Incorrect PIN.'; show('pin-error'); return; }
   hide('auth-screen');
   show('admin-screen');
   loadTickets();
-  // Refresh ticket list periodically so new student tickets show up without a manual reload
   refreshTimer = setInterval(loadTickets, 15000);
 }
-
 function logout(){
-  hide('admin-screen');
-  show('auth-screen');
-  document.getElementById('pin-input').value = '';
+  hide('admin-screen'); show('auth-screen');
+  $('pin-input').value = '';
   hide('pin-error');
   if(refreshTimer){ clearInterval(refreshTimer); refreshTimer = null; }
 }
 
-function setFilter(f){
-  currentFilter = f;
-  document.querySelectorAll('.filter-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.filter === f);
-  });
+/* ── Filtering ── */
+function navFilter(f, btn){
+  activeFilter = f;
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b===btn));
+  document.querySelectorAll('.filter-pill').forEach(b => b.classList.toggle('active', b.dataset.filter===f));
+  updateTopbar();
   renderTickets();
+}
+function setPill(f, btn){
+  activeFilter = f;
+  document.querySelectorAll('.filter-pill').forEach(b => b.classList.toggle('active', b===btn));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.filter===f));
+  updateTopbar();
+  renderTickets();
+}
+function updateTopbar(){
+  const map = {
+    'all':           ['All Tickets',        'Showing all submitted tickets'],
+    'open':          ['Open Tickets',        'Tickets awaiting first action'],
+    'progress':      ['In Progress',         'Tickets currently being handled'],
+    'resolved':      ['Resolved',            'Closed and completed tickets'],
+    'review-pending':['Review Pending',      'Students awaiting a 1-on-1 review session'],
+    'review-done':   ['Review Completed',    'Students who have had a 1-on-1 session'],
+  };
+  const [t,s] = map[activeFilter] || ['Tickets',''];
+  $('topbar-title').textContent = t;
+  $('topbar-sub').textContent   = s;
 }
 
 function getFiltered(){
-  const q = (document.getElementById('search-input')?.value || '').toLowerCase().trim();
+  const q = ($('search-input')?.value||'').toLowerCase().trim();
   return tickets
-    .filter(t => currentFilter === 'all' ? true : t.status === currentFilter)
+    .filter(t => {
+      if(activeFilter==='all') return true;
+      if(activeFilter==='review-pending') return !t.reviewed;
+      if(activeFilter==='review-done')    return !!t.reviewed;
+      return t.status === activeFilter;
+    })
     .filter(t => {
       if(!q) return true;
       return (t.roll_number||'').toLowerCase().includes(q)
           || (t.student_name||'').toLowerCase().includes(q)
-          || (t.subject||'').toLowerCase().includes(q);
+          || (t.subject||'').toLowerCase().includes(q)
+          || (t.category||'').toLowerCase().includes(q);
     })
     .sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
 }
 
-function stampHTML(status){
-  const l = {open:'Open',progress:'In Progress',resolved:'Resolved'};
-  return `<span class="stamp stamp-${status}">${l[status]||status}</span>`;
-}
-
-function ensureEditState(t){
-  if(!editState[t.id]){
-    editState[t.id] = { status: t.status, note: t.admin_note||'' };
-  }
-}
-
-function toggleRow(id){
-  const isExpanded = rowExpand[id] !== false; // default = expanded
-  rowExpand[id] = !isExpanded;
-  const t = tickets.find(x=>x.id===id);
-  if(t && !isExpanded){
-    // about to expand — make sure edit state exists
-    ensureEditState(t);
-  }
-  renderTickets();
-}
-
-async function saveTicket(id){
-  const s = editState[id];
-  if(!s) return;
-
-  const btn = document.querySelector(`#row-${id} .btn-primary`);
-  if(btn){ btn.disabled = true; btn.textContent = 'Saving…'; }
-
-  try {
-    const { error } = await sb
-      .from('tickets')
-      .update({ status: s.status, admin_note: s.note, updated_at: new Date().toISOString() })
-      .eq('id', id);
-
-    if(error) throw error;
-
-    tickets = tickets.map(t => t.id===id
-      ? {...t, status: s.status, admin_note: s.note, updated_at: new Date().toISOString()}
-      : t);
-
-    renderStats();
-    const saved = document.getElementById('saved-'+id);
-    if(saved){ saved.style.display='inline'; setTimeout(()=>{ if(saved) saved.style.display='none'; }, 2000); }
-  } catch(e){
-    console.error(e);
-    alert('Could not save changes. Please try again.');
-  } finally {
-    if(btn){ btn.disabled = false; btn.textContent = 'Save changes'; }
-  }
-}
-
-function onStatusChange(id, val){
-  if(!editState[id]) editState[id] = {};
-  editState[id].status = val;
-}
-function onNoteChange(id, val){
-  if(!editState[id]) editState[id] = {};
-  editState[id].note = val;
-}
-
+/* ── Stats ── */
 function renderStats(){
-  document.getElementById('cnt-all').textContent  = tickets.length;
-  document.getElementById('cnt-open').textContent = tickets.filter(t=>t.status==='open').length;
-  document.getElementById('cnt-prog').textContent = tickets.filter(t=>t.status==='progress').length;
-  document.getElementById('cnt-res').textContent  = tickets.filter(t=>t.status==='resolved').length;
+  $('cnt-all').textContent  = tickets.length;
+  $('cnt-open').textContent = tickets.filter(t=>t.status==='open').length;
+  $('cnt-prog').textContent = tickets.filter(t=>t.status==='progress').length;
+  $('cnt-res').textContent  = tickets.filter(t=>t.status==='resolved').length;
+  $('nav-cnt-all').textContent    = tickets.length;
+  $('nav-cnt-open').textContent   = tickets.filter(t=>t.status==='open').length;
+  $('nav-cnt-prog').textContent   = tickets.filter(t=>t.status==='progress').length;
+  $('nav-cnt-res').textContent    = tickets.filter(t=>t.status==='resolved').length;
+  const pending = tickets.filter(t=>!t.reviewed).length;
+  const done    = tickets.filter(t=>!!t.reviewed).length;
+  $('nav-cnt-review').textContent   = pending;
+  $('nav-cnt-reviewed').textContent = done;
 }
 
+/* ── Load ── */
 async function loadTickets(){
   try {
-    const { data, error } = await sb
-      .from('tickets')
-      .select('*')
-      .order('created_at', { ascending: false });
-
+    const { data, error } = await sb.from('tickets').select('*').order('created_at', { ascending: false });
     if(error) throw error;
     tickets = data || [];
     renderTickets();
   } catch(e){
     console.error(e);
-    const list = document.getElementById('ticket-list');
-    if(list && list.innerHTML === '') {
-      list.innerHTML = `<div class="empty-state">Couldn't load tickets. Please refresh.</div>`;
-    }
+    $('ticket-tbody').innerHTML = '';
+    show('empty-state');
+    $('empty-state').innerHTML = '<div class="empty-icon">⚠️</div><strong>Couldn\'t load tickets</strong><p>Check your connection and refresh.</p>';
   }
 }
 
+/* ── Render Table ── */
 function renderTickets(){
   renderStats();
   const filtered = getFiltered();
-  const list = document.getElementById('ticket-list');
-  if(!list) return;
+  const tbody    = $('ticket-tbody');
+  const empty    = $('empty-state');
 
   if(filtered.length === 0){
-    list.innerHTML = `<div class="empty-state">No tickets match this view.</div>`;
+    tbody.innerHTML = '';
+    show('empty-state');
+    empty.innerHTML = '<div class="empty-icon">📭</div><strong>No tickets found</strong><p>Try a different filter or search term.</p>';
     return;
   }
+  hide('empty-state');
 
-  list.innerHTML = filtered.map(t => {
-    const exp = rowExpand[t.id] !== false; // default = expanded
-    if(exp) ensureEditState(t);
-    const es  = editState[t.id] || { status: t.status, note: t.admin_note||'' };
-
-    const bodyHTML = exp ? `
-      <div class="ticket-body ticket-stub">
-        <p class="desc">${escHTML(t.description)}</p>
-        <div class="edit-grid">
-          <div>
-            <label class="field-label">Status</label>
-            <select onchange="onStatusChange('${t.id}', this.value)">
-              <option value="open"     ${es.status==='open'?'selected':''}>Open</option>
-              <option value="progress" ${es.status==='progress'?'selected':''}>In Progress</option>
-              <option value="resolved" ${es.status==='resolved'?'selected':''}>Resolved</option>
-            </select>
-          </div>
-          <div>
-            <label class="field-label">Response to student (optional)</label>
-            <input type="text" value="${escHTML(es.note)}" placeholder="e.g. Forwarded to exam cell"
-              oninput="onNoteChange('${t.id}', this.value)" />
-          </div>
-        </div>
-        <div class="edit-actions">
-          <button class="btn-primary" onclick="saveTicket('${t.id}')">Save changes</button>
-          <span id="saved-${t.id}" style="display:none;font-size:13px;color:var(--sage)">✓ Saved</span>
-        </div>
-      </div>` : '';
-
-    return `<div class="ticket-row status-${t.status}" id="row-${t.id}">
-      <button class="ticket-toggle" onclick="toggleRow('${t.id}')">
-        <div class="info-grid">
-          <div class="roll-no">${escHTML(t.roll_number)}</div>
-          <div>
-            <div class="subj">${escHTML(t.subject)}</div>
-            <div class="sub-meta">${escHTML(t.student_name)} · ${escHTML(t.college||'')} · ${escHTML(t.category)} · ${fmtRel(t.created_at)}</div>
-          </div>
-        </div>
-        ${stampHTML(t.status)}
-      </button>
-      ${bodyHTML}
-    </div>`;
+  tbody.innerHTML = filtered.map(t => {
+    const stampCls = {open:'stamp-open',progress:'stamp-progress',resolved:'stamp-resolved'}[t.status]||'stamp-open';
+    const stampLbl = {open:'Open',progress:'In Progress',resolved:'Resolved'}[t.status]||t.status;
+    const reviewBadge = t.reviewed
+      ? `<span class="review-badge review-yes">✓ Done</span>`
+      : `<span class="review-badge review-no">Pending</span>`;
+    return `<tr class="status-${t.status}">
+      <td><span class="roll-mono">${escHTML(t.roll_number)}</span></td>
+      <td>
+        <div class="subj-text">${escHTML(t.subject)}</div>
+        <div class="meta-text">${escHTML(t.student_name)}${t.college?' · '+escHTML(t.college):''}</div>
+      </td>
+      <td><span class="cat-pill">${escHTML(t.category)}</span></td>
+      <td><span class="stamp ${stampCls}">${stampLbl}</span></td>
+      <td>${reviewBadge}</td>
+      <td><span class="time-text">${fmtRel(t.created_at)}</span></td>
+      <td><button class="action-btn" onclick="openModal('${t.id}')">Edit →</button></td>
+    </tr>`;
   }).join('');
 }
+
+/* ── Modal ── */
+function openModal(id){
+  const t = tickets.find(x=>x.id===id);
+  if(!t) return;
+  modalId    = id;
+  modalDraft = { status: t.status, note: t.admin_note||'', reviewed: !!t.reviewed };
+
+  $('modal-title').textContent = t.subject || 'No subject';
+  $('modal-meta').textContent  = `${t.roll_number} · ${t.student_name}${t.college?' · '+t.college:''} · ${t.category} · ${fmtRel(t.created_at)}`;
+  $('modal-desc').textContent  = t.description || '(No description provided)';
+  $('modal-status').value      = t.status;
+  $('modal-note').value        = t.admin_note||'';
+  $('modal-review').checked    = !!t.reviewed;
+
+  hide('modal-saved');
+  show('ticket-modal');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(){
+  hide('ticket-modal');
+  document.body.style.overflow = '';
+  modalId = null;
+  modalDraft = {};
+}
+function modalEdit(field, val){
+  modalDraft[field] = val;
+}
+async function saveModal(){
+  if(!modalId) return;
+  const saveBtn = document.querySelector('#ticket-modal .btn-dark');
+  saveBtn.disabled = true; saveBtn.textContent = 'Saving…';
+  try {
+    const payload = {
+      status:     modalDraft.status,
+      admin_note: modalDraft.note,
+      reviewed:   !!modalDraft.reviewed,
+      updated_at: new Date().toISOString()
+    };
+    const { error } = await sb.from('tickets').update(payload).eq('id', modalId);
+    if(error) throw error;
+    tickets = tickets.map(t => t.id===modalId ? {...t, ...payload} : t);
+    renderTickets();
+    show('modal-saved');
+    setTimeout(()=>{ hide('modal-saved'); closeModal(); }, 1200);
+  } catch(e){
+    console.error(e);
+    alert('Could not save changes. Please try again.');
+  } finally {
+    saveBtn.disabled = false; saveBtn.textContent = 'Save changes';
+  }
+}
+
+/* ── keyboard shortcuts ── */
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') closeModal();
+});
 </script>
 </body>
 </html>
