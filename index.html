@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Campus Help Desk — Admin Dashboard</title>
+<title>FACE Prep Campus Help Desk — Admin Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
@@ -336,7 +336,7 @@
   <div class="auth-box">
     <div class="auth-header">
       <div class="auth-badge">🛡 Admin Access</div>
-      <h1 class="font-display">Campus Help Desk</h1>
+      <h1 class="font-display">FACE PREP Campus Help Desk</h1>
       <p>Enter your admin PIN to manage tickets and update statuses.</p>
     </div>
     <div class="auth-panel">
@@ -357,7 +357,7 @@
     <!-- Sidebar -->
     <aside class="sidebar">
       <div class="sidebar-top">
-        <div class="sidebar-logo font-display">Campus<br>Help Desk</div>
+        <div class="sidebar-logo font-display">FACE Prep Campus<br>Help Desk</div>
         <div class="sidebar-sub">Admin Console</div>
       </div>
       <nav class="sidebar-nav">
@@ -369,7 +369,7 @@
         </button>
         <button class="nav-btn" data-filter="open" onclick="navFilter('open', this)">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><line x1="8" y1="5" x2="8" y2="8.5"/><circle cx="8" cy="10.5" r="0.5" fill="currentColor"/></svg>
-          Open
+          Unresolved
           <span class="nav-count urgent" id="nav-cnt-open">0</span>
         </button>
         <button class="nav-btn" data-filter="progress" onclick="navFilter('progress', this)">
@@ -435,7 +435,7 @@
           </div>
           <div class="stat-card s-open">
             <div class="s-val font-display" id="cnt-open" style="color:var(--rust)">0</div>
-            <div class="s-lbl">Open</div>
+            <div class="s-lbl">Unresolved</div>
           </div>
           <div class="stat-card s-progress">
             <div class="s-val font-display" id="cnt-prog" style="color:var(--amber)">0</div>
@@ -450,7 +450,7 @@
         <!-- Filter pills + sort -->
         <div class="toolbar">
           <button class="filter-pill active" data-filter="all"      onclick="setPill('all',this)">All</button>
-          <button class="filter-pill"        data-filter="open"     onclick="setPill('open',this)">Open</button>
+          <button class="filter-pill"        data-filter="open"     onclick="setPill('open',this)">Unresolved</button>
           <button class="filter-pill"        data-filter="progress" onclick="setPill('progress',this)">In Progress</button>
           <button class="filter-pill"        data-filter="resolved" onclick="setPill('resolved',this)">Resolved</button>
           <div class="toolbar-sep"></div>
@@ -506,7 +506,7 @@
         <div class="form-group">
           <label class="field-label">Status</label>
           <select id="modal-status" onchange="modalEdit('status', this.value)">
-            <option value="open">Open</option>
+            <option value="open">Unresolved</option>
             <option value="progress">In Progress</option>
             <option value="resolved">Resolved</option>
           </select>
