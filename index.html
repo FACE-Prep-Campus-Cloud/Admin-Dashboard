@@ -47,6 +47,19 @@
   .review-yes { background: rgba(79,120,88,0.12); color: var(--sage); border: 1.5px solid rgba(79,120,88,0.35); }
   .review-no  { background: rgba(91,107,124,0.10); color: var(--ink-light); border: 1.5px solid var(--line); }
 
+  .region-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 9px; border-radius: 999px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
+    letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap;
+    border: 1.5px solid; background: var(--paper-dark);
+  }
+  .region-chennai     { color: var(--rust);  border-color: rgba(191,78,44,0.4); background: rgba(191,78,44,0.08); }
+  .region-karnakerala { color: var(--amber); border-color: rgba(184,120,15,0.4); background: rgba(184,120,15,0.08); }
+  .region-tamilnadu   { color: var(--sage);  border-color: rgba(79,120,88,0.4); background: rgba(79,120,88,0.08); }
+  .region-coimbatore  { color: #6A4FA0;      border-color: rgba(106,79,160,0.4); background: rgba(106,79,160,0.08); }
+  .region-unmapped    { color: var(--ink-light); border-color: var(--line); }
+
   /* ── AUTH ── */
   .auth-wrap {
     min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;
@@ -186,6 +199,24 @@
   .stat-card.s-resolved { border-left: 3px solid var(--sage); }
   .stat-card.s-review   { border-left: 3px solid #5B6B7C; }
 
+  /* ── REGIONS ROW ── */
+  .regions-row {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 28px;
+  }
+  .region-card {
+    background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px;
+    display: flex; flex-direction: column; gap: 3px; cursor: pointer; transition: border-color .12s, background .12s;
+  }
+  .region-card:hover { background: var(--paper-dark); }
+  .region-card.active { border-color: var(--ink); }
+  .region-card .r-val { font-family: 'Fraunces', serif; font-size: 24px; line-height: 1; }
+  .region-card .r-name { font-size: 12.5px; font-weight: 600; margin-top: 2px; }
+  .region-card .r-coord { font-size: 11px; color: var(--ink-light); }
+  .region-card.r-chennai     { border-left: 3px solid var(--rust); }
+  .region-card.r-karnakerala { border-left: 3px solid var(--amber); }
+  .region-card.r-tamilnadu   { border-left: 3px solid var(--sage); }
+  .region-card.r-coimbatore  { border-left: 3px solid #6A4FA0; }
+
   /* ── TOOLBAR ── */
   .toolbar {
     display: flex; align-items: center; gap: 10px; margin-bottom: 18px; flex-wrap: wrap;
@@ -288,6 +319,12 @@
     color: var(--ink); padding: 14px 16px; background: var(--paper-dark);
     border-radius: 10px; border: 1px solid var(--line); margin-bottom: 20px;
   }
+  .region-info-block {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 10px 16px; background: var(--paper-dark); border: 1px solid var(--line);
+    border-radius: 10px; margin-bottom: 14px; font-size: 12.5px;
+  }
+  .region-info-block .ri-coord { color: var(--ink-light); }
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
   .form-group { display: flex; flex-direction: column; gap: 6px; }
   .form-group.full { grid-column: 1 / -1; }
@@ -323,9 +360,10 @@
   @media (max-width: 768px) {
     .sidebar { display: none; }
     .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .regions-row { grid-template-columns: repeat(2, 1fr); }
     .form-grid { grid-template-columns: 1fr; }
     .tbl th:nth-child(3), .tbl td:nth-child(3),
-    .tbl th:nth-child(5), .tbl td:nth-child(5) { display: none; }
+    .tbl th:nth-child(6), .tbl td:nth-child(6) { display: none; }
   }
 </style>
 </head>
@@ -383,6 +421,28 @@
           <span class="nav-count" id="nav-cnt-res">0</span>
         </button>
 
+        <div class="nav-section-label">Regions</div>
+        <button class="nav-btn" data-filter="region-chennai" onclick="navFilter('region-chennai', this)">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1.5c-2.5 0-4.5 2-4.5 4.5 0 3.4 4.5 8.5 4.5 8.5s4.5-5.1 4.5-8.5c0-2.5-2-4.5-4.5-4.5z"/><circle cx="8" cy="6" r="1.6"/></svg>
+          Chennai
+          <span class="nav-count" id="nav-cnt-r-chennai">0</span>
+        </button>
+        <button class="nav-btn" data-filter="region-karnakerala" onclick="navFilter('region-karnakerala', this)">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1.5c-2.5 0-4.5 2-4.5 4.5 0 3.4 4.5 8.5 4.5 8.5s4.5-5.1 4.5-8.5c0-2.5-2-4.5-4.5-4.5z"/><circle cx="8" cy="6" r="1.6"/></svg>
+          Karnataka &amp; Kerala
+          <span class="nav-count" id="nav-cnt-r-karnakerala">0</span>
+        </button>
+        <button class="nav-btn" data-filter="region-tamilnadu" onclick="navFilter('region-tamilnadu', this)">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1.5c-2.5 0-4.5 2-4.5 4.5 0 3.4 4.5 8.5 4.5 8.5s4.5-5.1 4.5-8.5c0-2.5-2-4.5-4.5-4.5z"/><circle cx="8" cy="6" r="1.6"/></svg>
+          Tamil Nadu
+          <span class="nav-count" id="nav-cnt-r-tamilnadu">0</span>
+        </button>
+        <button class="nav-btn" data-filter="region-coimbatore" onclick="navFilter('region-coimbatore', this)">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1.5c-2.5 0-4.5 2-4.5 4.5 0 3.4 4.5 8.5 4.5 8.5s4.5-5.1 4.5-8.5c0-2.5-2-4.5-4.5-4.5z"/><circle cx="8" cy="6" r="1.6"/></svg>
+          Coimbatore
+          <span class="nav-count" id="nav-cnt-r-coimbatore">0</span>
+        </button>
+
         <div class="nav-section-label">Reviews</div>
         <button class="nav-btn" data-filter="review-pending" onclick="navFilter('review-pending', this)">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="2.5"/><path d="M2.5 13.5c0-3.04 2.46-5.5 5.5-5.5s5.5 2.46 5.5 5.5"/><line x1="12" y1="4" x2="14" y2="6"/><line x1="12" y1="6" x2="14" y2="4"/></svg>
@@ -415,7 +475,7 @@
         <div class="topbar-right">
           <div class="search-wrap">
             <span class="search-icon">⌕</span>
-            <input id="search-input" type="text" placeholder="Search roll no., name, subject…" oninput="renderTickets()" />
+            <input id="search-input" type="text" placeholder="Search roll no., name, college, subject…" oninput="renderTickets()" />
           </div>
           <button class="btn btn-ghost" onclick="loadTickets()" title="Refresh">
             <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13.5 2.5A6.5 6.5 0 1 1 8 1.5"/><polyline points="13.5,2.5 13.5,6 10,6"/></svg>
@@ -447,12 +507,41 @@
           </div>
         </div>
 
+        <!-- Regions -->
+        <div class="regions-row">
+          <div class="region-card r-chennai" data-filter="region-chennai" onclick="setPill('region-chennai', this)">
+            <div class="r-val font-display" id="cnt-r-chennai" style="color:var(--rust)">0</div>
+            <div class="r-name">Chennai</div>
+            <div class="r-coord">Shyam Kumar</div>
+          </div>
+          <div class="region-card r-karnakerala" data-filter="region-karnakerala" onclick="setPill('region-karnakerala', this)">
+            <div class="r-val font-display" id="cnt-r-karnakerala" style="color:var(--amber)">0</div>
+            <div class="r-name">Karnataka &amp; Kerala</div>
+            <div class="r-coord">Praveen Rao</div>
+          </div>
+          <div class="region-card r-tamilnadu" data-filter="region-tamilnadu" onclick="setPill('region-tamilnadu', this)">
+            <div class="r-val font-display" id="cnt-r-tamilnadu" style="color:var(--sage)">0</div>
+            <div class="r-name">Tamil Nadu</div>
+            <div class="r-coord">Guna Karthick</div>
+          </div>
+          <div class="region-card r-coimbatore" data-filter="region-coimbatore" onclick="setPill('region-coimbatore', this)">
+            <div class="r-val font-display" id="cnt-r-coimbatore" style="color:#6A4FA0">0</div>
+            <div class="r-name">Coimbatore</div>
+            <div class="r-coord">Coordinator TBD</div>
+          </div>
+        </div>
+
         <!-- Filter pills + sort -->
         <div class="toolbar">
           <button class="filter-pill active" data-filter="all"      onclick="setPill('all',this)">All</button>
           <button class="filter-pill"        data-filter="open"     onclick="setPill('open',this)">Unresolved</button>
           <button class="filter-pill"        data-filter="progress" onclick="setPill('progress',this)">In Progress</button>
           <button class="filter-pill"        data-filter="resolved" onclick="setPill('resolved',this)">Resolved</button>
+          <div class="toolbar-sep"></div>
+          <button class="filter-pill"        data-filter="region-chennai" onclick="setPill('region-chennai',this)">Chennai</button>
+          <button class="filter-pill"        data-filter="region-karnakerala" onclick="setPill('region-karnakerala',this)">Karnataka &amp; Kerala</button>
+          <button class="filter-pill"        data-filter="region-tamilnadu" onclick="setPill('region-tamilnadu',this)">Tamil Nadu</button>
+          <button class="filter-pill"        data-filter="region-coimbatore" onclick="setPill('region-coimbatore',this)">Coimbatore</button>
           <div class="toolbar-sep"></div>
           <button class="filter-pill"        data-filter="review-pending" onclick="setPill('review-pending',this)">Review Pending</button>
           <button class="filter-pill"        data-filter="review-done"    onclick="setPill('review-done',this)">Review Done</button>
@@ -465,6 +554,7 @@
               <tr>
                 <th>Roll No.</th>
                 <th>Subject / Student</th>
+                <th>Region</th>
                 <th>Category</th>
                 <th>Status</th>
                 <th>1-on-1 Review</th>
@@ -499,6 +589,11 @@
 
     <div class="modal-body">
       <hr class="tear-line">
+
+      <div class="region-info-block" id="modal-region-block">
+        <span id="modal-region-badge"></span>
+        <span class="ri-coord" id="modal-region-coord"></span>
+      </div>
 
       <div class="desc-block" id="modal-desc"></div>
 
@@ -547,6 +642,103 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const ADMIN_PIN = '1212';
 
+/* ── Region map ──
+   Maps each college (normalized, lowercase, punctuation-stripped) to its region.
+   Matching is "contains" based in both directions so partial / slightly different
+   spellings entered by students still resolve to the right region. */
+const REGION_DEFS = {
+  chennai:      { label: 'Chennai',              coordinator: 'Shyam Kumar',   cls: 'region-chennai' },
+  karnakerala:  { label: 'Karnataka & Kerala',    coordinator: 'Praveen Rao',   cls: 'region-karnakerala' },
+  tamilnadu:    { label: 'Tamil Nadu',            coordinator: 'Guna Karthick', cls: 'region-tamilnadu' },
+  coimbatore:   { label: 'Coimbatore',            coordinator: 'Coordinator TBD', cls: 'region-coimbatore' },
+};
+
+const COLLEGE_REGION_MAP = [
+  // Chennai — Shyam Kumar
+  { college: 'SDNB Vaishnav College for Women', region: 'chennai' },
+  { college: 'AMET University', region: 'chennai' },
+  { college: "Vinayaga Mission's Research Foundation School of Arts and Science", region: 'chennai' },
+  { college: 'Takshashila University', region: 'chennai' },
+  { college: 'TJS College of Arts and Science', region: 'chennai' },
+
+  // Karnataka and Kerala — Praveen Rao
+  { college: 'Alliance University', region: 'karnakerala' },
+  { college: 'Kristu Jayanti (DEEMED TO BE UNIVERSITY)', region: 'karnakerala' },
+  { college: 'St. Agnes College (Autonomous)', region: 'karnakerala' },
+  { college: 'Yenepoya (Deemed to be University)', region: 'karnakerala' },
+  { college: 'Asian School of Business', region: 'karnakerala' },
+  { college: 'S-VYASA University', region: 'karnakerala' },
+
+  // Tamil Nadu — Guna Karthick
+  { college: 'Kamaraj College', region: 'tamilnadu' },
+  { college: 'Noorul Islam Centre for Higher Education (NICHE)', region: 'tamilnadu' },
+  { college: 'Sri Amaraavathi College of Arts & Science', region: 'tamilnadu' },
+  { college: 'Bharathidasan College Of Arts & Science', region: 'tamilnadu' },
+  { college: 'Nagarathinam Angalammal Arts and Science College', region: 'tamilnadu' },
+  { college: 'Muthayammal College of Arts and Science', region: 'tamilnadu' },
+  { college: 'JOY University', region: 'tamilnadu' },
+  { college: 'TERFs College of Arts and Science', region: 'tamilnadu' },
+  { college: 'Sasurie College of Arts and Science', region: 'tamilnadu' },
+
+  // Coimbatore — coordinator not yet assigned
+  { college: 'Rathinam College Of Arts And Science', region: 'coimbatore' },
+  { college: 'Sree Saraswathi Thyagaraja College', region: 'coimbatore' },
+  { college: 'VLB Janakiammal College of Arts and Science', region: 'coimbatore' },
+  { college: 'Hindusthan College of Arts & Science', region: 'coimbatore' },
+  { college: 'Kongunadu College of Arts and Science', region: 'coimbatore' },
+  { college: 'Sri Ramakrishna College of Arts and Science for Women', region: 'coimbatore' },
+  { college: 'Study World Group of Institutions', region: 'coimbatore' },
+];
+
+function normalizeCollege(s){
+  return String(s||'')
+    .toLowerCase()
+    .replace(/['’]/g, '')
+    .replace(/[().,&-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+// Build a lookup once, keyed by normalized college name.
+const REGION_LOOKUP = COLLEGE_REGION_MAP.map(e => ({
+  norm: normalizeCollege(e.college),
+  region: e.region,
+  original: e.college
+}));
+
+/* Resolve a student's typed college name to a region key ('chennai', 'karnakerala',
+   'tamilnadu', 'coimbatore') or null if it can't be confidently matched. */
+function resolveRegion(collegeName){
+  const norm = normalizeCollege(collegeName);
+  if(!norm) return null;
+
+  // 1. Exact normalized match
+  let hit = REGION_LOOKUP.find(e => e.norm === norm);
+  if(hit) return hit.region;
+
+  // 2. One string contains the other (handles abbreviations / extra words)
+  hit = REGION_LOOKUP.find(e => norm.includes(e.norm) || e.norm.includes(norm));
+  if(hit) return hit.region;
+
+  // 3. Significant word overlap (handles minor typos / reordering)
+  const normWords = new Set(norm.split(' ').filter(w => w.length > 2));
+  let best = null, bestScore = 0;
+  REGION_LOOKUP.forEach(e => {
+    const entryWords = e.norm.split(' ').filter(w => w.length > 2);
+    const overlap = entryWords.filter(w => normWords.has(w)).length;
+    const score = overlap / Math.max(entryWords.length, 1);
+    if(score > bestScore){ bestScore = score; best = e; }
+  });
+  if(best && bestScore >= 0.6) return best.region;
+
+  return null;
+}
+function getRegionInfo(collegeName){
+  const key = resolveRegion(collegeName);
+  if(!key) return { key: null, label: 'Unmapped', coordinator: '—', cls: 'region-unmapped' };
+  const def = REGION_DEFS[key];
+  return { key, label: def.label, coordinator: def.coordinator, cls: def.cls };
+}
+
 let tickets      = [];
 let activeFilter = 'all';
 let refreshTimer = null;
@@ -593,13 +785,15 @@ function navFilter(f, btn){
   activeFilter = f;
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b===btn));
   document.querySelectorAll('.filter-pill').forEach(b => b.classList.toggle('active', b.dataset.filter===f));
+  document.querySelectorAll('.region-card').forEach(b => b.classList.toggle('active', b.dataset.filter===f));
   updateTopbar();
   renderTickets();
 }
 function setPill(f, btn){
   activeFilter = f;
-  document.querySelectorAll('.filter-pill').forEach(b => b.classList.toggle('active', b===btn));
+  document.querySelectorAll('.filter-pill').forEach(b => b.classList.toggle('active', b.dataset.filter===f));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.filter===f));
+  document.querySelectorAll('.region-card').forEach(b => b.classList.toggle('active', b.dataset.filter===f));
   updateTopbar();
   renderTickets();
 }
@@ -609,6 +803,10 @@ function updateTopbar(){
     'open':          ['Open Tickets',        'Tickets awaiting first action'],
     'progress':      ['In Progress',         'Tickets currently being handled'],
     'resolved':      ['Resolved',            'Closed and completed tickets'],
+    'region-chennai':      ['Chennai Region',           'Coordinator: Shyam Kumar'],
+    'region-karnakerala':  ['Karnataka & Kerala Region','Coordinator: Praveen Rao'],
+    'region-tamilnadu':    ['Tamil Nadu Region',        'Coordinator: Guna Karthick'],
+    'region-coimbatore':   ['Coimbatore Region',        'Coordinator: TBD'],
     'review-pending':['Review Pending',      'Students awaiting a 1-on-1 review session'],
     'review-done':   ['Review Completed',    'Students who have had a 1-on-1 session'],
   };
@@ -624,6 +822,10 @@ function getFiltered(){
       if(activeFilter==='all') return true;
       if(activeFilter==='review-pending') return !t.reviewed;
       if(activeFilter==='review-done')    return !!t.reviewed;
+      if(activeFilter.startsWith('region-')){
+        const regionKey = activeFilter.replace('region-','');
+        return resolveRegion(t.college) === regionKey;
+      }
       return t.status === activeFilter;
     })
     .filter(t => {
@@ -631,7 +833,8 @@ function getFiltered(){
       return (t.roll_number||'').toLowerCase().includes(q)
           || (t.student_name||'').toLowerCase().includes(q)
           || (t.subject||'').toLowerCase().includes(q)
-          || (t.category||'').toLowerCase().includes(q);
+          || (t.category||'').toLowerCase().includes(q)
+          || (t.college||'').toLowerCase().includes(q);
     })
     .sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
 }
@@ -650,6 +853,20 @@ function renderStats(){
   const done    = tickets.filter(t=>!!t.reviewed).length;
   $('nav-cnt-review').textContent   = pending;
   $('nav-cnt-reviewed').textContent = done;
+
+  const regionCounts = { chennai:0, karnakerala:0, tamilnadu:0, coimbatore:0 };
+  tickets.forEach(t => {
+    const key = resolveRegion(t.college);
+    if(key && regionCounts.hasOwnProperty(key)) regionCounts[key]++;
+  });
+  $('cnt-r-chennai').textContent     = regionCounts.chennai;
+  $('cnt-r-karnakerala').textContent = regionCounts.karnakerala;
+  $('cnt-r-tamilnadu').textContent   = regionCounts.tamilnadu;
+  $('cnt-r-coimbatore').textContent  = regionCounts.coimbatore;
+  $('nav-cnt-r-chennai').textContent     = regionCounts.chennai;
+  $('nav-cnt-r-karnakerala').textContent = regionCounts.karnakerala;
+  $('nav-cnt-r-tamilnadu').textContent   = regionCounts.tamilnadu;
+  $('nav-cnt-r-coimbatore').textContent  = regionCounts.coimbatore;
 }
 
 /* ── Load ── */
@@ -688,12 +905,15 @@ function renderTickets(){
     const reviewBadge = t.reviewed
       ? `<span class="review-badge review-yes">✓ Done</span>`
       : `<span class="review-badge review-no">Pending</span>`;
+    const rInfo = getRegionInfo(t.college);
+    const regionBadge = `<span class="region-badge ${rInfo.cls}" title="${escHTML(rInfo.coordinator)}">${escHTML(rInfo.label)}</span>`;
     return `<tr class="status-${t.status}">
       <td><span class="roll-mono">${escHTML(t.roll_number)}</span></td>
       <td>
         <div class="subj-text">${escHTML(t.subject)}</div>
         <div class="meta-text">${escHTML(t.student_name)}${t.college?' · '+escHTML(t.college):''}</div>
       </td>
+      <td>${regionBadge}</td>
       <td><span class="cat-pill">${escHTML(t.category)}</span></td>
       <td><span class="stamp ${stampCls}">${stampLbl}</span></td>
       <td>${reviewBadge}</td>
@@ -716,6 +936,10 @@ function openModal(id){
   $('modal-status').value      = t.status;
   $('modal-note').value        = t.admin_note||'';
   $('modal-review').checked    = !!t.reviewed;
+
+  const rInfo = getRegionInfo(t.college);
+  $('modal-region-badge').innerHTML = `<span class="region-badge ${rInfo.cls}">${escHTML(rInfo.label)}</span>`;
+  $('modal-region-coord').textContent = rInfo.key ? `Coordinator: ${rInfo.coordinator}` : 'College not yet mapped to a region';
 
   hide('modal-saved');
   show('ticket-modal');
