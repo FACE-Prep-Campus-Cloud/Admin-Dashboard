@@ -253,7 +253,7 @@
 
   /* ── TABLE ── */
   .table-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 16px; overflow-x: auto; overflow-y: hidden; box-shadow: var(--shadow-sm); -webkit-overflow-scrolling: touch; }
-  .tbl { width: 100%; min-width: 1260px; table-layout: fixed; border-collapse: collapse; }
+  .tbl { width: 100%; min-width: 1180px; table-layout: fixed; border-collapse: collapse; }
   .tbl thead tr { border-bottom: 1px solid var(--border); }
   .tbl th {
     padding: 12px 18px; text-align: left; font-size: 11.5px; font-weight: 700;
@@ -267,6 +267,7 @@
   .tbl td:nth-child(2) { white-space: normal; }
   .tbl tbody tr { border-bottom: 1px solid var(--border-soft); transition: background .1s; }
   .tbl tbody tr:last-child { border-bottom: none; }
+  .tbl tbody tr.ticket-row { cursor: pointer; }
   .tbl tbody tr:hover { background: #FAFBFC; }
 
   .roll-mono { font-size: 12.5px; color: var(--text-light); font-weight: 500; }
@@ -274,11 +275,6 @@
   .subj-text { font-weight: 600; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); }
   .meta-text { font-size: 12px; color: var(--text-faint); margin-top: 1px; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .time-text { font-size: 12.5px; color: var(--text-light); white-space: nowrap; }
-  .action-btn {
-    padding: 6px 13px; border-radius: 8px; font-size: 12.5px; font-weight: 600; border: 1px solid var(--border);
-    background: transparent; color: var(--text-light); cursor: pointer; transition: background .12s, color .12s, border-color .12s;
-  }
-  .action-btn:hover { background: var(--blue); color: #fff; border-color: var(--blue); }
 
   .empty-state { padding: 64px 24px; text-align: center; color: var(--text-light); font-size: 14px; }
   .empty-icon { font-size: 28px; margin-bottom: 12px; opacity: 0.4; }
@@ -594,14 +590,13 @@
           <table class="tbl">
             <colgroup>
               <col style="width:100px">
-              <col style="width:280px">
-              <col style="width:170px">
-              <col style="width:150px">
-              <col style="width:110px">
+              <col style="width:300px">
+              <col style="width:180px">
+              <col style="width:160px">
+              <col style="width:120px">
+              <col style="width:140px">
               <col style="width:130px">
               <col style="width:120px">
-              <col style="width:110px">
-              <col style="width:90px">
             </colgroup>
             <thead>
               <tr>
@@ -617,7 +612,6 @@
                     <svg viewBox="0 0 10 12" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 4 5 1l3 3M2 8l3 3 3-3"/></svg>
                   </span>
                 </th>
-                <th></th>
               </tr>
             </thead>
             <tbody id="ticket-tbody"></tbody>
@@ -1130,7 +1124,7 @@ function renderTickets(){
     const avColor = avatarColor(t.student_name);
     const prio = getPriority(t);
     const prioBadge = `<span class="prio-pill prio-${prio}">${prio==='high'?'⚑ ':''}${PRIORITY_LABEL[prio]}</span>`;
-    return `<tr>
+    return `<tr class="ticket-row" onclick="openModal('${t.id}')">
       <td><span class="roll-mono">${escHTML(t.roll_number)}</span></td>
       <td>
         <div class="subj-row">
@@ -1147,7 +1141,6 @@ function renderTickets(){
       <td><span class="dot-row"><span class="dot ${statusDot}"></span>${statusLbl}</span>${slaFlag}</td>
       <td>${reviewBadge}</td>
       <td><span class="time-text">${fmtRel(t.created_at)}</span></td>
-      <td><button class="action-btn" onclick="openModal('${t.id}')">Edit →</button></td>
     </tr>`;
   }).join('');
 }
