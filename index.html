@@ -664,10 +664,6 @@
             <option value="resolved">Resolved</option>
           </select>
         </div>
-        <div class="form-group">
-          <label class="field-label">Priority</label>
-          <div id="modal-priority-display" style="padding:10px 0;"></div>
-        </div>
         <div class="form-group full">
           <label class="field-label">Admin note (shown to student)</label>
           <input id="modal-note" type="text" placeholder="e.g. Forwarded to exam cell" oninput="modalEdit('note', this.value)" />
@@ -1161,14 +1157,12 @@ function openModal(id){
   const t = tickets.find(x=>x.id===id);
   if(!t) return;
   modalId    = id;
-  const prio = getPriority(t);
-  modalDraft = { status: t.status, note: t.admin_note||'', reviewed: !!t.reviewed, priority: prio };
+  modalDraft = { status: t.status, note: t.admin_note||'', reviewed: !!t.reviewed };
 
   $('modal-title').textContent = t.subject || 'No subject';
   $('modal-meta').textContent  = `${t.roll_number} · ${t.student_name}${t.college?' · '+t.college:''} · ${t.category} · ${fmtRel(t.created_at)}`;
   $('modal-desc').textContent  = t.description || '(No description provided)';
   $('modal-status').value      = t.status;
-  $('modal-priority-display').innerHTML = `<span class="prio-pill prio-${prio}">${prio==='high'?'⚑ ':''}${PRIORITY_LABEL[prio]}</span>`;
   $('modal-note').value        = t.admin_note||'';
   $('modal-review').checked    = !!t.reviewed;
 
@@ -1199,7 +1193,6 @@ async function saveModal(){
     status:     modalDraft.status,
     admin_note: modalDraft.note,
     reviewed:   !!modalDraft.reviewed,
-    priority:   modalDraft.priority,
     updated_at: new Date().toISOString()
   };
 
