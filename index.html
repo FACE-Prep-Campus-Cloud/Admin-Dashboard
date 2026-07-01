@@ -1160,8 +1160,7 @@ function openModal(id){
 
   const rInfo = getRegionInfo(t.college);
   $('modal-region-badge').innerHTML = `<span class="dot-row"><span class="dot ${rInfo.dot}"></span>${escHTML(rInfo.label)}</span>`;
-  $('modal-region-coord').textContent = rInfo.key ? `Coordinator: ${rInfo.coordinator}` : 'College not yet mapped to a region';
-
+$('modal-region-coord').textContent = rInfo.key ? `Coordinator: ${rInfo.kam}` : 'College not yet mapped to a region';
   hide('modal-saved');
   show('ticket-modal');
   document.body.style.overflow = 'hidden';
