@@ -666,11 +666,7 @@
         </div>
         <div class="form-group">
           <label class="field-label">Priority</label>
-          <select id="modal-priority" onchange="modalEdit('priority', this.value)">
-            <option value="high">High</option>
-            <option value="medium">Medium</option>
-            <option value="low">Low</option>
-          </select>
+          <div id="modal-priority-display" style="padding:10px 0;"></div>
         </div>
         <div class="form-group full">
           <label class="field-label">Admin note (shown to student)</label>
@@ -1172,7 +1168,7 @@ function openModal(id){
   $('modal-meta').textContent  = `${t.roll_number} · ${t.student_name}${t.college?' · '+t.college:''} · ${t.category} · ${fmtRel(t.created_at)}`;
   $('modal-desc').textContent  = t.description || '(No description provided)';
   $('modal-status').value      = t.status;
-  $('modal-priority').value    = prio;
+  $('modal-priority-display').innerHTML = `<span class="prio-pill prio-${prio}">${prio==='high'?'⚑ ':''}${PRIORITY_LABEL[prio]}</span>`;
   $('modal-note').value        = t.admin_note||'';
   $('modal-review').checked    = !!t.reviewed;
 
