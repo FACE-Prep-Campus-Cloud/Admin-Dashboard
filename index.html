@@ -69,6 +69,14 @@
     background: var(--slate-soft); color: var(--text-light); border: 1px solid var(--border);
   }
 
+  .prio-pill {
+    display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 7px; font-size: 12px; font-weight: 600;
+    border: 1px solid transparent; white-space: nowrap;
+  }
+  .prio-high   { background: var(--red-soft);   color: var(--red); }
+  .prio-medium { background: var(--amber-soft); color: var(--amber); }
+  .prio-low    { background: var(--slate-soft); color: var(--text-light); }
+
   .avatar {
     width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
     font-size: 11.5px; font-weight: 700; color: #fff;
@@ -407,6 +415,26 @@
           </div>
         </div>
 
+        <div class="sec-label">Priority</div>
+        <div class="nav-group open" id="grp-priority">
+          <button class="nav-row" onclick="toggleGroup('grp-priority')">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 1.5 9.8 5.6l4.5.6-3.3 3.1.9 4.5L8 11.5l-4 2.3.9-4.5-3.3-3.1 4.5-.6z"/></svg>
+            <span class="nav-label">By priority</span>
+            <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 3.5 10.5 8 6 12.5"/></svg>
+          </button>
+          <div class="sub-nav">
+            <button class="sub-row" data-filter="priority-high" onclick="setPriorityOnly('high')">
+              High <span class="nav-count urgent" id="nav-cnt-p-high" style="margin-left:auto">0</span>
+            </button>
+            <button class="sub-row" data-filter="priority-medium" onclick="setPriorityOnly('medium')">
+              Medium <span class="nav-count" id="nav-cnt-p-medium" style="margin-left:auto">0</span>
+            </button>
+            <button class="sub-row" data-filter="priority-low" onclick="setPriorityOnly('low')">
+              Low <span class="nav-count" id="nav-cnt-p-low" style="margin-left:auto">0</span>
+            </button>
+          </div>
+        </div>
+
         <div class="sec-label">Regions</div>
         <div class="nav-group open" id="grp-regions">
           <button class="nav-row" onclick="toggleGroup('grp-regions')">
@@ -496,11 +524,11 @@
             <div class="s-val" id="cnt-prog">0</div>
             <div class="s-sub">Being handled by coordinators</div>
           </button>
-          <button class="stat-card" data-filter="resolved" onclick="setStatusFilter('resolved')">
-            <div class="stat-icon i-green"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><polyline points="5.5,8.5 7.5,10.5 10.5,5.5"/></svg></div>
-            <div class="s-lbl">Resolved</div>
-            <div class="s-val" id="cnt-res">0</div>
-            <div class="s-sub">Closed this session</div>
+          <button class="stat-card" data-filter="priority-high" onclick="setPriorityOnly('high')">
+            <div class="stat-icon i-red"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 1.5 9.8 5.6l4.5.6-3.3 3.1.9 4.5L8 11.5l-4 2.3.9-4.5-3.3-3.1 4.5-.6z"/></svg></div>
+            <div class="s-lbl">High priority</div>
+            <div class="s-val" id="cnt-p-high">0</div>
+            <div class="s-sub">Needs urgent attention</div>
           </button>
         </div>
 
@@ -516,6 +544,14 @@
               <label class="dd-opt"><span class="swatch" style="background:var(--amber)"></span>In progress<input type="radio" name="statusopt" onclick="setStatusFilter('progress')"></label>
               <label class="dd-opt"><span class="swatch" style="background:var(--green)"></span>Resolved<input type="radio" name="statusopt" onclick="setStatusFilter('resolved')"></label>
             </div>
+          </div>
+
+          <div class="dd" id="dd-priority">
+            <button class="dd-trigger" onclick="toggleDD('dd-priority')">
+              Priority <span class="dd-count hidden" id="priority-dd-count">0</span>
+              <svg class="chev" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 1l4 4 4-4"/></svg>
+            </button>
+            <div class="dd-panel hidden" id="dd-priority-panel"></div>
           </div>
 
           <div class="dd" id="dd-region">
@@ -546,6 +582,7 @@
             <div class="dd-panel hidden" id="dd-sort-panel">
               <label class="dd-opt">Newest first<input type="radio" name="sortopt" checked onclick="setSort('new')"></label>
               <label class="dd-opt">Oldest first<input type="radio" name="sortopt" onclick="setSort('old')"></label>
+              <label class="dd-opt">Priority: high → low<input type="radio" name="sortopt" onclick="setSort('prio')"></label>
             </div>
           </div>
 
@@ -560,6 +597,7 @@
                 <th>Subject / Student</th>
                 <th>Region</th>
                 <th>Category</th>
+                <th>Priority</th>
                 <th>Status</th>
                 <th>1-on-1 review</th>
                 <th class="sortable" onclick="toggleSortDirection()">
@@ -615,6 +653,14 @@
           </select>
         </div>
         <div class="form-group">
+          <label class="field-label">Priority</label>
+          <select id="modal-priority" onchange="modalEdit('priority', this.value)">
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+        <div class="form-group full">
           <label class="field-label">Admin note (shown to student)</label>
           <input id="modal-note" type="text" placeholder="e.g. Forwarded to exam cell" oninput="modalEdit('note', this.value)" />
         </div>
@@ -649,6 +695,36 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const ADMIN_PIN = '1212';
 const SLA_HOURS = 48;
+
+/* ── Category → default priority map ──
+   Used whenever a ticket has no explicit `priority` value saved yet.
+   Admins can always override per-ticket in the modal; the override is
+   persisted to the `priority` column and takes precedence forever after. */
+const CATEGORY_PRIORITY_MAP = {
+  'Ragging / Harassment':      'high',
+  'Health & Wellness':         'high',
+  'Examinations':               'high',
+  'Technical / Portal':         'high',
+  'Fees & Accounts':            'high',
+  'Certificates & Documents':   'high',
+
+  'Academics':                  'medium',
+  'Teaching Issue':             'medium',
+  'Scholarship & Financial Aid':'medium',
+  'Placement & Internships':    'medium',
+  'Hostel & Mess':              'medium',
+  'Infrastructure':             'medium',
+
+  'Library':                    'low',
+  'Transport':                  'low',
+  'Sports & Extracurricular':   'low',
+  'Other':                      'low',
+};
+const PRIORITY_LABEL = { high: 'High', medium: 'Medium', low: 'Low' };
+const PRIORITY_RANK  = { high: 0, medium: 1, low: 2 };
+function getPriority(t){
+  return t.priority || CATEGORY_PRIORITY_MAP[t.category] || 'medium';
+}
 
 /* ── Region map ── */
 const REGION_DEFS = {
@@ -737,6 +813,7 @@ function avatarColor(name){
 let tickets       = [];
 let statusFilter  = 'all';
 let regionFilter  = new Set();
+let priorityFilter= new Set();
 let reviewFilter  = 'all';
 let sortDir       = 'new';
 let refreshTimer  = null;
@@ -768,6 +845,7 @@ function submitPin(){
   hide('auth-screen');
   show('admin-screen');
   buildRegionDropdown();
+  buildPriorityDropdown();
   loadTickets();
   refreshTimer = setInterval(loadTickets, 15000);
 }
@@ -822,9 +900,52 @@ function syncRegionDDCount(){
   if(regionFilter.size){ badge.textContent = regionFilter.size; show('region-dd-count'); trigger.classList.add('filled'); }
   else { hide('region-dd-count'); trigger.classList.remove('filled'); }
 }
+
+/* ── Priority dropdown ── */
+const PRIORITY_HEX = { high: '#DC2626', medium: '#D9840C', low: '#9AA1AC' };
+function buildPriorityDropdown(){
+  const panel = $('dd-priority-panel');
+  panel.innerHTML = ['high','medium','low'].map(k => `
+    <label class="dd-opt">
+      <span class="swatch" style="background:${PRIORITY_HEX[k]}"></span> ${PRIORITY_LABEL[k]}
+      <input type="checkbox" value="${k}" onchange="togglePriorityOpt('${k}', this.checked)">
+    </label>`).join('') + `
+    <div class="dd-sep"></div>
+    <button class="dd-clear" onclick="clearPriorityFilter()">Clear priority filter</button>`;
+}
+function togglePriorityOpt(key, checked){
+  if(checked) priorityFilter.add(key); else priorityFilter.delete(key);
+  syncPriorityDDCount();
+  renderTickets();
+}
+function clearPriorityFilter(){
+  priorityFilter.clear();
+  $('dd-priority-panel').querySelectorAll('input[type=checkbox]').forEach(c => c.checked = false);
+  syncPriorityDDCount();
+  renderTickets();
+}
+function syncPriorityDDCount(){
+  const badge = $('priority-dd-count');
+  const trigger = $('dd-priority').querySelector('.dd-trigger');
+  if(priorityFilter.size){ badge.textContent = priorityFilter.size; show('priority-dd-count'); trigger.classList.add('filled'); }
+  else { hide('priority-dd-count'); trigger.classList.remove('filled'); }
+}
+function setPriorityOnly(key){
+  priorityFilter = new Set([key]);
+  buildPriorityDropdown();
+  $('dd-priority-panel').querySelector(`input[value="${key}"]`).checked = true;
+  syncPriorityDDCount();
+  statusFilter = 'all';
+  syncStatusDD();
+  syncNavActive('priority-'+key);
+  updateHeader('priority-'+key);
+  renderTickets();
+}
+
 function setSort(dir){
   sortDir = dir;
-  $('sort-dd-label').textContent = dir==='new' ? 'Newest first' : 'Oldest first';
+  const labelMap = { new: 'Newest first', old: 'Oldest first', prio: 'Priority: high → low' };
+  $('sort-dd-label').textContent = labelMap[dir];
   toggleDD('dd-sort');
   renderTickets();
 }
@@ -867,7 +988,7 @@ function setReviewFilter(v){
 function syncNavActive(explicitKey){
   const key = explicitKey || statusFilter;
   document.querySelectorAll('.sub-row, .nav-row[data-filter]').forEach(b => b.classList.toggle('active', b.dataset.filter === key));
-  document.querySelectorAll('.stat-card').forEach(b => b.classList.toggle('active', b.dataset.filter === statusFilter));
+  document.querySelectorAll('.stat-card').forEach(b => b.classList.toggle('active', b.dataset.filter === statusFilter || b.dataset.filter === key));
 }
 function updateHeader(explicitKey){
   const key = explicitKey || statusFilter;
@@ -883,6 +1004,9 @@ function updateHeader(explicitKey){
     'region-coimbatore':   'Coimbatore',
     'review-pending':      'Review Pending',
     'review-done':         'Review Done',
+    'priority-high':       'High Priority',
+    'priority-medium':     'Medium Priority',
+    'priority-low':        'Low Priority',
   };
   $('breadcrumb-current').textContent = map[key] || 'Tickets';
 }
@@ -897,6 +1021,9 @@ function getFiltered(){
   if(regionFilter.size){
     list = list.filter(t => { const key = resolveRegion(t.college); return regionFilter.has(key || 'unmapped'); });
   }
+  if(priorityFilter.size){
+    list = list.filter(t => priorityFilter.has(getPriority(t)));
+  }
   if(reviewFilter==='pending') list = list.filter(t => !t.reviewed);
   if(reviewFilter==='done')    list = list.filter(t => !!t.reviewed);
   if(q){
@@ -907,9 +1034,13 @@ function getFiltered(){
       (t.category||'').toLowerCase().includes(q) ||
       (t.college||'').toLowerCase().includes(q));
   }
-  list.sort((a,b) => sortDir==='new'
-    ? new Date(b.created_at) - new Date(a.created_at)
-    : new Date(a.created_at) - new Date(b.created_at));
+  if(sortDir === 'prio'){
+    list.sort((a,b) => PRIORITY_RANK[getPriority(a)] - PRIORITY_RANK[getPriority(b)] || (new Date(b.created_at) - new Date(a.created_at)));
+  } else {
+    list.sort((a,b) => sortDir==='new'
+      ? new Date(b.created_at) - new Date(a.created_at)
+      : new Date(a.created_at) - new Date(b.created_at));
+  }
   return list;
 }
 
@@ -919,8 +1050,8 @@ function renderStats(){
   $('cnt-all').textContent  = tickets.length;
   $('cnt-open').textContent = tickets.filter(t=>t.status==='open').length;
   $('cnt-prog').textContent = tickets.filter(t=>t.status==='progress').length;
-  $('cnt-res').textContent  = tickets.filter(t=>t.status==='resolved').length;
   $('cnt-open-sub').textContent = slaCount + ' at SLA risk';
+  $('cnt-p-high').textContent = tickets.filter(t=>getPriority(t)==='high').length;
 
   $('nav-cnt-all').textContent   = tickets.length;
   $('nav-cnt-all-2').textContent = tickets.length;
@@ -928,6 +1059,10 @@ function renderStats(){
   $('nav-cnt-prog').textContent  = tickets.filter(t=>t.status==='progress').length;
   $('nav-cnt-res').textContent   = tickets.filter(t=>t.status==='resolved').length;
   $('nav-cnt-sla').textContent   = slaCount;
+
+  $('nav-cnt-p-high').textContent   = tickets.filter(t=>getPriority(t)==='high').length;
+  $('nav-cnt-p-medium').textContent = tickets.filter(t=>getPriority(t)==='medium').length;
+  $('nav-cnt-p-low').textContent    = tickets.filter(t=>getPriority(t)==='low').length;
 
   const pending = tickets.filter(t=>!t.reviewed).length;
   const done    = tickets.filter(t=>!!t.reviewed).length;
@@ -945,6 +1080,7 @@ function renderStats(){
 function renderChips(){
   const chips = [];
   if(regionFilter.size) chips.push(`<span class="active-chip">Region: ${regionFilter.size} selected<button onclick="clearRegionFilter()" aria-label="Clear region filter">✕</button></span>`);
+  if(priorityFilter.size) chips.push(`<span class="active-chip">Priority: ${[...priorityFilter].map(k=>PRIORITY_LABEL[k]).join(', ')}<button onclick="clearPriorityFilter()" aria-label="Clear priority filter">✕</button></span>`);
   if(reviewFilter!=='all') chips.push(`<span class="active-chip">Review: ${reviewFilter==='pending'?'Pending':'Done'}<button onclick="setReviewFilter('all')" aria-label="Clear review filter">✕</button></span>`);
   $('active-chips').innerHTML = chips.join(' ');
 }
@@ -988,6 +1124,8 @@ function renderTickets(){
     const regionRow = `<span class="dot-row"><span class="dot ${rInfo.dot}"></span>${escHTML(rInfo.label)}</span>`;
     const slaFlag = isSlaRisk(t) ? `<div class="sla-tag">⚑ SLA risk</div>` : '';
     const avColor = avatarColor(t.student_name);
+    const prio = getPriority(t);
+    const prioBadge = `<span class="prio-pill prio-${prio}">${prio==='high'?'⚑ ':''}${PRIORITY_LABEL[prio]}</span>`;
     return `<tr>
       <td><span class="roll-mono">${escHTML(t.roll_number)}</span></td>
       <td>
@@ -1001,6 +1139,7 @@ function renderTickets(){
       </td>
       <td>${regionRow}</td>
       <td><span class="cat-pill">${escHTML(t.category)}</span></td>
+      <td>${prioBadge}</td>
       <td><span class="dot-row"><span class="dot ${statusDot}"></span>${statusLbl}</span>${slaFlag}</td>
       <td>${reviewBadge}</td>
       <td><span class="time-text">${fmtRel(t.created_at)}</span></td>
@@ -1014,12 +1153,14 @@ function openModal(id){
   const t = tickets.find(x=>x.id===id);
   if(!t) return;
   modalId    = id;
-  modalDraft = { status: t.status, note: t.admin_note||'', reviewed: !!t.reviewed };
+  const prio = getPriority(t);
+  modalDraft = { status: t.status, note: t.admin_note||'', reviewed: !!t.reviewed, priority: prio };
 
   $('modal-title').textContent = t.subject || 'No subject';
   $('modal-meta').textContent  = `${t.roll_number} · ${t.student_name}${t.college?' · '+t.college:''} · ${t.category} · ${fmtRel(t.created_at)}`;
   $('modal-desc').textContent  = t.description || '(No description provided)';
   $('modal-status').value      = t.status;
+  $('modal-priority').value    = prio;
   $('modal-note').value        = t.admin_note||'';
   $('modal-review').checked    = !!t.reviewed;
 
@@ -1050,6 +1191,7 @@ async function saveModal(){
     status:     modalDraft.status,
     admin_note: modalDraft.note,
     reviewed:   !!modalDraft.reviewed,
+    priority:   modalDraft.priority,
     updated_at: new Date().toISOString()
   };
 
