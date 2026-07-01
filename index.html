@@ -6,112 +6,104 @@
 <title>FACE Prep Campus Help Desk — Admin Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --ink: #1C2B3A;
-    --ink-light: #5B6B7C;
-    --ink-faint: #93A2B0;
-    --paper: #FBF7EE;
-    --paper-dark: #F0E8D6;
+    --bg: #F4F5F7;
     --card: #FFFFFF;
-    --line: #E4DCC6;
-    --line-soft: #EEE7D4;
-    --rust: #BF4E2C;
-    --amber: #B8780F;
-    --sage: #4F7858;
-    --violet: #6A4FA0;
-    --shadow: 0 1px 2px rgba(28,43,58,0.04), 0 8px 24px -12px rgba(28,43,58,0.10);
+    --border: #E7E9EC;
+    --border-soft: #EFF1F3;
+    --text: #14151A;
+    --text-light: #6B7280;
+    --text-faint: #9AA1AC;
+    --blue: #3457E8;
+    --blue-dark: #2440C4;
+    --blue-soft: #EBEFFE;
+    --green: #16A34A;
+    --green-soft: #E9F8EF;
+    --amber: #D9840C;
+    --amber-soft: #FDF3E3;
+    --red: #DC2626;
+    --red-soft: #FDECEC;
+    --violet: #7C3AED;
+    --violet-soft: #F2ECFD;
+    --slate: #64748B;
+    --slate-soft: #F1F3F6;
+    --shadow-sm: 0 1px 2px rgba(20,21,26,0.04);
+    --shadow-md: 0 4px 16px -6px rgba(20,21,26,0.10);
+    --shadow-lg: 0 16px 40px -12px rgba(20,21,26,0.18);
   }
 
-  body { font-family: 'Inter', sans-serif; color: var(--ink); background: var(--paper-dark); min-height: 100vh; -webkit-font-smoothing: antialiased; }
-  .font-display { font-family: 'Fraunces', serif; }
-  .font-mono    { font-family: 'IBM Plex Mono', monospace; }
+  body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--bg); min-height: 100vh; -webkit-font-smoothing: antialiased; font-size: 14px; }
   .hidden { display: none !important; }
   button, input, select { font-family: inherit; }
-  :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+  ul { list-style: none; }
 
-  /* ── STAMPS ── */
-  .stamp {
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 3px 10px; border: 1.5px solid currentColor; border-radius: 999px;
-    font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
-    letter-spacing: 0.08em; text-transform: uppercase;
-    white-space: nowrap; flex-shrink: 0;
-  }
-  .stamp-open     { color: var(--rust);  background: rgba(191,78,44,0.08); }
-  .stamp-progress { color: var(--amber); background: rgba(184,120,15,0.10); }
-  .stamp-resolved { color: var(--sage);  background: rgba(79,120,88,0.10); }
+  /* ── STATUS / PRIORITY DOTS ── */
+  .dot-row { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 500; white-space: nowrap; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .dot-red    { background: var(--red); }
+  .dot-amber  { background: var(--amber); }
+  .dot-green  { background: var(--green); }
+  .dot-blue   { background: var(--blue); }
+  .dot-violet { background: var(--violet); }
+  .dot-slate  { background: var(--text-faint); }
 
-  .sla-flag {
-    display: inline-flex; align-items: center; gap: 4px;
-    font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 700;
-    letter-spacing: 0.06em; text-transform: uppercase; color: var(--rust);
+  .sla-tag {
+    display: inline-flex; align-items: center; gap: 4px; margin-top: 3px;
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: var(--red);
   }
-  .sla-flag svg { width: 11px; height: 11px; }
 
   .review-badge {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 3px 9px; border-radius: 999px;
-    font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
-    letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 999px;
+    font-size: 12px; font-weight: 600; white-space: nowrap;
   }
-  .review-yes { background: rgba(79,120,88,0.12); color: var(--sage); border: 1.5px solid rgba(79,120,88,0.3); }
-  .review-no  { background: rgba(91,107,124,0.08); color: var(--ink-light); border: 1.5px solid var(--line); }
+  .review-yes { background: var(--green-soft); color: var(--green); }
+  .review-no  { background: var(--slate-soft); color: var(--text-light); }
 
-  .region-badge {
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 3px 9px; border-radius: 999px;
-    font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
-    letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap;
-    border: 1.5px solid; background: var(--paper-dark);
+  .cat-pill {
+    display: inline-block; padding: 3px 10px; border-radius: 7px; font-size: 12px; font-weight: 500;
+    background: var(--slate-soft); color: var(--text-light); border: 1px solid var(--border);
   }
-  .region-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
-  .region-chennai     { color: var(--rust);  border-color: rgba(191,78,44,0.35); background: rgba(191,78,44,0.07); }
-  .region-karnakerala { color: var(--amber); border-color: rgba(184,120,15,0.35); background: rgba(184,120,15,0.07); }
-  .region-tamilnadu   { color: var(--sage);  border-color: rgba(79,120,88,0.35); background: rgba(79,120,88,0.07); }
-  .region-coimbatore  { color: var(--violet); border-color: rgba(106,79,160,0.35); background: rgba(106,79,160,0.07); }
-  .region-unmapped    { color: var(--ink-faint); border-color: var(--line); }
+
+  .avatar {
+    width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 11.5px; font-weight: 700; color: #fff;
+  }
 
   /* ── AUTH ── */
-  .auth-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+  .auth-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; background: var(--bg); }
   .auth-box { width: 100%; max-width: 380px; }
-  .auth-header { text-align: center; margin-bottom: 28px; }
-  .auth-badge {
-    display: inline-block; padding: 4px 14px; border: 1.5px solid var(--amber); border-radius: 999px;
-    font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
-    letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber); background: rgba(184,120,15,0.10);
-    margin-bottom: 12px;
-  }
-  .auth-header h1 { font-family: 'Fraunces', serif; font-size: 29px; margin-top: 0; }
-  .auth-header p  { font-size: 13px; color: var(--ink-light); margin-top: 8px; }
-  .auth-panel { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 28px; box-shadow: var(--shadow); }
-  .field-label {
-    display: block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-light); margin-bottom: 6px;
-  }
-  .error-msg { font-size: 13px; color: var(--rust); margin: 8px 0; }
+  .auth-header { text-align: center; margin-bottom: 26px; }
+  .auth-logo { width: 46px; height: 46px; border-radius: 13px; background: var(--blue); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; box-shadow: var(--shadow-md); }
+  .auth-logo svg { width: 24px; height: 24px; }
+  .auth-header h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.01em; }
+  .auth-header p  { font-size: 13px; color: var(--text-light); margin-top: 7px; }
+  .auth-panel { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 26px; box-shadow: var(--shadow-md); }
+  .field-label { display: block; font-size: 12px; font-weight: 600; color: var(--text-light); margin-bottom: 7px; }
+  .error-msg { font-size: 13px; color: var(--red); margin: 8px 0; }
   input, select, textarea {
-    background: var(--paper-dark); border: 1px solid var(--line); border-radius: 8px;
-    color: var(--ink); font-size: 14px; padding: 10px 14px; outline: none; transition: border-color .15s; width: 100%;
+    background: var(--card); border: 1px solid var(--border); border-radius: 9px;
+    color: var(--text); font-size: 14px; padding: 10px 13px; outline: none; transition: border-color .15s, box-shadow .15s; width: 100%;
   }
-  input:focus, select:focus, textarea:focus { border-color: var(--ink); background: var(--card); }
-  input::placeholder { color: var(--ink-light); opacity: 0.55; }
+  input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-soft); }
+  input::placeholder { color: var(--text-faint); }
 
   /* ── BUTTONS ── */
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 7px;
-    padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer;
-    transition: opacity .15s, transform .12s, background .12s; border: none; white-space: nowrap;
+    padding: 9px 16px; border-radius: 9px; font-size: 13px; font-weight: 600; cursor: pointer;
+    transition: opacity .15s, transform .1s, background .12s, border-color .12s; border: none; white-space: nowrap;
   }
   .btn:active { transform: scale(0.97); }
-  .btn-dark  { background: var(--ink);  color: var(--paper); }
-  .btn-dark:hover  { opacity: 0.85; }
-  .btn-dark:disabled { opacity: 0.5; cursor: not-allowed; }
-  .btn-ghost { background: var(--card); color: var(--ink-light); border: 1px solid var(--line); }
-  .btn-ghost:hover { color: var(--ink); border-color: var(--ink-faint); }
+  .btn-primary { background: var(--blue); color: #fff; }
+  .btn-primary:hover { background: var(--blue-dark); }
+  .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+  .btn-ghost { background: var(--card); color: var(--text-light); border: 1px solid var(--border); }
+  .btn-ghost:hover { color: var(--text); border-color: #C7CCD3; }
   .btn-full { width: 100%; }
 
   /* ── SHELL ── */
@@ -119,223 +111,221 @@
 
   /* ── SIDEBAR ── */
   .sidebar {
-    width: 226px; flex-shrink: 0; background: var(--ink); color: var(--paper);
-    display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh;
-    overflow-y: auto; transition: width .18s ease;
+    width: 244px; flex-shrink: 0; background: var(--card); border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow-y: auto; transition: width .18s ease;
   }
-  .sidebar.collapsed { width: 68px; }
-  .sidebar.collapsed .sidebar-logo, .sidebar.collapsed .sidebar-sub,
-  .sidebar.collapsed .nav-section-label, .sidebar.collapsed .nav-label,
-  .sidebar.collapsed .nav-count, .sidebar.collapsed .logout-label { display: none; }
-  .sidebar.collapsed .nav-btn, .sidebar.collapsed .btn-logout { justify-content: center; }
-  .sidebar.collapsed .sidebar-top { justify-content: center; }
+  .sidebar.collapsed { width: 76px; }
+  .sidebar.collapsed .brand-text, .sidebar.collapsed .sec-label, .sidebar.collapsed .nav-label,
+  .sidebar.collapsed .nav-count, .sidebar.collapsed .chevron, .sidebar.collapsed .logout-label,
+  .sidebar.collapsed .sub-nav { display: none; }
+  .sidebar.collapsed .nav-row, .sidebar.collapsed .btn-logout { justify-content: center; }
+  .sidebar.collapsed .sidebar-top { justify-content: center; padding: 18px 12px; }
 
-  .sidebar-top {
-    padding: 20px 18px; border-bottom: 1px solid rgba(251,247,238,0.1);
-    display: flex; align-items: center; gap: 10px;
-  }
+  .sidebar-top { padding: 18px 18px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid var(--border); }
+  .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .brand-mark { width: 34px; height: 34px; border-radius: 10px; background: var(--blue); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .brand-mark svg { width: 18px; height: 18px; }
+  .brand-text { min-width: 0; }
+  .brand-text .b1 { font-size: 14.5px; font-weight: 800; letter-spacing: -0.01em; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .brand-text .b2 { font-size: 10.5px; color: var(--text-faint); font-weight: 600; white-space: nowrap; }
   .collapse-btn {
-    width: 28px; height: 28px; flex-shrink: 0; border-radius: 7px; border: 1px solid rgba(251,247,238,0.18);
-    background: transparent; color: rgba(251,247,238,0.7); cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: background .12s;
+    width: 26px; height: 26px; border-radius: 7px; border: 1px solid var(--border); background: var(--card);
+    color: var(--text-light); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
   }
-  .collapse-btn:hover { background: rgba(251,247,238,0.1); }
-  .collapse-btn svg { width: 13px; height: 13px; transition: transform .18s; }
+  .collapse-btn:hover { background: var(--slate-soft); }
+  .collapse-btn svg { width: 12px; height: 12px; transition: transform .18s; }
   .sidebar.collapsed .collapse-btn svg { transform: rotate(180deg); }
-  .sidebar-brand { min-width: 0; }
-  .sidebar-logo { font-family: 'Fraunces', serif; font-size: 15.5px; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .sidebar-sub { font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(251,247,238,0.4); margin-top: 3px; }
 
-  .sidebar-nav { padding: 14px 10px; flex: 1; }
-  .nav-section-label {
-    font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; font-weight: 600; text-transform: uppercase;
-    letter-spacing: 0.1em; color: rgba(251,247,238,0.32); padding: 0 10px; margin-bottom: 6px; margin-top: 16px;
+  .sidebar-nav { padding: 12px 12px; flex: 1; }
+  .sec-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-faint); padding: 0 10px; margin: 16px 0 6px; }
+  .sec-label:first-child { margin-top: 4px; }
+
+  .nav-row {
+    display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 10px; border-radius: 9px;
+    border: none; cursor: pointer; font-size: 13.5px; font-weight: 500; color: var(--text-light);
+    background: transparent; transition: background .12s, color .12s; text-align: left;
   }
-  .nav-section-label:first-child { margin-top: 0; }
-  .nav-btn {
-    display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 10px; border-radius: 8px;
-    border: none; cursor: pointer; font-size: 13px; font-weight: 500; color: rgba(251,247,238,0.62);
-    background: transparent; transition: background .15s, color .15s; text-align: left; position: relative;
-  }
-  .nav-btn svg { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.7; }
-  .nav-btn:hover { background: rgba(251,247,238,0.07); color: var(--paper); }
-  .nav-btn:hover svg { opacity: 1; }
-  .nav-btn.active { background: rgba(251,247,238,0.13); color: var(--paper); font-weight: 600; }
-  .nav-btn.active svg { opacity: 1; }
+  .nav-row svg { width: 16px; height: 16px; flex-shrink: 0; }
+  .nav-row:hover { background: var(--slate-soft); color: var(--text); }
+  .nav-row.active { background: var(--blue-soft); color: var(--blue); font-weight: 600; }
   .nav-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .nav-count {
-    font-family: 'IBM Plex Mono', monospace; font-size: 10px; background: rgba(251,247,238,0.14);
-    color: rgba(251,247,238,0.75); border-radius: 999px; padding: 1px 7px; min-width: 20px; text-align: center; flex-shrink: 0;
+  .nav-count { font-size: 11px; font-weight: 700; background: var(--slate-soft); color: var(--text-light); border-radius: 999px; padding: 1px 7px; min-width: 20px; text-align: center; flex-shrink: 0; }
+  .nav-count.urgent { background: var(--red-soft); color: var(--red); }
+  .nav-row.active .nav-count { background: rgba(52,87,232,0.14); color: var(--blue); }
+  .chevron { width: 12px !important; height: 12px !important; color: var(--text-faint); transition: transform .15s; flex-shrink: 0; }
+  .nav-group.open > .nav-row .chevron { transform: rotate(90deg); }
+
+  .sub-nav { padding-left: 20px; margin-left: 15px; border-left: 1px solid var(--border); display: flex; flex-direction: column; gap: 1px; margin-top: 2px; margin-bottom: 6px; max-height: 0; overflow: hidden; transition: max-height .18s ease; }
+  .nav-group.open .sub-nav { max-height: 400px; }
+  .sub-row {
+    display: flex; align-items: center; gap: 8px; width: 100%; padding: 7px 10px; border-radius: 8px; border: none;
+    cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text-light); background: transparent; text-align: left;
+    transition: background .12s, color .12s;
   }
-  .nav-count.urgent { background: rgba(191,78,44,0.5); color: #FBD9CB; }
-  .sidebar-foot { padding: 12px 10px; border-top: 1px solid rgba(251,247,238,0.1); }
+  .sub-row:hover { background: var(--slate-soft); color: var(--text); }
+  .sub-row.active { background: var(--blue-soft); color: var(--blue); font-weight: 600; }
+  .sub-row .nav-count.urgent { background: var(--red-soft); color: var(--red); }
+
+  .sidebar-foot { padding: 12px; border-top: 1px solid var(--border); }
   .btn-logout {
-    display: flex; align-items: center; gap: 9px; width: 100%; padding: 8px 10px; border-radius: 8px; border: none;
-    cursor: pointer; font-size: 13px; color: rgba(251,247,238,0.48); background: transparent; transition: background .15s, color .15s;
+    display: flex; align-items: center; gap: 9px; width: 100%; padding: 9px 10px; border-radius: 9px; border: none;
+    cursor: pointer; font-size: 13.5px; color: var(--text-light); background: transparent; transition: background .12s, color .12s;
   }
-  .btn-logout:hover { background: rgba(251,247,238,0.07); color: rgba(251,247,238,0.85); }
-  .btn-logout svg { width: 15px; height: 15px; flex-shrink: 0; }
+  .btn-logout:hover { background: var(--red-soft); color: var(--red); }
+  .btn-logout svg { width: 16px; height: 16px; flex-shrink: 0; }
 
   /* ── MAIN ── */
   .main-content { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 
   .topbar {
-    display: flex; align-items: center; justify-content: space-between; padding: 16px 28px;
-    background: var(--paper); border-bottom: 1px solid var(--line); gap: 16px; position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; justify-content: space-between; padding: 20px 30px 16px;
+    background: var(--bg); gap: 16px;
   }
-  .breadcrumb { font-size: 12px; color: var(--ink-faint); font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.02em; margin-bottom: 4px; }
-  .breadcrumb b { color: var(--ink-light); font-weight: 600; }
-  .topbar-title { font-family: 'Fraunces', serif; font-size: 21px; }
+  .breadcrumb { font-size: 13px; color: var(--text-faint); }
+  .breadcrumb b { color: var(--text); font-weight: 600; }
   .topbar-right { display: flex; align-items: center; gap: 10px; }
   .search-wrap { position: relative; }
-  .search-wrap input { padding-left: 34px; width: 250px; font-size: 13px; }
-  .search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--ink-light); font-size: 14px; pointer-events: none; }
+  .search-wrap input { padding-left: 34px; width: 260px; font-size: 13px; background: var(--card); }
+  .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-faint); font-size: 14px; pointer-events: none; }
 
-  .page-body { padding: 26px 28px 40px; flex: 1; max-width: 1320px; width: 100%; }
+  .page-body { padding: 4px 30px 40px; flex: 1; max-width: 1360px; width: 100%; }
 
   /* ── STATS ── */
-  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px; }
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 22px; }
   .stat-card {
-    background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 17px 20px;
-    display: flex; flex-direction: column; gap: 3px; cursor: pointer; text-align: left;
-    transition: border-color .12s, box-shadow .12s, transform .12s; box-shadow: var(--shadow);
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px;
+    display: flex; flex-direction: column; gap: 12px; cursor: pointer; text-align: left;
+    transition: box-shadow .12s, transform .12s, border-color .12s; box-shadow: var(--shadow-sm);
   }
-  .stat-card:hover { transform: translateY(-1px); }
-  .stat-card.active { border-color: var(--ink); }
-  .stat-card .s-val { font-family: 'Fraunces', serif; font-size: 29px; line-height: 1; }
-  .stat-card .s-lbl { font-family: 'IBM Plex Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink-light); margin-top: 2px; }
-  .stat-card .s-sub { font-size: 11px; color: var(--ink-faint); margin-top: 1px; }
-  .stat-card.s-total    { border-left: 3px solid var(--ink); }
-  .stat-card.s-open     { border-left: 3px solid var(--rust); }
-  .stat-card.s-progress { border-left: 3px solid var(--amber); }
-  .stat-card.s-resolved { border-left: 3px solid var(--sage); }
+  .stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+  .stat-card.active { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-soft); }
+  .stat-icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+  .stat-icon svg { width: 17px; height: 17px; }
+  .stat-icon.i-slate  { background: var(--text); }
+  .stat-icon.i-red    { background: var(--red); }
+  .stat-icon.i-amber  { background: var(--amber); }
+  .stat-icon.i-green  { background: var(--green); }
+  .stat-icon svg { color: #fff; }
+  .s-lbl { font-size: 13px; color: var(--text-light); font-weight: 500; }
+  .s-val { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; line-height: 1; }
+  .s-sub { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-faint); }
+  .s-sub.warn { color: var(--red); font-weight: 600; }
 
   /* ── TOOLBAR ── */
   .toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
   .dd { position: relative; }
   .dd-trigger {
-    display: inline-flex; align-items: center; gap: 7px; padding: 8px 13px; border-radius: 8px;
-    border: 1px solid var(--line); background: var(--card); font-size: 12.5px; font-weight: 500;
-    color: var(--ink-light); cursor: pointer; transition: border-color .12s, color .12s;
+    display: inline-flex; align-items: center; gap: 7px; padding: 8px 13px; border-radius: 9px;
+    border: 1px solid var(--border); background: var(--card); font-size: 13px; font-weight: 500;
+    color: var(--text-light); cursor: pointer; transition: border-color .12s, color .12s; box-shadow: var(--shadow-sm);
   }
-  .dd-trigger:hover { border-color: var(--ink-faint); color: var(--ink); }
-  .dd-trigger.filled { color: var(--ink); border-color: var(--ink); background: var(--paper); }
+  .dd-trigger:hover { border-color: #C7CCD3; color: var(--text); }
+  .dd-trigger.filled { color: var(--blue); border-color: var(--blue); background: var(--blue-soft); }
   .dd-trigger svg.chev { width: 10px; height: 10px; opacity: 0.6; transition: transform .12s; }
   .dd.open .dd-trigger svg.chev { transform: rotate(180deg); }
-  .dd-count {
-    font-family: 'IBM Plex Mono', monospace; font-size: 10px; background: var(--ink); color: var(--paper);
-    border-radius: 999px; padding: 0px 6px; min-width: 16px; text-align: center;
-  }
+  .dd-count { font-size: 10px; font-weight: 700; background: var(--blue); color: #fff; border-radius: 999px; padding: 0px 6px; min-width: 16px; text-align: center; }
   .dd-panel {
-    position: absolute; top: calc(100% + 6px); left: 0; min-width: 210px; background: var(--card);
-    border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 12px 32px -10px rgba(28,43,58,0.22);
-    padding: 8px; z-index: 30;
+    position: absolute; top: calc(100% + 6px); left: 0; min-width: 220px; background: var(--card);
+    border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow-lg); padding: 8px; z-index: 30;
   }
-  .dd-opt {
-    display: flex; align-items: center; gap: 9px; padding: 7px 8px; border-radius: 7px; cursor: pointer;
-    font-size: 13px; color: var(--ink); transition: background .1s;
-  }
-  .dd-opt:hover { background: var(--paper-dark); }
-  .dd-opt input[type=checkbox], .dd-opt input[type=radio] { width: 14px; height: 14px; accent-color: var(--ink); flex-shrink: 0; }
-  .dd-opt .swatch { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-  .dd-sep { height: 1px; background: var(--line-soft); margin: 6px 2px; }
-  .dd-clear { display: block; width: 100%; text-align: left; background: none; border: none; padding: 7px 8px; font-size: 12px; color: var(--ink-light); cursor: pointer; border-radius: 7px; }
-  .dd-clear:hover { background: var(--paper-dark); color: var(--ink); }
+  .dd-opt { display: flex; align-items: center; gap: 9px; padding: 8px 9px; border-radius: 8px; cursor: pointer; font-size: 13.5px; color: var(--text); transition: background .1s; }
+  .dd-opt:hover { background: var(--slate-soft); }
+  .dd-opt input[type=checkbox], .dd-opt input[type=radio] { width: 15px; height: 15px; accent-color: var(--blue); flex-shrink: 0; margin-left: auto; }
+  .dd-opt .swatch { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .dd-sep { height: 1px; background: var(--border-soft); margin: 6px 2px; }
+  .dd-clear { display: block; width: 100%; text-align: left; background: none; border: none; padding: 8px 9px; font-size: 12.5px; color: var(--text-light); cursor: pointer; border-radius: 8px; }
+  .dd-clear:hover { background: var(--slate-soft); color: var(--text); }
 
-  .toolbar-sep { width: 1px; height: 22px; background: var(--line); margin: 0 2px; }
   .active-chip {
-    display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px 6px 12px; border-radius: 999px;
-    background: var(--ink); color: var(--paper); font-size: 12px; font-weight: 500;
+    display: inline-flex; align-items: center; gap: 6px; padding: 6px 8px 6px 12px; border-radius: 999px;
+    background: var(--blue-soft); color: var(--blue); font-size: 12px; font-weight: 600;
   }
-  .active-chip button { background: none; border: none; color: rgba(251,247,238,0.7); cursor: pointer; font-size: 13px; line-height: 1; padding: 0; }
-  .active-chip button:hover { color: var(--paper); }
+  .active-chip button { background: none; border: none; color: var(--blue); opacity: 0.6; cursor: pointer; font-size: 13px; line-height: 1; padding: 0; }
+  .active-chip button:hover { opacity: 1; }
 
   /* ── TABLE ── */
-  .table-wrap { background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); }
+  .table-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-sm); }
   .tbl { width: 100%; border-collapse: collapse; }
-  .tbl thead tr { border-bottom: 1px solid var(--line); background: var(--paper-dark); }
+  .tbl thead tr { border-bottom: 1px solid var(--border); }
   .tbl th {
-    padding: 11px 16px; text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink-light); white-space: nowrap;
+    padding: 12px 18px; text-align: left; font-size: 11.5px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-faint); white-space: nowrap;
   }
-  .tbl th.sortable { cursor: pointer; user-select: none; }
-  .tbl th.sortable:hover { color: var(--ink); }
-  .tbl td { padding: 13px 16px; font-size: 13px; vertical-align: middle; }
-  .tbl tbody tr { border-bottom: 1px solid var(--line-soft); transition: background .1s; }
+  .tbl th.sortable { cursor: pointer; user-select: none; display: table-cell; }
+  .tbl th.sortable:hover { color: var(--text); }
+  .th-flex { display: inline-flex; align-items: center; gap: 4px; }
+  .th-flex svg { width: 11px; height: 11px; }
+  .tbl td { padding: 13px 18px; font-size: 13.5px; vertical-align: middle; }
+  .tbl tbody tr { border-bottom: 1px solid var(--border-soft); transition: background .1s; }
   .tbl tbody tr:last-child { border-bottom: none; }
-  .tbl tbody tr:hover { background: var(--paper-dark); }
+  .tbl tbody tr:hover { background: #FAFBFC; }
 
-  .roll-mono { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--ink-light); }
-  .subj-text { font-weight: 600; max-width: 230px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .meta-text { font-size: 11px; color: var(--ink-light); margin-top: 2px; max-width: 230px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .cat-pill {
-    display: inline-block; padding: 2px 9px; border-radius: 999px; font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
-    background: rgba(91,107,124,0.1); color: var(--ink-light); border: 1px solid var(--line);
-  }
-  .time-text { font-size: 12px; color: var(--ink-light); white-space: nowrap; }
+  .roll-mono { font-size: 12.5px; color: var(--text-light); font-weight: 500; }
+  .subj-row { display: flex; align-items: center; gap: 11px; }
+  .subj-text { font-weight: 600; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); }
+  .meta-text { font-size: 12px; color: var(--text-faint); margin-top: 1px; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .time-text { font-size: 12.5px; color: var(--text-light); white-space: nowrap; }
   .action-btn {
-    padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 500; border: 1px solid var(--line);
-    background: transparent; color: var(--ink-light); cursor: pointer; transition: background .12s, color .12s, border-color .12s;
+    padding: 6px 13px; border-radius: 8px; font-size: 12.5px; font-weight: 600; border: 1px solid var(--border);
+    background: transparent; color: var(--text-light); cursor: pointer; transition: background .12s, color .12s, border-color .12s;
   }
-  .action-btn:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .action-btn:hover { background: var(--blue); color: #fff; border-color: var(--blue); }
 
-  .empty-state { padding: 64px 24px; text-align: center; color: var(--ink-light); font-size: 14px; }
+  .empty-state { padding: 64px 24px; text-align: center; color: var(--text-light); font-size: 14px; }
   .empty-icon { font-size: 28px; margin-bottom: 12px; opacity: 0.4; }
-  .empty-state p { margin-top: 6px; font-size: 12px; }
+  .empty-state p { margin-top: 6px; font-size: 12px; color: var(--text-faint); }
 
   /* ── MODAL ── */
   .modal-overlay {
-    position: fixed; inset: 0; background: rgba(28,43,58,0.5); display: flex; align-items: center; justify-content: center;
+    position: fixed; inset: 0; background: rgba(20,21,26,0.45); display: flex; align-items: center; justify-content: center;
     padding: 24px; z-index: 100; backdrop-filter: blur(2px);
   }
-  .modal-box { background: var(--paper); border: 1px solid var(--line); border-radius: 20px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; }
-  .modal-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 24px 24px 0; }
-  .modal-title { font-family: 'Fraunces', serif; font-size: 20px; line-height: 1.3; }
-  .modal-meta  { font-size: 12px; color: var(--ink-light); margin-top: 4px; }
+  .modal-box { background: var(--card); border: 1px solid var(--border); border-radius: 18px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); }
+  .modal-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 22px 22px 0; }
+  .modal-title { font-size: 18px; font-weight: 700; line-height: 1.3; letter-spacing: -0.01em; }
+  .modal-meta  { font-size: 12.5px; color: var(--text-light); margin-top: 5px; }
   .modal-close {
-    width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 8px;
-    border: 1px solid var(--line); background: transparent; cursor: pointer; font-size: 16px; color: var(--ink-light);
+    width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 9px;
+    border: 1px solid var(--border); background: transparent; cursor: pointer; font-size: 15px; color: var(--text-light);
     flex-shrink: 0; transition: background .12s;
   }
-  .modal-close:hover { background: var(--paper-dark); color: var(--ink); }
-  .tear-line { border: none; border-top: 2px dashed var(--line); margin: 20px 0; position: relative; }
-  .tear-line::before, .tear-line::after { content: ''; position: absolute; top: -9px; width: 16px; height: 16px; border-radius: 50%; background: var(--paper-dark); }
-  .tear-line::before { left: -1px; } .tear-line::after { right: -1px; }
-  .modal-body { padding: 0 24px 24px; }
+  .modal-close:hover { background: var(--slate-soft); color: var(--text); }
+  .modal-div { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
+  .modal-body { padding: 0 22px 22px; }
   .desc-block {
-    font-size: 13.5px; line-height: 1.65; white-space: pre-wrap; color: var(--ink); padding: 14px 16px;
-    background: var(--paper-dark); border-radius: 10px; border: 1px solid var(--line); margin-bottom: 20px;
+    font-size: 13.5px; line-height: 1.6; white-space: pre-wrap; color: var(--text); padding: 14px 16px;
+    background: var(--slate-soft); border-radius: 11px; border: 1px solid var(--border); margin-bottom: 18px;
   }
   .region-info-block {
-    display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 16px;
-    background: var(--paper-dark); border: 1px solid var(--line); border-radius: 10px; margin-bottom: 14px; font-size: 12.5px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 16px;
+    background: var(--blue-soft); border: 1px solid rgba(52,87,232,0.18); border-radius: 11px; margin-bottom: 14px; font-size: 12.5px;
   }
-  .region-info-block .ri-coord { color: var(--ink-light); }
+  .region-info-block .ri-coord { color: var(--blue); font-weight: 500; }
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group { display: flex; flex-direction: column; gap: 7px; }
   .form-group.full { grid-column: 1 / -1; }
   .review-toggle-wrap {
-    grid-column: 1 / -1; background: var(--paper-dark); border: 1px solid var(--line); border-radius: 10px;
+    grid-column: 1 / -1; background: var(--slate-soft); border: 1px solid var(--border); border-radius: 11px;
     padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
   }
   .review-toggle-info strong { font-size: 13px; display: block; margin-bottom: 2px; }
-  .review-toggle-info span { font-size: 11.5px; color: var(--ink-light); }
+  .review-toggle-info span { font-size: 11.5px; color: var(--text-light); }
   .toggle-switch { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
   .toggle-switch input { opacity: 0; width: 0; height: 0; }
-  .toggle-track { position: absolute; inset: 0; border-radius: 999px; background: var(--line); cursor: pointer; transition: background .2s; }
-  .toggle-thumb { position: absolute; left: 3px; top: 3px; width: 18px; height: 18px; border-radius: 50%; background: white; transition: transform .2s; pointer-events: none; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
-  .toggle-switch input:checked ~ .toggle-track { background: var(--sage); }
+  .toggle-track { position: absolute; inset: 0; border-radius: 999px; background: #D5D9DF; cursor: pointer; transition: background .2s; }
+  .toggle-thumb { position: absolute; left: 3px; top: 3px; width: 18px; height: 18px; border-radius: 50%; background: white; transition: transform .2s; pointer-events: none; box-shadow: 0 1px 3px rgba(0,0,0,0.25); }
+  .toggle-switch input:checked ~ .toggle-track { background: var(--green); }
   .toggle-switch input:checked ~ .toggle-thumb { transform: translateX(20px); }
   .modal-actions { display: flex; align-items: center; gap: 10px; padding-top: 4px; }
-  .saved-msg { font-size: 12px; color: var(--sage); }
+  .saved-msg { font-size: 12.5px; color: var(--green); font-weight: 600; }
 
   @media (max-width: 860px) {
-    .sidebar { position: fixed; z-index: 40; left: -226px; }
+    .sidebar { position: fixed; z-index: 40; left: -244px; }
     .sidebar.mobile-open { left: 0; }
     .stats-row { grid-template-columns: repeat(2, 1fr); }
     .form-grid { grid-template-columns: 1fr; }
     .search-wrap input { width: 170px; }
+    .topbar, .page-body { padding-left: 18px; padding-right: 18px; }
     .tbl th:nth-child(3), .tbl td:nth-child(3), .tbl th:nth-child(4), .tbl td:nth-child(4) { display: none; }
   }
 </style>
@@ -346,9 +336,11 @@
 <div id="auth-screen" class="auth-wrap">
   <div class="auth-box">
     <div class="auth-header">
-      <div class="auth-badge">🛡 Admin Access</div>
-      <h1 class="font-display">FACE Prep Campus Help Desk</h1>
-      <p>Enter your admin PIN to manage tickets and update statuses.</p>
+      <div class="auth-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M12 3 3 8v3c0 5 3.8 9.4 9 10 5.2-.6 9-5 9-10V8l-9-5z"/><path d="m9 12 2 2 4-4"/></svg>
+      </div>
+      <h1>FACE Prep Help Desk</h1>
+      <p>Enter your admin PIN to manage campus tickets.</p>
     </div>
     <div class="auth-panel">
       <div style="margin-bottom:16px">
@@ -356,7 +348,7 @@
         <input id="pin-input" type="password" placeholder="Enter PIN" onkeydown="if(event.key==='Enter')submitPin()" />
       </div>
       <div id="pin-error" class="error-msg hidden"></div>
-      <button class="btn btn-dark btn-full" onclick="submitPin()">Enter dashboard →</button>
+      <button class="btn btn-primary btn-full" onclick="submitPin()">Enter dashboard →</button>
     </div>
   </div>
 </div>
@@ -365,82 +357,100 @@
 <div id="admin-screen" class="hidden">
   <div class="shell">
 
-    <!-- Sidebar (single source of navigation truth) -->
+    <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-top">
-        <button class="collapse-btn" onclick="toggleSidebar()" title="Collapse sidebar" aria-label="Collapse sidebar">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 3.5 5.5 8l4.5 4.5"/></svg>
-        </button>
-        <div class="sidebar-brand">
-          <div class="sidebar-logo font-display">FACE Prep Campus<br>Help Desk</div>
-          <div class="sidebar-sub">Admin Console</div>
+        <div class="brand">
+          <div class="brand-mark">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M12 3 3 8v3c0 5 3.8 9.4 9 10 5.2-.6 9-5 9-10V8l-9-5z"/><path d="m9 12 2 2 4-4"/></svg>
+          </div>
+          <div class="brand-text">
+            <div class="b1">FACE Prep</div>
+            <div class="b2">Help Desk</div>
+          </div>
         </div>
+        <button class="collapse-btn" onclick="toggleSidebar()" title="Collapse sidebar" aria-label="Collapse sidebar">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M10 3.5 5.5 8l4.5 4.5"/></svg>
+        </button>
       </div>
+
       <nav class="sidebar-nav" id="sidebar-nav">
-        <div class="nav-section-label">Tickets</div>
-        <button class="nav-btn active" data-filter="all" onclick="setStatusFilter('all')">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="13" height="13" rx="2"/><line x1="4.5" y1="5.5" x2="11.5" y2="5.5"/><line x1="4.5" y1="8" x2="11.5" y2="8"/><line x1="4.5" y1="10.5" x2="8" y2="10.5"/></svg>
-          <span class="nav-label">All tickets</span>
-          <span class="nav-count" id="nav-cnt-all">0</span>
-        </button>
-        <button class="nav-btn" data-filter="open" onclick="setStatusFilter('open')">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><line x1="8" y1="5" x2="8" y2="8.5"/><circle cx="8" cy="10.5" r="0.5" fill="currentColor"/></svg>
-          <span class="nav-label">Unresolved</span>
-          <span class="nav-count urgent" id="nav-cnt-open">0</span>
-        </button>
-        <button class="nav-btn" data-filter="progress" onclick="setStatusFilter('progress')">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 4v4l2.5 2.5"/></svg>
-          <span class="nav-label">In progress</span>
-          <span class="nav-count" id="nav-cnt-prog">0</span>
-        </button>
-        <button class="nav-btn" data-filter="resolved" onclick="setStatusFilter('resolved')">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><polyline points="5.5,8.5 7.5,10.5 10.5,5.5"/></svg>
-          <span class="nav-label">Resolved</span>
-          <span class="nav-count" id="nav-cnt-res">0</span>
-        </button>
-        <button class="nav-btn" data-filter="sla" onclick="setStatusFilter('sla')">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1.5 14.8 13.5H1.2L8 1.5z"/><line x1="8" y1="6.5" x2="8" y2="9.5"/><circle cx="8" cy="11.3" r="0.5" fill="currentColor"/></svg>
-          <span class="nav-label">SLA risk (48h+)</span>
-          <span class="nav-count urgent" id="nav-cnt-sla">0</span>
+        <button class="nav-row active" data-filter="all" onclick="setStatusFilter('all')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1.5" y="1.5" width="6" height="6" rx="1.3"/><rect x="8.5" y="1.5" width="6" height="6" rx="1.3"/><rect x="1.5" y="8.5" width="6" height="6" rx="1.3"/><rect x="8.5" y="8.5" width="6" height="6" rx="1.3"/></svg>
+          <span class="nav-label">Dashboard</span>
         </button>
 
-        <div class="nav-section-label">Regions</div>
-        <button class="nav-btn" data-filter="region-chennai" onclick="setRegionOnly('chennai')">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1.5c-2.5 0-4.5 2-4.5 4.5 0 3.4 4.5 8.5 4.5 8.5s4.5-5.1 4.5-8.5c0-2.5-2-4.5-4.5-4.5z"/><circle cx="8" cy="6" r="1.6"/></svg>
-          <span class="nav-label">Chennai</span>
-          <span class="nav-count" id="nav-cnt-r-chennai">0</span>
-        </button>
-        <button class="nav-btn" data-filter="region-karnakerala" onclick="setRegionOnly('karnakerala')">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1.5c-2.5 0-4.5 2-4.5 4.5 0 3.4 4.5 8.5 4.5 8.5s4.5-5.1 4.5-8.5c0-2.5-2-4.5-4.5-4.5z"/><circle cx="8" cy="6" r="1.6"/></svg>
-          <span class="nav-label">Karnataka &amp; Kerala</span>
-          <span class="nav-count" id="nav-cnt-r-karnakerala">0</span>
-        </button>
-        <button class="nav-btn" data-filter="region-tamilnadu" onclick="setRegionOnly('tamilnadu')">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1.5c-2.5 0-4.5 2-4.5 4.5 0 3.4 4.5 8.5 4.5 8.5s4.5-5.1 4.5-8.5c0-2.5-2-4.5-4.5-4.5z"/><circle cx="8" cy="6" r="1.6"/></svg>
-          <span class="nav-label">Tamil Nadu</span>
-          <span class="nav-count" id="nav-cnt-r-tamilnadu">0</span>
-        </button>
-        <button class="nav-btn" data-filter="region-coimbatore" onclick="setRegionOnly('coimbatore')">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1.5c-2.5 0-4.5 2-4.5 4.5 0 3.4 4.5 8.5 4.5 8.5s4.5-5.1 4.5-8.5c0-2.5-2-4.5-4.5-4.5z"/><circle cx="8" cy="6" r="1.6"/></svg>
-          <span class="nav-label">Coimbatore</span>
-          <span class="nav-count" id="nav-cnt-r-coimbatore">0</span>
-        </button>
+        <div class="sec-label">Tickets</div>
+        <div class="nav-group open" id="grp-tickets">
+          <button class="nav-row" onclick="toggleGroup('grp-tickets')">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1.5" y="1.5" width="13" height="13" rx="2"/><line x1="4.5" y1="5.5" x2="11.5" y2="5.5"/><line x1="4.5" y1="8" x2="11.5" y2="8"/><line x1="4.5" y1="10.5" x2="8" y2="10.5"/></svg>
+            <span class="nav-label">All tickets</span>
+            <span class="nav-count" id="nav-cnt-all">0</span>
+            <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 3.5 10.5 8 6 12.5"/></svg>
+          </button>
+          <div class="sub-nav">
+            <button class="sub-row" data-filter="all" onclick="setStatusFilter('all')">
+              All tickets <span class="nav-count" id="nav-cnt-all-2" style="margin-left:auto">0</span>
+            </button>
+            <button class="sub-row" data-filter="open" onclick="setStatusFilter('open')">
+              Unresolved <span class="nav-count urgent" id="nav-cnt-open" style="margin-left:auto">0</span>
+            </button>
+            <button class="sub-row" data-filter="progress" onclick="setStatusFilter('progress')">
+              In progress <span class="nav-count" id="nav-cnt-prog" style="margin-left:auto">0</span>
+            </button>
+            <button class="sub-row" data-filter="resolved" onclick="setStatusFilter('resolved')">
+              Resolved <span class="nav-count" id="nav-cnt-res" style="margin-left:auto">0</span>
+            </button>
+            <button class="sub-row" data-filter="sla" onclick="setStatusFilter('sla')">
+              SLA risk (48h+) <span class="nav-count urgent" id="nav-cnt-sla" style="margin-left:auto">0</span>
+            </button>
+          </div>
+        </div>
 
-        <div class="nav-section-label">1-on-1 Reviews</div>
-        <button class="nav-btn" data-filter="review-pending" onclick="setReviewFilter('pending')">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="2.5"/><path d="M2.5 13.5c0-3.04 2.46-5.5 5.5-5.5s5.5 2.46 5.5 5.5"/><line x1="12" y1="4" x2="14" y2="6"/><line x1="12" y1="6" x2="14" y2="4"/></svg>
-          <span class="nav-label">Review pending</span>
-          <span class="nav-count urgent" id="nav-cnt-review">0</span>
-        </button>
-        <button class="nav-btn" data-filter="review-done" onclick="setReviewFilter('done')">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="2.5"/><path d="M2.5 13.5c0-3.04 2.46-5.5 5.5-5.5s5.5 2.46 5.5 5.5"/><polyline points="11,3 12.5,4.5 14.5,2"/></svg>
-          <span class="nav-label">Review done</span>
-          <span class="nav-count" id="nav-cnt-reviewed">0</span>
-        </button>
+        <div class="sec-label">Regions</div>
+        <div class="nav-group open" id="grp-regions">
+          <button class="nav-row" onclick="toggleGroup('grp-regions')">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 1.5c-2.5 0-4.5 2-4.5 4.5 0 3.4 4.5 8.5 4.5 8.5s4.5-5.1 4.5-8.5c0-2.5-2-4.5-4.5-4.5z"/><circle cx="8" cy="6" r="1.6"/></svg>
+            <span class="nav-label">By region</span>
+            <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 3.5 10.5 8 6 12.5"/></svg>
+          </button>
+          <div class="sub-nav">
+            <button class="sub-row" data-filter="region-chennai" onclick="setRegionOnly('chennai')">
+              Chennai <span class="nav-count" id="nav-cnt-r-chennai" style="margin-left:auto">0</span>
+            </button>
+            <button class="sub-row" data-filter="region-karnakerala" onclick="setRegionOnly('karnakerala')">
+              Karnataka &amp; Kerala <span class="nav-count" id="nav-cnt-r-karnakerala" style="margin-left:auto">0</span>
+            </button>
+            <button class="sub-row" data-filter="region-tamilnadu" onclick="setRegionOnly('tamilnadu')">
+              Tamil Nadu <span class="nav-count" id="nav-cnt-r-tamilnadu" style="margin-left:auto">0</span>
+            </button>
+            <button class="sub-row" data-filter="region-coimbatore" onclick="setRegionOnly('coimbatore')">
+              Coimbatore <span class="nav-count" id="nav-cnt-r-coimbatore" style="margin-left:auto">0</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="sec-label">1-on-1 Reviews</div>
+        <div class="nav-group open" id="grp-reviews">
+          <button class="nav-row" onclick="toggleGroup('grp-reviews')">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="6" r="2.5"/><path d="M2.5 13.5c0-3.04 2.46-5.5 5.5-5.5s5.5 2.46 5.5 5.5"/></svg>
+            <span class="nav-label">Reviews</span>
+            <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 3.5 10.5 8 6 12.5"/></svg>
+          </button>
+          <div class="sub-nav">
+            <button class="sub-row" data-filter="review-pending" onclick="setReviewFilter('pending')">
+              Pending <span class="nav-count urgent" id="nav-cnt-review" style="margin-left:auto">0</span>
+            </button>
+            <button class="sub-row" data-filter="review-done" onclick="setReviewFilter('done')">
+              Done <span class="nav-count" id="nav-cnt-reviewed" style="margin-left:auto">0</span>
+            </button>
+          </div>
+        </div>
       </nav>
+
       <div class="sidebar-foot">
         <button class="btn-logout" onclick="logout()">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2.5H3.5a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1H6"/><polyline points="10.5,5 13.5,8 10.5,11"/><line x1="13.5" y1="8" x2="6" y2="8"/></svg>
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 2.5H3.5a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1H6"/><polyline points="10.5,5 13.5,8 10.5,11"/><line x1="13.5" y1="8" x2="6" y2="8"/></svg>
           <span class="logout-label">Log out</span>
         </button>
       </div>
@@ -449,11 +459,9 @@
     <!-- Main -->
     <div class="main-content">
 
-      <!-- Top bar -->
       <div class="topbar">
         <div class="topbar-left">
           <div class="breadcrumb">Dashboard / <b id="breadcrumb-current">All Tickets</b></div>
-          <div class="topbar-title font-display" id="topbar-title">All Tickets</div>
         </div>
         <div class="topbar-right">
           <div class="search-wrap">
@@ -467,32 +475,49 @@
         </div>
       </div>
 
-      <!-- Page body -->
       <div class="page-body">
 
-        <!-- KPI stats — click to filter by status, mirrors sidebar -->
         <div class="stats-row">
-          <button class="stat-card s-total" data-filter="all" onclick="setStatusFilter('all')">
-            <div class="s-val font-display" id="cnt-all" style="color:var(--ink)">0</div>
+          <button class="stat-card" data-filter="all" onclick="setStatusFilter('all')">
+            <div class="stat-icon i-slate"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1.5" y="1.5" width="13" height="13" rx="2"/><line x1="4.5" y1="5.5" x2="11.5" y2="5.5"/><line x1="4.5" y1="8" x2="11.5" y2="8"/></svg></div>
             <div class="s-lbl">Total tickets</div>
+            <div class="s-val" id="cnt-all">0</div>
+            <div class="s-sub">All submitted requests</div>
           </button>
-          <button class="stat-card s-open" data-filter="open" onclick="setStatusFilter('open')">
-            <div class="s-val font-display" id="cnt-open" style="color:var(--rust)">0</div>
+          <button class="stat-card" data-filter="open" onclick="setStatusFilter('open')">
+            <div class="stat-icon i-red"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><line x1="8" y1="5" x2="8" y2="8.5"/><circle cx="8" cy="10.5" r="0.4" fill="currentColor"/></svg></div>
             <div class="s-lbl">Unresolved</div>
-            <div class="s-sub" id="cnt-open-sub">0 at SLA risk</div>
+            <div class="s-val" id="cnt-open">0</div>
+            <div class="s-sub warn" id="cnt-open-sub">0 at SLA risk</div>
           </button>
-          <button class="stat-card s-progress" data-filter="progress" onclick="setStatusFilter('progress')">
-            <div class="s-val font-display" id="cnt-prog" style="color:var(--amber)">0</div>
+          <button class="stat-card" data-filter="progress" onclick="setStatusFilter('progress')">
+            <div class="stat-icon i-amber"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><path d="M8 4v4l2.5 2.5"/></svg></div>
             <div class="s-lbl">In progress</div>
+            <div class="s-val" id="cnt-prog">0</div>
+            <div class="s-sub">Being handled by coordinators</div>
           </button>
-          <button class="stat-card s-resolved" data-filter="resolved" onclick="setStatusFilter('resolved')">
-            <div class="s-val font-display" id="cnt-res" style="color:var(--sage)">0</div>
+          <button class="stat-card" data-filter="resolved" onclick="setStatusFilter('resolved')">
+            <div class="stat-icon i-green"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><polyline points="5.5,8.5 7.5,10.5 10.5,5.5"/></svg></div>
             <div class="s-lbl">Resolved</div>
+            <div class="s-val" id="cnt-res">0</div>
+            <div class="s-sub">Closed this session</div>
           </button>
         </div>
 
-        <!-- Toolbar: dropdown filters refine whatever the sidebar/KPIs selected -->
         <div class="toolbar">
+          <div class="dd" id="dd-status">
+            <button class="dd-trigger" onclick="toggleDD('dd-status')">
+              Status
+              <svg class="chev" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 1l4 4 4-4"/></svg>
+            </button>
+            <div class="dd-panel hidden" id="dd-status-panel">
+              <label class="dd-opt"><span class="swatch" style="background:#9AA1AC"></span>All statuses<input type="radio" name="statusopt" checked onclick="setStatusFilter('all')"></label>
+              <label class="dd-opt"><span class="swatch" style="background:var(--red)"></span>Unresolved<input type="radio" name="statusopt" onclick="setStatusFilter('open')"></label>
+              <label class="dd-opt"><span class="swatch" style="background:var(--amber)"></span>In progress<input type="radio" name="statusopt" onclick="setStatusFilter('progress')"></label>
+              <label class="dd-opt"><span class="swatch" style="background:var(--green)"></span>Resolved<input type="radio" name="statusopt" onclick="setStatusFilter('resolved')"></label>
+            </div>
+          </div>
+
           <div class="dd" id="dd-region">
             <button class="dd-trigger" onclick="toggleDD('dd-region')">
               Region <span class="dd-count hidden" id="region-dd-count">0</span>
@@ -503,13 +528,13 @@
 
           <div class="dd" id="dd-review">
             <button class="dd-trigger" onclick="toggleDD('dd-review')">
-              1-on-1 review <span class="dd-count hidden" id="review-dd-count">1</span>
+              Review
               <svg class="chev" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 1l4 4 4-4"/></svg>
             </button>
             <div class="dd-panel hidden" id="dd-review-panel">
-              <label class="dd-opt"><input type="radio" name="revopt" onclick="setReviewFilter('all')"> Any</label>
-              <label class="dd-opt"><input type="radio" name="revopt" onclick="setReviewFilter('pending')"> Pending</label>
-              <label class="dd-opt"><input type="radio" name="revopt" onclick="setReviewFilter('done')"> Done</label>
+              <label class="dd-opt">Any<input type="radio" name="revopt" checked onclick="setReviewFilter('all')"></label>
+              <label class="dd-opt">Pending<input type="radio" name="revopt" onclick="setReviewFilter('pending')"></label>
+              <label class="dd-opt">Done<input type="radio" name="revopt" onclick="setReviewFilter('done')"></label>
             </div>
           </div>
 
@@ -519,16 +544,14 @@
               <svg class="chev" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 1l4 4 4-4"/></svg>
             </button>
             <div class="dd-panel hidden" id="dd-sort-panel">
-              <label class="dd-opt"><input type="radio" name="sortopt" checked onclick="setSort('new')"> Newest first</label>
-              <label class="dd-opt"><input type="radio" name="sortopt" onclick="setSort('old')"> Oldest first</label>
+              <label class="dd-opt">Newest first<input type="radio" name="sortopt" checked onclick="setSort('new')"></label>
+              <label class="dd-opt">Oldest first<input type="radio" name="sortopt" onclick="setSort('old')"></label>
             </div>
           </div>
 
-          <div class="toolbar-sep"></div>
           <span id="active-chips"></span>
         </div>
 
-        <!-- Table -->
         <div class="table-wrap">
           <table class="tbl">
             <thead>
@@ -539,7 +562,11 @@
                 <th>Category</th>
                 <th>Status</th>
                 <th>1-on-1 review</th>
-                <th class="sortable" onclick="toggleSortDirection()">Submitted</th>
+                <th class="sortable" onclick="toggleSortDirection()">
+                  <span class="th-flex">Submitted
+                    <svg viewBox="0 0 10 12" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 4 5 1l3 3M2 8l3 3 3-3"/></svg>
+                  </span>
+                </th>
                 <th></th>
               </tr>
             </thead>
@@ -552,24 +579,24 @@
           </div>
         </div>
 
-      </div><!-- /page-body -->
-    </div><!-- /main-content -->
-  </div><!-- /shell -->
-</div><!-- /admin-screen -->
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ── TICKET MODAL ── -->
 <div id="ticket-modal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal()">
   <div class="modal-box">
     <div class="modal-header">
       <div>
-        <div class="modal-title font-display" id="modal-title"></div>
+        <div class="modal-title" id="modal-title"></div>
         <div class="modal-meta" id="modal-meta"></div>
       </div>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
 
     <div class="modal-body">
-      <hr class="tear-line">
+      <hr class="modal-div">
 
       <div class="region-info-block" id="modal-region-block">
         <span id="modal-region-badge"></span>
@@ -606,7 +633,7 @@
       </div>
 
       <div class="modal-actions">
-        <button class="btn btn-dark" onclick="saveModal()">Save changes</button>
+        <button class="btn btn-primary" onclick="saveModal()">Save changes</button>
         <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
         <span id="modal-saved" class="saved-msg hidden">✓ Saved</span>
       </div>
@@ -621,15 +648,16 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const ADMIN_PIN = '1212';
-const SLA_HOURS = 48; // tickets left "open" past this age are flagged as SLA risk
+const SLA_HOURS = 48;
 
 /* ── Region map ── */
 const REGION_DEFS = {
-  chennai:      { label: 'Chennai',              coordinator: 'Shyam Kumar',   cls: 'region-chennai' },
-  karnakerala:  { label: 'Karnataka & Kerala',    coordinator: 'Praveen Rao',   cls: 'region-karnakerala' },
-  tamilnadu:    { label: 'Tamil Nadu',            coordinator: 'Guna Karthick', cls: 'region-tamilnadu' },
-  coimbatore:   { label: 'Coimbatore',            coordinator: 'Coordinator TBD', cls: 'region-coimbatore' },
+  chennai:      { label: 'Chennai',              coordinator: 'Shyam Kumar',   dot: 'dot-red' },
+  karnakerala:  { label: 'Karnataka & Kerala',    coordinator: 'Praveen Rao',   dot: 'dot-amber' },
+  tamilnadu:    { label: 'Tamil Nadu',            coordinator: 'Guna Karthick', dot: 'dot-green' },
+  coimbatore:   { label: 'Coimbatore',            coordinator: 'Coordinator TBD', dot: 'dot-violet' },
 };
+const REGION_HEX = { chennai:'#DC2626', karnakerala:'#D9840C', tamilnadu:'#16A34A', coimbatore:'#7C3AED', unmapped:'#9AA1AC' };
 
 const COLLEGE_REGION_MAP = [
   { college: 'SDNB Vaishnav College for Women', region: 'chennai' },
@@ -686,22 +714,31 @@ function resolveRegion(collegeName){
 }
 function getRegionInfo(collegeName){
   const key = resolveRegion(collegeName);
-  if(!key) return { key: null, label: 'Unmapped', coordinator: '—', cls: 'region-unmapped' };
+  if(!key) return { key: null, label: 'Unmapped', coordinator: '—', dot: 'dot-slate' };
   const def = REGION_DEFS[key];
-  return { key, label: def.label, coordinator: def.coordinator, cls: def.cls };
+  return { key, label: def.label, coordinator: def.coordinator, dot: def.dot };
 }
 function isSlaRisk(t){
   if(t.status !== 'open') return false;
   const ageHrs = (Date.now() - new Date(t.created_at).getTime()) / 3600000;
   return ageHrs >= SLA_HOURS;
 }
+function initials(name){
+  const parts = String(name||'?').trim().split(/\s+/);
+  return ((parts[0]?.[0]||'') + (parts[1]?.[0]||'')).toUpperCase() || '?';
+}
+function avatarColor(name){
+  const palette = ['#3457E8','#16A34A','#D9840C','#DC2626','#7C3AED','#0EA5A4'];
+  let h = 0; for(const c of String(name||'')) h = (h*31 + c.charCodeAt(0)) % 997;
+  return palette[h % palette.length];
+}
 
 /* ── State ── */
 let tickets       = [];
-let statusFilter  = 'all';           // all | open | progress | resolved | sla
-let regionFilter  = new Set();       // empty = all regions
-let reviewFilter  = 'all';           // all | pending | done
-let sortDir       = 'new';           // new | old
+let statusFilter  = 'all';
+let regionFilter  = new Set();
+let reviewFilter  = 'all';
+let sortDir       = 'new';
 let refreshTimer  = null;
 let modalId       = null;
 let modalDraft    = {};
@@ -741,8 +778,9 @@ function logout(){
   if(refreshTimer){ clearInterval(refreshTimer); refreshTimer = null; }
 }
 
-/* ── Sidebar collapse ── */
+/* ── Sidebar ── */
 function toggleSidebar(){ $('sidebar').classList.toggle('collapsed'); }
+function toggleGroup(id){ $(id).classList.toggle('open'); }
 
 /* ── Dropdowns ── */
 function toggleDD(id){
@@ -759,15 +797,14 @@ function buildRegionDropdown(){
   const keys = Object.keys(REGION_DEFS);
   panel.innerHTML = keys.map(k => `
     <label class="dd-opt">
+      <span class="swatch" style="background:${REGION_HEX[k]}"></span> ${escHTML(REGION_DEFS[k].label)}
       <input type="checkbox" value="${k}" onchange="toggleRegionOpt('${k}', this.checked)">
-      <span class="swatch" style="background:${getSwatchColor(k)}"></span> ${escHTML(REGION_DEFS[k].label)}
     </label>`).join('') + `
     <div class="dd-sep"></div>
-    <label class="dd-opt"><input type="checkbox" value="unmapped" onchange="toggleRegionOpt('unmapped', this.checked)"> <span class="swatch" style="background:#93A2B0"></span> Unmapped</label>
+    <label class="dd-opt"><span class="swatch" style="background:${REGION_HEX.unmapped}"></span> Unmapped<input type="checkbox" value="unmapped" onchange="toggleRegionOpt('unmapped', this.checked)"></label>
     <div class="dd-sep"></div>
     <button class="dd-clear" onclick="clearRegionFilter()">Clear region filter</button>`;
 }
-function getSwatchColor(k){ return { chennai:'#BF4E2C', karnakerala:'#B8780F', tamilnadu:'#4F7858', coimbatore:'#6A4FA0' }[k] || '#93A2B0'; }
 function toggleRegionOpt(key, checked){
   if(checked) regionFilter.add(key); else regionFilter.delete(key);
   syncRegionDDCount();
@@ -793,20 +830,27 @@ function setSort(dir){
 }
 function toggleSortDirection(){ setSort(sortDir==='new' ? 'old' : 'new'); }
 
-/* ── Filtering: sidebar + KPI cards drive statusFilter; dropdowns refine ── */
+/* ── Filtering: sidebar + KPI cards + Status dropdown all set statusFilter ── */
 function setStatusFilter(f){
   statusFilter = f;
+  syncStatusDD();
   syncNavActive();
   updateHeader();
   renderTickets();
 }
+function syncStatusDD(){
+  const map = { all:0, open:1, progress:2, resolved:3 };
+  const radios = document.querySelectorAll('input[name=statusopt]');
+  radios.forEach((r,i) => r.checked = (map[statusFilter] === i));
+  $('dd-status').querySelector('.dd-trigger').classList.toggle('filled', statusFilter!=='all' && statusFilter!=='sla');
+}
 function setRegionOnly(key){
-  // clicking a region in the sidebar jumps straight to "just this region", all statuses
   regionFilter = new Set([key]);
   buildRegionDropdown();
   $('dd-region-panel').querySelector(`input[value="${key}"]`).checked = true;
   syncRegionDDCount();
   statusFilter = 'all';
+  syncStatusDD();
   syncNavActive('region-'+key);
   updateHeader('region-'+key);
   renderTickets();
@@ -814,37 +858,33 @@ function setRegionOnly(key){
 function setReviewFilter(v){
   reviewFilter = v;
   const radios = document.querySelectorAll('input[name=revopt]');
-  radios.forEach(r => r.checked = (r.parentElement.textContent.trim().toLowerCase().startsWith(v==='all'?'any':v)));
-  $('review-dd-count').textContent = v==='all' ? '' : (v==='pending'?'Pending':'Done');
-  if(v==='all') hide('review-dd-count'); else show('review-dd-count');
+  const idx = { all:0, pending:1, done:2 }[v];
+  radios.forEach((r,i) => r.checked = (i===idx));
   $('dd-review').querySelector('.dd-trigger').classList.toggle('filled', v!=='all');
-  if(document.activeElement && document.activeElement.tagName!=='INPUT'){ /* no-op */ }
   syncNavActive(v==='all' ? null : 'review-'+v);
   renderTickets();
 }
 function syncNavActive(explicitKey){
   const key = explicitKey || statusFilter;
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === key));
+  document.querySelectorAll('.sub-row, .nav-row[data-filter]').forEach(b => b.classList.toggle('active', b.dataset.filter === key));
   document.querySelectorAll('.stat-card').forEach(b => b.classList.toggle('active', b.dataset.filter === statusFilter));
 }
 function updateHeader(explicitKey){
   const key = explicitKey || statusFilter;
   const map = {
-    'all':                 ['All Tickets',            'Showing all submitted tickets'],
-    'open':                ['Unresolved',              'Tickets awaiting first action'],
-    'progress':            ['In Progress',              'Tickets currently being handled'],
-    'resolved':            ['Resolved',                 'Closed and completed tickets'],
-    'sla':                 ['SLA Risk',                 `Open ${SLA_HOURS}+ hours without resolution`],
-    'region-chennai':      ['Chennai',                  'Coordinator: Shyam Kumar'],
-    'region-karnakerala':  ['Karnataka & Kerala',       'Coordinator: Praveen Rao'],
-    'region-tamilnadu':    ['Tamil Nadu',               'Coordinator: Guna Karthick'],
-    'region-coimbatore':   ['Coimbatore',               'Coordinator: TBD'],
-    'review-pending':      ['Review Pending',           'Students awaiting a 1-on-1 review session'],
-    'review-done':         ['Review Completed',         'Students who have had a 1-on-1 session'],
+    'all':                 'All Tickets',
+    'open':                'Unresolved',
+    'progress':            'In Progress',
+    'resolved':            'Resolved',
+    'sla':                 'SLA Risk',
+    'region-chennai':      'Chennai',
+    'region-karnakerala':  'Karnataka & Kerala',
+    'region-tamilnadu':    'Tamil Nadu',
+    'region-coimbatore':   'Coimbatore',
+    'review-pending':      'Review Pending',
+    'review-done':         'Review Done',
   };
-  const [t,s] = map[key] || ['Tickets',''];
-  $('topbar-title').textContent = t;
-  $('breadcrumb-current').textContent = t;
+  $('breadcrumb-current').textContent = map[key] || 'Tickets';
 }
 
 function getFiltered(){
@@ -855,10 +895,7 @@ function getFiltered(){
     return t.status === statusFilter;
   });
   if(regionFilter.size){
-    list = list.filter(t => {
-      const key = resolveRegion(t.college);
-      return regionFilter.has(key || 'unmapped');
-    });
+    list = list.filter(t => { const key = resolveRegion(t.college); return regionFilter.has(key || 'unmapped'); });
   }
   if(reviewFilter==='pending') list = list.filter(t => !t.reviewed);
   if(reviewFilter==='done')    list = list.filter(t => !!t.reviewed);
@@ -885,11 +922,12 @@ function renderStats(){
   $('cnt-res').textContent  = tickets.filter(t=>t.status==='resolved').length;
   $('cnt-open-sub').textContent = slaCount + ' at SLA risk';
 
-  $('nav-cnt-all').textContent  = tickets.length;
-  $('nav-cnt-open').textContent = tickets.filter(t=>t.status==='open').length;
-  $('nav-cnt-prog').textContent = tickets.filter(t=>t.status==='progress').length;
-  $('nav-cnt-res').textContent  = tickets.filter(t=>t.status==='resolved').length;
-  $('nav-cnt-sla').textContent  = slaCount;
+  $('nav-cnt-all').textContent   = tickets.length;
+  $('nav-cnt-all-2').textContent = tickets.length;
+  $('nav-cnt-open').textContent  = tickets.filter(t=>t.status==='open').length;
+  $('nav-cnt-prog').textContent  = tickets.filter(t=>t.status==='progress').length;
+  $('nav-cnt-res').textContent   = tickets.filter(t=>t.status==='resolved').length;
+  $('nav-cnt-sla').textContent   = slaCount;
 
   const pending = tickets.filter(t=>!t.reviewed).length;
   const done    = tickets.filter(t=>!!t.reviewed).length;
@@ -904,15 +942,10 @@ function renderStats(){
   $('nav-cnt-r-coimbatore').textContent  = regionCounts.coimbatore;
 }
 
-/* ── Active filter chips ── */
 function renderChips(){
   const chips = [];
-  if(regionFilter.size){
-    chips.push(`<span class="active-chip">Region: ${regionFilter.size} selected<button onclick="clearRegionFilter()" aria-label="Clear region filter">✕</button></span>`);
-  }
-  if(reviewFilter!=='all'){
-    chips.push(`<span class="active-chip">Review: ${reviewFilter==='pending'?'Pending':'Done'}<button onclick="setReviewFilter('all')" aria-label="Clear review filter">✕</button></span>`);
-  }
+  if(regionFilter.size) chips.push(`<span class="active-chip">Region: ${regionFilter.size} selected<button onclick="clearRegionFilter()" aria-label="Clear region filter">✕</button></span>`);
+  if(reviewFilter!=='all') chips.push(`<span class="active-chip">Review: ${reviewFilter==='pending'?'Pending':'Done'}<button onclick="setReviewFilter('all')" aria-label="Clear review filter">✕</button></span>`);
   $('active-chips').innerHTML = chips.join(' ');
 }
 
@@ -948,23 +981,27 @@ function renderTickets(){
   hide('empty-state');
 
   tbody.innerHTML = filtered.map(t => {
-    const stampCls = {open:'stamp-open',progress:'stamp-progress',resolved:'stamp-resolved'}[t.status]||'stamp-open';
-    const stampLbl = {open:'Open',progress:'In Progress',resolved:'Resolved'}[t.status]||t.status;
-    const reviewBadge = t.reviewed
-      ? `<span class="review-badge review-yes">✓ Done</span>`
-      : `<span class="review-badge review-no">Pending</span>`;
+    const statusDot = {open:'dot-red',progress:'dot-amber',resolved:'dot-green'}[t.status]||'dot-slate';
+    const statusLbl = {open:'Unresolved',progress:'In Progress',resolved:'Resolved'}[t.status]||t.status;
+    const reviewBadge = t.reviewed ? `<span class="review-badge review-yes">✓ Done</span>` : `<span class="review-badge review-no">Pending</span>`;
     const rInfo = getRegionInfo(t.college);
-    const regionBadge = `<span class="region-badge ${rInfo.cls}" title="${escHTML(rInfo.coordinator)}"><span class="dot"></span>${escHTML(rInfo.label)}</span>`;
-    const slaFlag = isSlaRisk(t) ? `<div class="sla-flag"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5 14.8 13.5H1.2L8 1.5zM8 6v3.2M8 11.3h.01"/></svg>SLA risk</div>` : '';
+    const regionRow = `<span class="dot-row"><span class="dot ${rInfo.dot}"></span>${escHTML(rInfo.label)}</span>`;
+    const slaFlag = isSlaRisk(t) ? `<div class="sla-tag">⚑ SLA risk</div>` : '';
+    const avColor = avatarColor(t.student_name);
     return `<tr>
       <td><span class="roll-mono">${escHTML(t.roll_number)}</span></td>
       <td>
-        <div class="subj-text">${escHTML(t.subject)}</div>
-        <div class="meta-text">${escHTML(t.student_name)}${t.college?' · '+escHTML(t.college):''}</div>
+        <div class="subj-row">
+          <div class="avatar" style="background:${avColor}">${initials(t.student_name)}</div>
+          <div>
+            <div class="subj-text">${escHTML(t.subject)}</div>
+            <div class="meta-text">${escHTML(t.student_name)}${t.college?' · '+escHTML(t.college):''}</div>
+          </div>
+        </div>
       </td>
-      <td>${regionBadge}</td>
+      <td>${regionRow}</td>
       <td><span class="cat-pill">${escHTML(t.category)}</span></td>
-      <td><span class="stamp ${stampCls}">${stampLbl}</span>${slaFlag}</td>
+      <td><span class="dot-row"><span class="dot ${statusDot}"></span>${statusLbl}</span>${slaFlag}</td>
       <td>${reviewBadge}</td>
       <td><span class="time-text">${fmtRel(t.created_at)}</span></td>
       <td><button class="action-btn" onclick="openModal('${t.id}')">Edit →</button></td>
@@ -987,7 +1024,7 @@ function openModal(id){
   $('modal-review').checked    = !!t.reviewed;
 
   const rInfo = getRegionInfo(t.college);
-  $('modal-region-badge').innerHTML = `<span class="region-badge ${rInfo.cls}"><span class="dot"></span>${escHTML(rInfo.label)}</span>`;
+  $('modal-region-badge').innerHTML = `<span class="dot-row"><span class="dot ${rInfo.dot}"></span>${escHTML(rInfo.label)}</span>`;
   $('modal-region-coord').textContent = rInfo.key ? `Coordinator: ${rInfo.coordinator}` : 'College not yet mapped to a region';
 
   hide('modal-saved');
@@ -1003,7 +1040,7 @@ function closeModal(){
 function modalEdit(field, val){ modalDraft[field] = val; }
 async function saveModal(){
   if(!modalId) return;
-  const saveBtn = document.querySelector('#ticket-modal .btn-dark');
+  const saveBtn = document.querySelector('#ticket-modal .btn-primary');
   const savedMsg = $('modal-saved');
   saveBtn.disabled = true;
   saveBtn.textContent = 'Saving…';
@@ -1020,7 +1057,7 @@ async function saveModal(){
 
   if(error){
     console.error(error);
-    savedMsg.style.color = 'var(--rust)';
+    savedMsg.style.color = 'var(--red)';
     savedMsg.textContent = '✗ ' + (error.message || 'Save failed — check console.');
     show('modal-saved');
     saveBtn.disabled = false;
@@ -1031,7 +1068,7 @@ async function saveModal(){
   tickets = tickets.map(t => t.id === modalId ? { ...t, ...payload } : t);
   renderTickets();
 
-  savedMsg.style.color = 'var(--sage)';
+  savedMsg.style.color = 'var(--green)';
   savedMsg.textContent = '✓ Saved';
   show('modal-saved');
   saveBtn.disabled = false;
@@ -1039,7 +1076,6 @@ async function saveModal(){
   setTimeout(() => { hide('modal-saved'); closeModal(); }, 1200);
 }
 
-/* ── keyboard shortcuts ── */
 document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
 </script>
 </body>
