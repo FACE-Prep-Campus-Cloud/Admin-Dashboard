@@ -13,97 +13,105 @@
   :root {
     --ink: #1C2B3A;
     --ink-light: #5B6B7C;
+    --ink-faint: #93A2B0;
     --paper: #FBF7EE;
     --paper-dark: #F0E8D6;
-    --line: #D8CFB8;
+    --card: #FFFFFF;
+    --line: #E4DCC6;
+    --line-soft: #EEE7D4;
     --rust: #BF4E2C;
     --amber: #B8780F;
     --sage: #4F7858;
+    --violet: #6A4FA0;
+    --shadow: 0 1px 2px rgba(28,43,58,0.04), 0 8px 24px -12px rgba(28,43,58,0.10);
   }
 
-  body { font-family: 'Inter', sans-serif; color: var(--ink); background: var(--paper-dark); min-height: 100vh; }
+  body { font-family: 'Inter', sans-serif; color: var(--ink); background: var(--paper-dark); min-height: 100vh; -webkit-font-smoothing: antialiased; }
   .font-display { font-family: 'Fraunces', serif; }
   .font-mono    { font-family: 'IBM Plex Mono', monospace; }
   .hidden { display: none !important; }
+  button, input, select { font-family: inherit; }
+  :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 
   /* ── STAMPS ── */
   .stamp {
     display: inline-flex; align-items: center; gap: 5px;
     padding: 3px 10px; border: 1.5px solid currentColor; border-radius: 999px;
     font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
-    letter-spacing: 0.1em; text-transform: uppercase; transform: rotate(-2deg);
+    letter-spacing: 0.08em; text-transform: uppercase;
     white-space: nowrap; flex-shrink: 0;
   }
   .stamp-open     { color: var(--rust);  background: rgba(191,78,44,0.08); }
   .stamp-progress { color: var(--amber); background: rgba(184,120,15,0.10); }
   .stamp-resolved { color: var(--sage);  background: rgba(79,120,88,0.10); }
 
+  .sla-flag {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase; color: var(--rust);
+  }
+  .sla-flag svg { width: 11px; height: 11px; }
+
   .review-badge {
     display: inline-flex; align-items: center; gap: 4px;
     padding: 3px 9px; border-radius: 999px;
     font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
-    letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap;
+    letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap;
   }
-  .review-yes { background: rgba(79,120,88,0.12); color: var(--sage); border: 1.5px solid rgba(79,120,88,0.35); }
-  .review-no  { background: rgba(91,107,124,0.10); color: var(--ink-light); border: 1.5px solid var(--line); }
+  .review-yes { background: rgba(79,120,88,0.12); color: var(--sage); border: 1.5px solid rgba(79,120,88,0.3); }
+  .review-no  { background: rgba(91,107,124,0.08); color: var(--ink-light); border: 1.5px solid var(--line); }
 
   .region-badge {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 2px 9px; border-radius: 999px;
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 9px; border-radius: 999px;
     font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
-    letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap;
+    letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap;
     border: 1.5px solid; background: var(--paper-dark);
   }
-  .region-chennai     { color: var(--rust);  border-color: rgba(191,78,44,0.4); background: rgba(191,78,44,0.08); }
-  .region-karnakerala { color: var(--amber); border-color: rgba(184,120,15,0.4); background: rgba(184,120,15,0.08); }
-  .region-tamilnadu   { color: var(--sage);  border-color: rgba(79,120,88,0.4); background: rgba(79,120,88,0.08); }
-  .region-coimbatore  { color: #6A4FA0;      border-color: rgba(106,79,160,0.4); background: rgba(106,79,160,0.08); }
-  .region-unmapped    { color: var(--ink-light); border-color: var(--line); }
+  .region-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+  .region-chennai     { color: var(--rust);  border-color: rgba(191,78,44,0.35); background: rgba(191,78,44,0.07); }
+  .region-karnakerala { color: var(--amber); border-color: rgba(184,120,15,0.35); background: rgba(184,120,15,0.07); }
+  .region-tamilnadu   { color: var(--sage);  border-color: rgba(79,120,88,0.35); background: rgba(79,120,88,0.07); }
+  .region-coimbatore  { color: var(--violet); border-color: rgba(106,79,160,0.35); background: rgba(106,79,160,0.07); }
+  .region-unmapped    { color: var(--ink-faint); border-color: var(--line); }
 
   /* ── AUTH ── */
-  .auth-wrap {
-    min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;
-  }
+  .auth-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
   .auth-box { width: 100%; max-width: 380px; }
   .auth-header { text-align: center; margin-bottom: 28px; }
   .auth-badge {
-    display: inline-block; padding: 4px 14px;
-    border: 1.5px solid var(--amber); border-radius: 999px;
+    display: inline-block; padding: 4px 14px; border: 1.5px solid var(--amber); border-radius: 999px;
     font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--amber); background: rgba(184,120,15,0.10);
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber); background: rgba(184,120,15,0.10);
     margin-bottom: 12px;
   }
-  .auth-header h1 { font-family: 'Fraunces', serif; font-size: 30px; margin-top: 0; }
+  .auth-header h1 { font-family: 'Fraunces', serif; font-size: 29px; margin-top: 0; }
   .auth-header p  { font-size: 13px; color: var(--ink-light); margin-top: 8px; }
-  .auth-panel { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 28px; }
+  .auth-panel { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 28px; box-shadow: var(--shadow); }
   .field-label {
-    display: block; font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px; font-weight: 600; text-transform: uppercase;
-    letter-spacing: 0.08em; color: var(--ink-light); margin-bottom: 6px;
+    display: block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-light); margin-bottom: 6px;
   }
   .error-msg { font-size: 13px; color: var(--rust); margin: 8px 0; }
   input, select, textarea {
     background: var(--paper-dark); border: 1px solid var(--line); border-radius: 8px;
-    color: var(--ink); font-family: inherit; font-size: 14px; padding: 10px 14px;
-    outline: none; transition: border-color .15s; width: 100%;
+    color: var(--ink); font-size: 14px; padding: 10px 14px; outline: none; transition: border-color .15s; width: 100%;
   }
-  input:focus, select:focus, textarea:focus { border-color: var(--ink); }
+  input:focus, select:focus, textarea:focus { border-color: var(--ink); background: var(--card); }
   input::placeholder { color: var(--ink-light); opacity: 0.55; }
 
   /* ── BUTTONS ── */
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 7px;
-    padding: 9px 18px; border-radius: 8px; font-family: inherit;
-    font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity .15s, transform .12s;
-    border: none; white-space: nowrap;
+    padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer;
+    transition: opacity .15s, transform .12s, background .12s; border: none; white-space: nowrap;
   }
   .btn:active { transform: scale(0.97); }
   .btn-dark  { background: var(--ink);  color: var(--paper); }
   .btn-dark:hover  { opacity: 0.85; }
   .btn-dark:disabled { opacity: 0.5; cursor: not-allowed; }
-  .btn-ghost { background: transparent; color: var(--ink-light); border: 1px solid var(--line); }
-  .btn-ghost:hover { background: var(--paper); color: var(--ink); border-color: var(--ink-light); }
+  .btn-ghost { background: var(--card); color: var(--ink-light); border: 1px solid var(--line); }
+  .btn-ghost:hover { color: var(--ink); border-color: var(--ink-faint); }
   .btn-full { width: 100%; }
 
   /* ── SHELL ── */
@@ -111,259 +119,224 @@
 
   /* ── SIDEBAR ── */
   .sidebar {
-    width: 220px; flex-shrink: 0;
-    background: var(--ink); color: var(--paper);
-    display: flex; flex-direction: column;
-    padding: 0;
-    position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    width: 226px; flex-shrink: 0; background: var(--ink); color: var(--paper);
+    display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh;
+    overflow-y: auto; transition: width .18s ease;
   }
+  .sidebar.collapsed { width: 68px; }
+  .sidebar.collapsed .sidebar-logo, .sidebar.collapsed .sidebar-sub,
+  .sidebar.collapsed .nav-section-label, .sidebar.collapsed .nav-label,
+  .sidebar.collapsed .nav-count, .sidebar.collapsed .logout-label { display: none; }
+  .sidebar.collapsed .nav-btn, .sidebar.collapsed .btn-logout { justify-content: center; }
+  .sidebar.collapsed .sidebar-top { justify-content: center; }
+
   .sidebar-top {
-    padding: 24px 20px 20px;
-    border-bottom: 1px solid rgba(251,247,238,0.1);
+    padding: 20px 18px; border-bottom: 1px solid rgba(251,247,238,0.1);
+    display: flex; align-items: center; gap: 10px;
   }
-  .sidebar-logo { font-family: 'Fraunces', serif; font-size: 17px; line-height: 1.3; }
-  .sidebar-sub { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(251,247,238,0.45); margin-top: 4px; }
-  .sidebar-nav { padding: 16px 12px; flex: 1; }
+  .collapse-btn {
+    width: 28px; height: 28px; flex-shrink: 0; border-radius: 7px; border: 1px solid rgba(251,247,238,0.18);
+    background: transparent; color: rgba(251,247,238,0.7); cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background .12s;
+  }
+  .collapse-btn:hover { background: rgba(251,247,238,0.1); }
+  .collapse-btn svg { width: 13px; height: 13px; transition: transform .18s; }
+  .sidebar.collapsed .collapse-btn svg { transform: rotate(180deg); }
+  .sidebar-brand { min-width: 0; }
+  .sidebar-logo { font-family: 'Fraunces', serif; font-size: 15.5px; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sidebar-sub { font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(251,247,238,0.4); margin-top: 3px; }
+
+  .sidebar-nav { padding: 14px 10px; flex: 1; }
   .nav-section-label {
-    font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 0.1em;
-    color: rgba(251,247,238,0.35); padding: 0 8px; margin-bottom: 6px; margin-top: 12px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.1em; color: rgba(251,247,238,0.32); padding: 0 10px; margin-bottom: 6px; margin-top: 16px;
   }
+  .nav-section-label:first-child { margin-top: 0; }
   .nav-btn {
-    display: flex; align-items: center; gap: 10px; width: 100%;
-    padding: 9px 10px; border-radius: 8px; border: none; cursor: pointer;
-    font-family: inherit; font-size: 13px; font-weight: 500;
-    color: rgba(251,247,238,0.65); background: transparent;
-    transition: background .15s, color .15s; text-align: left;
+    display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 10px; border-radius: 8px;
+    border: none; cursor: pointer; font-size: 13px; font-weight: 500; color: rgba(251,247,238,0.62);
+    background: transparent; transition: background .15s, color .15s; text-align: left; position: relative;
   }
   .nav-btn svg { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.7; }
-  .nav-btn:hover { background: rgba(251,247,238,0.08); color: var(--paper); }
+  .nav-btn:hover { background: rgba(251,247,238,0.07); color: var(--paper); }
   .nav-btn:hover svg { opacity: 1; }
   .nav-btn.active { background: rgba(251,247,238,0.13); color: var(--paper); font-weight: 600; }
   .nav-btn.active svg { opacity: 1; }
+  .nav-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .nav-count {
-    margin-left: auto; font-family: 'IBM Plex Mono', monospace; font-size: 10px;
-    background: rgba(251,247,238,0.15); color: rgba(251,247,238,0.75);
-    border-radius: 999px; padding: 1px 7px; min-width: 20px; text-align: center;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; background: rgba(251,247,238,0.14);
+    color: rgba(251,247,238,0.75); border-radius: 999px; padding: 1px 7px; min-width: 20px; text-align: center; flex-shrink: 0;
   }
-  .nav-count.urgent { background: rgba(191,78,44,0.45); color: #F7C0A8; }
-  .sidebar-foot {
-    padding: 16px 12px;
-    border-top: 1px solid rgba(251,247,238,0.1);
-  }
+  .nav-count.urgent { background: rgba(191,78,44,0.5); color: #FBD9CB; }
+  .sidebar-foot { padding: 12px 10px; border-top: 1px solid rgba(251,247,238,0.1); }
   .btn-logout {
-    display: flex; align-items: center; gap: 8px; width: 100%;
-    padding: 9px 10px; border-radius: 8px; border: none; cursor: pointer;
-    font-family: inherit; font-size: 13px; color: rgba(251,247,238,0.5);
-    background: transparent; transition: background .15s, color .15s;
+    display: flex; align-items: center; gap: 9px; width: 100%; padding: 8px 10px; border-radius: 8px; border: none;
+    cursor: pointer; font-size: 13px; color: rgba(251,247,238,0.48); background: transparent; transition: background .15s, color .15s;
   }
-  .btn-logout:hover { background: rgba(251,247,238,0.08); color: rgba(251,247,238,0.85); }
-  .btn-logout svg { width: 15px; height: 15px; }
+  .btn-logout:hover { background: rgba(251,247,238,0.07); color: rgba(251,247,238,0.85); }
+  .btn-logout svg { width: 15px; height: 15px; flex-shrink: 0; }
 
-  /* ── MAIN CONTENT ── */
+  /* ── MAIN ── */
   .main-content { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 
-  /* ── TOP BAR ── */
   .topbar {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 18px 28px; background: var(--paper); border-bottom: 1px solid var(--line);
-    gap: 16px; position: sticky; top: 0; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between; padding: 16px 28px;
+    background: var(--paper); border-bottom: 1px solid var(--line); gap: 16px; position: sticky; top: 0; z-index: 20;
   }
-  .topbar-left { display: flex; flex-direction: column; gap: 2px; }
-  .topbar-title { font-family: 'Fraunces', serif; font-size: 20px; }
-  .topbar-sub { font-size: 12px; color: var(--ink-light); }
+  .breadcrumb { font-size: 12px; color: var(--ink-faint); font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.02em; margin-bottom: 4px; }
+  .breadcrumb b { color: var(--ink-light); font-weight: 600; }
+  .topbar-title { font-family: 'Fraunces', serif; font-size: 21px; }
   .topbar-right { display: flex; align-items: center; gap: 10px; }
   .search-wrap { position: relative; }
-  .search-wrap input { padding-left: 34px; width: 240px; font-size: 13px; }
-  .search-icon {
-    position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
-    color: var(--ink-light); font-size: 14px; pointer-events: none;
-  }
+  .search-wrap input { padding-left: 34px; width: 250px; font-size: 13px; }
+  .search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--ink-light); font-size: 14px; pointer-events: none; }
 
-  /* ── PAGE BODY ── */
-  .page-body { padding: 28px; flex: 1; }
+  .page-body { padding: 26px 28px 40px; flex: 1; max-width: 1320px; width: 100%; }
 
-  /* ── STATS ROW ── */
-  .stats-row {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 28px;
-  }
+  /* ── STATS ── */
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px; }
   .stat-card {
-    background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px;
-    display: flex; flex-direction: column; gap: 4px;
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 17px 20px;
+    display: flex; flex-direction: column; gap: 3px; cursor: pointer; text-align: left;
+    transition: border-color .12s, box-shadow .12s, transform .12s; box-shadow: var(--shadow);
   }
-  .stat-card .s-val { font-family: 'Fraunces', serif; font-size: 30px; line-height: 1; }
-  .stat-card .s-lbl { font-family: 'IBM Plex Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-light); }
-  .stat-card .s-sub { font-size: 11px; color: var(--ink-light); margin-top: 2px; }
+  .stat-card:hover { transform: translateY(-1px); }
+  .stat-card.active { border-color: var(--ink); }
+  .stat-card .s-val { font-family: 'Fraunces', serif; font-size: 29px; line-height: 1; }
+  .stat-card .s-lbl { font-family: 'IBM Plex Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink-light); margin-top: 2px; }
+  .stat-card .s-sub { font-size: 11px; color: var(--ink-faint); margin-top: 1px; }
+  .stat-card.s-total    { border-left: 3px solid var(--ink); }
   .stat-card.s-open     { border-left: 3px solid var(--rust); }
   .stat-card.s-progress { border-left: 3px solid var(--amber); }
   .stat-card.s-resolved { border-left: 3px solid var(--sage); }
-  .stat-card.s-review   { border-left: 3px solid #5B6B7C; }
-
-  /* ── REGIONS ROW ── */
-  .regions-row {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 28px;
-  }
-  .region-card {
-    background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px;
-    display: flex; flex-direction: column; gap: 3px; cursor: pointer; transition: border-color .12s, background .12s;
-  }
-  .region-card:hover { background: var(--paper-dark); }
-  .region-card.active { border-color: var(--ink); }
-  .region-card .r-val { font-family: 'Fraunces', serif; font-size: 24px; line-height: 1; }
-  .region-card .r-name { font-size: 12.5px; font-weight: 600; margin-top: 2px; }
-  .region-card .r-coord { font-size: 11px; color: var(--ink-light); }
-  .region-card.r-chennai     { border-left: 3px solid var(--rust); }
-  .region-card.r-karnakerala { border-left: 3px solid var(--amber); }
-  .region-card.r-tamilnadu   { border-left: 3px solid var(--sage); }
-  .region-card.r-coimbatore  { border-left: 3px solid #6A4FA0; }
 
   /* ── TOOLBAR ── */
-  .toolbar {
-    display: flex; align-items: center; gap: 10px; margin-bottom: 18px; flex-wrap: wrap;
+  .toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .dd { position: relative; }
+  .dd-trigger {
+    display: inline-flex; align-items: center; gap: 7px; padding: 8px 13px; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--card); font-size: 12.5px; font-weight: 500;
+    color: var(--ink-light); cursor: pointer; transition: border-color .12s, color .12s;
   }
-  .filter-pill {
-    padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 500;
-    font-family: inherit; cursor: pointer; transition: background .12s, color .12s;
-    border: 1px solid var(--line);
+  .dd-trigger:hover { border-color: var(--ink-faint); color: var(--ink); }
+  .dd-trigger.filled { color: var(--ink); border-color: var(--ink); background: var(--paper); }
+  .dd-trigger svg.chev { width: 10px; height: 10px; opacity: 0.6; transition: transform .12s; }
+  .dd.open .dd-trigger svg.chev { transform: rotate(180deg); }
+  .dd-count {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; background: var(--ink); color: var(--paper);
+    border-radius: 999px; padding: 0px 6px; min-width: 16px; text-align: center;
   }
-  .filter-pill.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-  .filter-pill:not(.active) { background: var(--paper); color: var(--ink-light); }
-  .filter-pill:not(.active):hover { background: var(--paper-dark); color: var(--ink); }
+  .dd-panel {
+    position: absolute; top: calc(100% + 6px); left: 0; min-width: 210px; background: var(--card);
+    border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 12px 32px -10px rgba(28,43,58,0.22);
+    padding: 8px; z-index: 30;
+  }
+  .dd-opt {
+    display: flex; align-items: center; gap: 9px; padding: 7px 8px; border-radius: 7px; cursor: pointer;
+    font-size: 13px; color: var(--ink); transition: background .1s;
+  }
+  .dd-opt:hover { background: var(--paper-dark); }
+  .dd-opt input[type=checkbox], .dd-opt input[type=radio] { width: 14px; height: 14px; accent-color: var(--ink); flex-shrink: 0; }
+  .dd-opt .swatch { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .dd-sep { height: 1px; background: var(--line-soft); margin: 6px 2px; }
+  .dd-clear { display: block; width: 100%; text-align: left; background: none; border: none; padding: 7px 8px; font-size: 12px; color: var(--ink-light); cursor: pointer; border-radius: 7px; }
+  .dd-clear:hover { background: var(--paper-dark); color: var(--ink); }
 
-  .toolbar-sep { width: 1px; height: 24px; background: var(--line); margin: 0 4px; }
+  .toolbar-sep { width: 1px; height: 22px; background: var(--line); margin: 0 2px; }
+  .active-chip {
+    display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px 6px 12px; border-radius: 999px;
+    background: var(--ink); color: var(--paper); font-size: 12px; font-weight: 500;
+  }
+  .active-chip button { background: none; border: none; color: rgba(251,247,238,0.7); cursor: pointer; font-size: 13px; line-height: 1; padding: 0; }
+  .active-chip button:hover { color: var(--paper); }
 
   /* ── TABLE ── */
-  .table-wrap {
-    background: var(--paper); border: 1px solid var(--line); border-radius: 14px; overflow: hidden;
-  }
+  .table-wrap { background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); }
   .tbl { width: 100%; border-collapse: collapse; }
   .tbl thead tr { border-bottom: 1px solid var(--line); background: var(--paper-dark); }
   .tbl th {
-    padding: 10px 16px; text-align: left;
-    font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-light);
-    white-space: nowrap;
+    padding: 11px 16px; text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink-light); white-space: nowrap;
   }
-  .tbl td { padding: 14px 16px; font-size: 13px; vertical-align: middle; }
-  .tbl tbody tr { border-bottom: 1px solid var(--line); transition: background .1s; }
+  .tbl th.sortable { cursor: pointer; user-select: none; }
+  .tbl th.sortable:hover { color: var(--ink); }
+  .tbl td { padding: 13px 16px; font-size: 13px; vertical-align: middle; }
+  .tbl tbody tr { border-bottom: 1px solid var(--line-soft); transition: background .1s; }
   .tbl tbody tr:last-child { border-bottom: none; }
   .tbl tbody tr:hover { background: var(--paper-dark); }
-  .tbl tbody tr.status-open     { background: rgba(191,78,44,0.05); }
-  .tbl tbody tr.status-open:hover { background: rgba(191,78,44,0.09); }
-  .tbl tbody tr.status-progress { background: rgba(184,120,15,0.05); }
-  .tbl tbody tr.status-progress:hover { background: rgba(184,120,15,0.09); }
-  .tbl tbody tr.status-resolved { background: rgba(79,120,88,0.04); }
-  .tbl tbody tr.status-resolved:hover { background: rgba(79,120,88,0.08); }
 
   .roll-mono { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--ink-light); }
-  .subj-text { font-weight: 500; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .meta-text { font-size: 11px; color: var(--ink-light); margin-top: 2px; }
+  .subj-text { font-weight: 600; max-width: 230px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .meta-text { font-size: 11px; color: var(--ink-light); margin-top: 2px; max-width: 230px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .cat-pill {
-    display: inline-block; padding: 2px 9px; border-radius: 999px;
-    font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 0.06em;
-    background: rgba(91,107,124,0.12); color: var(--ink-light); border: 1px solid var(--line);
+    display: inline-block; padding: 2px 9px; border-radius: 999px; font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+    background: rgba(91,107,124,0.1); color: var(--ink-light); border: 1px solid var(--line);
   }
   .time-text { font-size: 12px; color: var(--ink-light); white-space: nowrap; }
   .action-btn {
-    padding: 6px 12px; border-radius: 6px; font-family: inherit; font-size: 12px; font-weight: 500;
-    border: 1px solid var(--line); background: transparent; color: var(--ink-light); cursor: pointer;
-    transition: background .12s, color .12s, border-color .12s;
+    padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 500; border: 1px solid var(--line);
+    background: transparent; color: var(--ink-light); cursor: pointer; transition: background .12s, color .12s, border-color .12s;
   }
   .action-btn:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 
-  /* ── EMPTY STATE ── */
-  .empty-state {
-    padding: 60px 24px; text-align: center; color: var(--ink-light); font-size: 14px;
-  }
+  .empty-state { padding: 64px 24px; text-align: center; color: var(--ink-light); font-size: 14px; }
   .empty-icon { font-size: 28px; margin-bottom: 12px; opacity: 0.4; }
   .empty-state p { margin-top: 6px; font-size: 12px; }
 
   /* ── MODAL ── */
   .modal-overlay {
-    position: fixed; inset: 0; background: rgba(28,43,58,0.5);
-    display: flex; align-items: center; justify-content: center;
+    position: fixed; inset: 0; background: rgba(28,43,58,0.5); display: flex; align-items: center; justify-content: center;
     padding: 24px; z-index: 100; backdrop-filter: blur(2px);
   }
-  .modal-box {
-    background: var(--paper); border: 1px solid var(--line); border-radius: 20px;
-    width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto;
-  }
-  .modal-header {
-    display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
-    padding: 24px 24px 0;
-  }
+  .modal-box { background: var(--paper); border: 1px solid var(--line); border-radius: 20px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; }
+  .modal-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 24px 24px 0; }
   .modal-title { font-family: 'Fraunces', serif; font-size: 20px; line-height: 1.3; }
   .modal-meta  { font-size: 12px; color: var(--ink-light); margin-top: 4px; }
   .modal-close {
-    width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
-    border-radius: 8px; border: 1px solid var(--line); background: transparent; cursor: pointer;
-    font-size: 16px; color: var(--ink-light); flex-shrink: 0; transition: background .12s;
+    width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 8px;
+    border: 1px solid var(--line); background: transparent; cursor: pointer; font-size: 16px; color: var(--ink-light);
+    flex-shrink: 0; transition: background .12s;
   }
   .modal-close:hover { background: var(--paper-dark); color: var(--ink); }
-
-  /* dashed tear line */
-  .tear-line {
-    border: none; border-top: 2px dashed var(--line); margin: 20px 0; position: relative;
-  }
-  .tear-line::before, .tear-line::after {
-    content: ''; position: absolute; top: -9px;
-    width: 16px; height: 16px; border-radius: 50%; background: var(--paper-dark);
-  }
-  .tear-line::before { left: -1px; }
-  .tear-line::after  { right: -1px; }
-
+  .tear-line { border: none; border-top: 2px dashed var(--line); margin: 20px 0; position: relative; }
+  .tear-line::before, .tear-line::after { content: ''; position: absolute; top: -9px; width: 16px; height: 16px; border-radius: 50%; background: var(--paper-dark); }
+  .tear-line::before { left: -1px; } .tear-line::after { right: -1px; }
   .modal-body { padding: 0 24px 24px; }
   .desc-block {
-    font-size: 13.5px; line-height: 1.65; white-space: pre-wrap;
-    color: var(--ink); padding: 14px 16px; background: var(--paper-dark);
-    border-radius: 10px; border: 1px solid var(--line); margin-bottom: 20px;
+    font-size: 13.5px; line-height: 1.65; white-space: pre-wrap; color: var(--ink); padding: 14px 16px;
+    background: var(--paper-dark); border-radius: 10px; border: 1px solid var(--line); margin-bottom: 20px;
   }
   .region-info-block {
-    display: flex; align-items: center; justify-content: space-between; gap: 12px;
-    padding: 10px 16px; background: var(--paper-dark); border: 1px solid var(--line);
-    border-radius: 10px; margin-bottom: 14px; font-size: 12.5px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 16px;
+    background: var(--paper-dark); border: 1px solid var(--line); border-radius: 10px; margin-bottom: 14px; font-size: 12.5px;
   }
   .region-info-block .ri-coord { color: var(--ink-light); }
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
   .form-group { display: flex; flex-direction: column; gap: 6px; }
   .form-group.full { grid-column: 1 / -1; }
-
   .review-toggle-wrap {
-    grid-column: 1 / -1;
-    background: var(--paper-dark); border: 1px solid var(--line);
-    border-radius: 10px; padding: 14px 16px;
-    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    grid-column: 1 / -1; background: var(--paper-dark); border: 1px solid var(--line); border-radius: 10px;
+    padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
   }
   .review-toggle-info strong { font-size: 13px; display: block; margin-bottom: 2px; }
   .review-toggle-info span { font-size: 11.5px; color: var(--ink-light); }
-  .toggle-switch {
-    position: relative; width: 44px; height: 24px; flex-shrink: 0;
-  }
+  .toggle-switch { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
   .toggle-switch input { opacity: 0; width: 0; height: 0; }
-  .toggle-track {
-    position: absolute; inset: 0; border-radius: 999px;
-    background: var(--line); cursor: pointer; transition: background .2s;
-  }
-  .toggle-thumb {
-    position: absolute; left: 3px; top: 3px; width: 18px; height: 18px;
-    border-radius: 50%; background: white; transition: transform .2s; pointer-events: none;
-  }
+  .toggle-track { position: absolute; inset: 0; border-radius: 999px; background: var(--line); cursor: pointer; transition: background .2s; }
+  .toggle-thumb { position: absolute; left: 3px; top: 3px; width: 18px; height: 18px; border-radius: 50%; background: white; transition: transform .2s; pointer-events: none; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
   .toggle-switch input:checked ~ .toggle-track { background: var(--sage); }
   .toggle-switch input:checked ~ .toggle-thumb { transform: translateX(20px); }
-
-  .modal-actions {
-    display: flex; align-items: center; gap: 10px; padding-top: 4px;
-  }
+  .modal-actions { display: flex; align-items: center; gap: 10px; padding-top: 4px; }
   .saved-msg { font-size: 12px; color: var(--sage); }
 
-  @media (max-width: 768px) {
-    .sidebar { display: none; }
+  @media (max-width: 860px) {
+    .sidebar { position: fixed; z-index: 40; left: -226px; }
+    .sidebar.mobile-open { left: 0; }
     .stats-row { grid-template-columns: repeat(2, 1fr); }
-    .regions-row { grid-template-columns: repeat(2, 1fr); }
     .form-grid { grid-template-columns: 1fr; }
-    .tbl th:nth-child(3), .tbl td:nth-child(3),
-    .tbl th:nth-child(6), .tbl td:nth-child(6) { display: none; }
+    .search-wrap input { width: 170px; }
+    .tbl th:nth-child(3), .tbl td:nth-child(3), .tbl th:nth-child(4), .tbl td:nth-child(4) { display: none; }
   }
 </style>
 </head>
@@ -392,73 +365,83 @@
 <div id="admin-screen" class="hidden">
   <div class="shell">
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
+    <!-- Sidebar (single source of navigation truth) -->
+    <aside class="sidebar" id="sidebar">
       <div class="sidebar-top">
-        <div class="sidebar-logo font-display">FACE Prep Campus<br>Help Desk</div>
-        <div class="sidebar-sub">Admin Console</div>
+        <button class="collapse-btn" onclick="toggleSidebar()" title="Collapse sidebar" aria-label="Collapse sidebar">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 3.5 5.5 8l4.5 4.5"/></svg>
+        </button>
+        <div class="sidebar-brand">
+          <div class="sidebar-logo font-display">FACE Prep Campus<br>Help Desk</div>
+          <div class="sidebar-sub">Admin Console</div>
+        </div>
       </div>
-      <nav class="sidebar-nav">
+      <nav class="sidebar-nav" id="sidebar-nav">
         <div class="nav-section-label">Tickets</div>
-        <button class="nav-btn active" data-filter="all" onclick="navFilter('all', this)">
+        <button class="nav-btn active" data-filter="all" onclick="setStatusFilter('all')">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="13" height="13" rx="2"/><line x1="4.5" y1="5.5" x2="11.5" y2="5.5"/><line x1="4.5" y1="8" x2="11.5" y2="8"/><line x1="4.5" y1="10.5" x2="8" y2="10.5"/></svg>
-          All tickets
+          <span class="nav-label">All tickets</span>
           <span class="nav-count" id="nav-cnt-all">0</span>
         </button>
-        <button class="nav-btn" data-filter="open" onclick="navFilter('open', this)">
+        <button class="nav-btn" data-filter="open" onclick="setStatusFilter('open')">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><line x1="8" y1="5" x2="8" y2="8.5"/><circle cx="8" cy="10.5" r="0.5" fill="currentColor"/></svg>
-          Unresolved
+          <span class="nav-label">Unresolved</span>
           <span class="nav-count urgent" id="nav-cnt-open">0</span>
         </button>
-        <button class="nav-btn" data-filter="progress" onclick="navFilter('progress', this)">
+        <button class="nav-btn" data-filter="progress" onclick="setStatusFilter('progress')">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 4v4l2.5 2.5"/></svg>
-          In Progress
+          <span class="nav-label">In progress</span>
           <span class="nav-count" id="nav-cnt-prog">0</span>
         </button>
-        <button class="nav-btn" data-filter="resolved" onclick="navFilter('resolved', this)">
+        <button class="nav-btn" data-filter="resolved" onclick="setStatusFilter('resolved')">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><polyline points="5.5,8.5 7.5,10.5 10.5,5.5"/></svg>
-          Resolved
+          <span class="nav-label">Resolved</span>
           <span class="nav-count" id="nav-cnt-res">0</span>
+        </button>
+        <button class="nav-btn" data-filter="sla" onclick="setStatusFilter('sla')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1.5 14.8 13.5H1.2L8 1.5z"/><line x1="8" y1="6.5" x2="8" y2="9.5"/><circle cx="8" cy="11.3" r="0.5" fill="currentColor"/></svg>
+          <span class="nav-label">SLA risk (48h+)</span>
+          <span class="nav-count urgent" id="nav-cnt-sla">0</span>
         </button>
 
         <div class="nav-section-label">Regions</div>
-        <button class="nav-btn" data-filter="region-chennai" onclick="navFilter('region-chennai', this)">
+        <button class="nav-btn" data-filter="region-chennai" onclick="setRegionOnly('chennai')">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1.5c-2.5 0-4.5 2-4.5 4.5 0 3.4 4.5 8.5 4.5 8.5s4.5-5.1 4.5-8.5c0-2.5-2-4.5-4.5-4.5z"/><circle cx="8" cy="6" r="1.6"/></svg>
-          Chennai
+          <span class="nav-label">Chennai</span>
           <span class="nav-count" id="nav-cnt-r-chennai">0</span>
         </button>
-        <button class="nav-btn" data-filter="region-karnakerala" onclick="navFilter('region-karnakerala', this)">
+        <button class="nav-btn" data-filter="region-karnakerala" onclick="setRegionOnly('karnakerala')">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1.5c-2.5 0-4.5 2-4.5 4.5 0 3.4 4.5 8.5 4.5 8.5s4.5-5.1 4.5-8.5c0-2.5-2-4.5-4.5-4.5z"/><circle cx="8" cy="6" r="1.6"/></svg>
-          Karnataka &amp; Kerala
+          <span class="nav-label">Karnataka &amp; Kerala</span>
           <span class="nav-count" id="nav-cnt-r-karnakerala">0</span>
         </button>
-        <button class="nav-btn" data-filter="region-tamilnadu" onclick="navFilter('region-tamilnadu', this)">
+        <button class="nav-btn" data-filter="region-tamilnadu" onclick="setRegionOnly('tamilnadu')">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1.5c-2.5 0-4.5 2-4.5 4.5 0 3.4 4.5 8.5 4.5 8.5s4.5-5.1 4.5-8.5c0-2.5-2-4.5-4.5-4.5z"/><circle cx="8" cy="6" r="1.6"/></svg>
-          Tamil Nadu
+          <span class="nav-label">Tamil Nadu</span>
           <span class="nav-count" id="nav-cnt-r-tamilnadu">0</span>
         </button>
-        <button class="nav-btn" data-filter="region-coimbatore" onclick="navFilter('region-coimbatore', this)">
+        <button class="nav-btn" data-filter="region-coimbatore" onclick="setRegionOnly('coimbatore')">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1.5c-2.5 0-4.5 2-4.5 4.5 0 3.4 4.5 8.5 4.5 8.5s4.5-5.1 4.5-8.5c0-2.5-2-4.5-4.5-4.5z"/><circle cx="8" cy="6" r="1.6"/></svg>
-          Coimbatore
+          <span class="nav-label">Coimbatore</span>
           <span class="nav-count" id="nav-cnt-r-coimbatore">0</span>
         </button>
 
-        <div class="nav-section-label">Reviews</div>
-        <button class="nav-btn" data-filter="review-pending" onclick="navFilter('review-pending', this)">
+        <div class="nav-section-label">1-on-1 Reviews</div>
+        <button class="nav-btn" data-filter="review-pending" onclick="setReviewFilter('pending')">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="2.5"/><path d="M2.5 13.5c0-3.04 2.46-5.5 5.5-5.5s5.5 2.46 5.5 5.5"/><line x1="12" y1="4" x2="14" y2="6"/><line x1="12" y1="6" x2="14" y2="4"/></svg>
-          Review Pending
+          <span class="nav-label">Review pending</span>
           <span class="nav-count urgent" id="nav-cnt-review">0</span>
         </button>
-        <button class="nav-btn" data-filter="review-done" onclick="navFilter('review-done', this)">
+        <button class="nav-btn" data-filter="review-done" onclick="setReviewFilter('done')">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="2.5"/><path d="M2.5 13.5c0-3.04 2.46-5.5 5.5-5.5s5.5 2.46 5.5 5.5"/><polyline points="11,3 12.5,4.5 14.5,2"/></svg>
-          Review Done
+          <span class="nav-label">Review done</span>
           <span class="nav-count" id="nav-cnt-reviewed">0</span>
         </button>
       </nav>
       <div class="sidebar-foot">
         <button class="btn-logout" onclick="logout()">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2.5H3.5a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1H6"/><polyline points="10.5,5 13.5,8 10.5,11"/><line x1="13.5" y1="8" x2="6" y2="8"/></svg>
-          Log out
+          <span class="logout-label">Log out</span>
         </button>
       </div>
     </aside>
@@ -469,8 +452,8 @@
       <!-- Top bar -->
       <div class="topbar">
         <div class="topbar-left">
+          <div class="breadcrumb">Dashboard / <b id="breadcrumb-current">All Tickets</b></div>
           <div class="topbar-title font-display" id="topbar-title">All Tickets</div>
-          <div class="topbar-sub" id="topbar-sub">Showing all submitted tickets</div>
         </div>
         <div class="topbar-right">
           <div class="search-wrap">
@@ -487,64 +470,62 @@
       <!-- Page body -->
       <div class="page-body">
 
-        <!-- Stats -->
+        <!-- KPI stats — click to filter by status, mirrors sidebar -->
         <div class="stats-row">
-          <div class="stat-card">
+          <button class="stat-card s-total" data-filter="all" onclick="setStatusFilter('all')">
             <div class="s-val font-display" id="cnt-all" style="color:var(--ink)">0</div>
-            <div class="s-lbl">Total</div>
-          </div>
-          <div class="stat-card s-open">
+            <div class="s-lbl">Total tickets</div>
+          </button>
+          <button class="stat-card s-open" data-filter="open" onclick="setStatusFilter('open')">
             <div class="s-val font-display" id="cnt-open" style="color:var(--rust)">0</div>
             <div class="s-lbl">Unresolved</div>
-          </div>
-          <div class="stat-card s-progress">
+            <div class="s-sub" id="cnt-open-sub">0 at SLA risk</div>
+          </button>
+          <button class="stat-card s-progress" data-filter="progress" onclick="setStatusFilter('progress')">
             <div class="s-val font-display" id="cnt-prog" style="color:var(--amber)">0</div>
-            <div class="s-lbl">In Progress</div>
-          </div>
-          <div class="stat-card s-resolved">
+            <div class="s-lbl">In progress</div>
+          </button>
+          <button class="stat-card s-resolved" data-filter="resolved" onclick="setStatusFilter('resolved')">
             <div class="s-val font-display" id="cnt-res" style="color:var(--sage)">0</div>
             <div class="s-lbl">Resolved</div>
-          </div>
+          </button>
         </div>
 
-        <!-- Regions -->
-        <div class="regions-row">
-          <div class="region-card r-chennai" data-filter="region-chennai" onclick="setPill('region-chennai', this)">
-            <div class="r-val font-display" id="cnt-r-chennai" style="color:var(--rust)">0</div>
-            <div class="r-name">Chennai</div>
-            <div class="r-coord">Shyam Kumar</div>
-          </div>
-          <div class="region-card r-karnakerala" data-filter="region-karnakerala" onclick="setPill('region-karnakerala', this)">
-            <div class="r-val font-display" id="cnt-r-karnakerala" style="color:var(--amber)">0</div>
-            <div class="r-name">Karnataka &amp; Kerala</div>
-            <div class="r-coord">Praveen Rao</div>
-          </div>
-          <div class="region-card r-tamilnadu" data-filter="region-tamilnadu" onclick="setPill('region-tamilnadu', this)">
-            <div class="r-val font-display" id="cnt-r-tamilnadu" style="color:var(--sage)">0</div>
-            <div class="r-name">Tamil Nadu</div>
-            <div class="r-coord">Guna Karthick</div>
-          </div>
-          <div class="region-card r-coimbatore" data-filter="region-coimbatore" onclick="setPill('region-coimbatore', this)">
-            <div class="r-val font-display" id="cnt-r-coimbatore" style="color:#6A4FA0">0</div>
-            <div class="r-name">Coimbatore</div>
-            <div class="r-coord">Guna Karthick</div>
-          </div>
-        </div>
-
-        <!-- Filter pills + sort -->
+        <!-- Toolbar: dropdown filters refine whatever the sidebar/KPIs selected -->
         <div class="toolbar">
-          <button class="filter-pill active" data-filter="all"      onclick="setPill('all',this)">All</button>
-          <button class="filter-pill"        data-filter="open"     onclick="setPill('open',this)">Unresolved</button>
-          <button class="filter-pill"        data-filter="progress" onclick="setPill('progress',this)">In Progress</button>
-          <button class="filter-pill"        data-filter="resolved" onclick="setPill('resolved',this)">Resolved</button>
+          <div class="dd" id="dd-region">
+            <button class="dd-trigger" onclick="toggleDD('dd-region')">
+              Region <span class="dd-count hidden" id="region-dd-count">0</span>
+              <svg class="chev" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 1l4 4 4-4"/></svg>
+            </button>
+            <div class="dd-panel hidden" id="dd-region-panel"></div>
+          </div>
+
+          <div class="dd" id="dd-review">
+            <button class="dd-trigger" onclick="toggleDD('dd-review')">
+              1-on-1 review <span class="dd-count hidden" id="review-dd-count">1</span>
+              <svg class="chev" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 1l4 4 4-4"/></svg>
+            </button>
+            <div class="dd-panel hidden" id="dd-review-panel">
+              <label class="dd-opt"><input type="radio" name="revopt" onclick="setReviewFilter('all')"> Any</label>
+              <label class="dd-opt"><input type="radio" name="revopt" onclick="setReviewFilter('pending')"> Pending</label>
+              <label class="dd-opt"><input type="radio" name="revopt" onclick="setReviewFilter('done')"> Done</label>
+            </div>
+          </div>
+
+          <div class="dd" id="dd-sort">
+            <button class="dd-trigger" onclick="toggleDD('dd-sort')">
+              Sort: <span id="sort-dd-label">Newest first</span>
+              <svg class="chev" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 1l4 4 4-4"/></svg>
+            </button>
+            <div class="dd-panel hidden" id="dd-sort-panel">
+              <label class="dd-opt"><input type="radio" name="sortopt" checked onclick="setSort('new')"> Newest first</label>
+              <label class="dd-opt"><input type="radio" name="sortopt" onclick="setSort('old')"> Oldest first</label>
+            </div>
+          </div>
+
           <div class="toolbar-sep"></div>
-          <button class="filter-pill"        data-filter="region-chennai" onclick="setPill('region-chennai',this)">Chennai</button>
-          <button class="filter-pill"        data-filter="region-karnakerala" onclick="setPill('region-karnakerala',this)">Karnataka &amp; Kerala</button>
-          <button class="filter-pill"        data-filter="region-tamilnadu" onclick="setPill('region-tamilnadu',this)">Tamil Nadu</button>
-          <button class="filter-pill"        data-filter="region-coimbatore" onclick="setPill('region-coimbatore',this)">Coimbatore</button>
-          <div class="toolbar-sep"></div>
-          <button class="filter-pill"        data-filter="review-pending" onclick="setPill('review-pending',this)">Review Pending</button>
-          <button class="filter-pill"        data-filter="review-done"    onclick="setPill('review-done',this)">Review Done</button>
+          <span id="active-chips"></span>
         </div>
 
         <!-- Table -->
@@ -557,8 +538,8 @@
                 <th>Region</th>
                 <th>Category</th>
                 <th>Status</th>
-                <th>1-on-1 Review</th>
-                <th>Submitted</th>
+                <th>1-on-1 review</th>
+                <th class="sortable" onclick="toggleSortDirection()">Submitted</th>
                 <th></th>
               </tr>
             </thead>
@@ -607,11 +588,10 @@
           </select>
         </div>
         <div class="form-group">
-          <label class="field-label">Admin Note (shown to student)</label>
+          <label class="field-label">Admin note (shown to student)</label>
           <input id="modal-note" type="text" placeholder="e.g. Forwarded to exam cell" oninput="modalEdit('note', this.value)" />
         </div>
 
-        <!-- 1-on-1 Review Toggle -->
         <div class="review-toggle-wrap">
           <div class="review-toggle-info">
             <strong>1-on-1 review with student</strong>
@@ -641,11 +621,9 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const ADMIN_PIN = '1212';
+const SLA_HOURS = 48; // tickets left "open" past this age are flagged as SLA risk
 
-/* ── Region map ──
-   Maps each college (normalized, lowercase, punctuation-stripped) to its region.
-   Matching is "contains" based in both directions so partial / slightly different
-   spellings entered by students still resolve to the right region. */
+/* ── Region map ── */
 const REGION_DEFS = {
   chennai:      { label: 'Chennai',              coordinator: 'Shyam Kumar',   cls: 'region-chennai' },
   karnakerala:  { label: 'Karnataka & Kerala',    coordinator: 'Praveen Rao',   cls: 'region-karnakerala' },
@@ -654,22 +632,17 @@ const REGION_DEFS = {
 };
 
 const COLLEGE_REGION_MAP = [
-  // Chennai — Shyam Kumar
   { college: 'SDNB Vaishnav College for Women', region: 'chennai' },
   { college: 'AMET University', region: 'chennai' },
   { college: "Vinayaga Mission's Research Foundation School of Arts and Science", region: 'chennai' },
   { college: 'Takshashila University', region: 'chennai' },
   { college: 'TJS College of Arts and Science', region: 'chennai' },
-
-  // Karnataka and Kerala — Praveen Rao
   { college: 'Alliance University', region: 'karnakerala' },
   { college: 'Kristu Jayanti (DEEMED TO BE UNIVERSITY)', region: 'karnakerala' },
   { college: 'St. Agnes College (Autonomous)', region: 'karnakerala' },
   { college: 'Yenepoya (Deemed to be University)', region: 'karnakerala' },
   { college: 'Asian School of Business', region: 'karnakerala' },
   { college: 'S-VYASA University', region: 'karnakerala' },
-
-  // Tamil Nadu — Guna Karthick
   { college: 'Kamaraj College', region: 'tamilnadu' },
   { college: 'Noorul Islam Centre for Higher Education (NICHE)', region: 'tamilnadu' },
   { college: 'Sri Amaraavathi College of Arts & Science', region: 'tamilnadu' },
@@ -679,8 +652,6 @@ const COLLEGE_REGION_MAP = [
   { college: 'JOY University', region: 'tamilnadu' },
   { college: 'TERFs College of Arts and Science', region: 'tamilnadu' },
   { college: 'Sasurie College of Arts and Science', region: 'tamilnadu' },
-
-  // Coimbatore — coordinator not yet assigned
   { college: 'Rathinam College Of Arts And Science', region: 'coimbatore' },
   { college: 'Sree Saraswathi Thyagaraja College', region: 'coimbatore' },
   { college: 'VLB Janakiammal College of Arts and Science', region: 'coimbatore' },
@@ -691,35 +662,17 @@ const COLLEGE_REGION_MAP = [
 ];
 
 function normalizeCollege(s){
-  return String(s||'')
-    .toLowerCase()
-    .replace(/['’]/g, '')
-    .replace(/[().,&-]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+  return String(s||'').toLowerCase().replace(/['’]/g, '').replace(/[().,&-]/g, ' ').replace(/\s+/g, ' ').trim();
 }
-// Build a lookup once, keyed by normalized college name.
-const REGION_LOOKUP = COLLEGE_REGION_MAP.map(e => ({
-  norm: normalizeCollege(e.college),
-  region: e.region,
-  original: e.college
-}));
+const REGION_LOOKUP = COLLEGE_REGION_MAP.map(e => ({ norm: normalizeCollege(e.college), region: e.region, original: e.college }));
 
-/* Resolve a student's typed college name to a region key ('chennai', 'karnakerala',
-   'tamilnadu', 'coimbatore') or null if it can't be confidently matched. */
 function resolveRegion(collegeName){
   const norm = normalizeCollege(collegeName);
   if(!norm) return null;
-
-  // 1. Exact normalized match
   let hit = REGION_LOOKUP.find(e => e.norm === norm);
   if(hit) return hit.region;
-
-  // 2. One string contains the other (handles abbreviations / extra words)
   hit = REGION_LOOKUP.find(e => norm.includes(e.norm) || e.norm.includes(norm));
   if(hit) return hit.region;
-
-  // 3. Significant word overlap (handles minor typos / reordering)
   const normWords = new Set(norm.split(' ').filter(w => w.length > 2));
   let best = null, bestScore = 0;
   REGION_LOOKUP.forEach(e => {
@@ -729,7 +682,6 @@ function resolveRegion(collegeName){
     if(score > bestScore){ bestScore = score; best = e; }
   });
   if(best && bestScore >= 0.6) return best.region;
-
   return null;
 }
 function getRegionInfo(collegeName){
@@ -738,14 +690,22 @@ function getRegionInfo(collegeName){
   const def = REGION_DEFS[key];
   return { key, label: def.label, coordinator: def.coordinator, cls: def.cls };
 }
+function isSlaRisk(t){
+  if(t.status !== 'open') return false;
+  const ageHrs = (Date.now() - new Date(t.created_at).getTime()) / 3600000;
+  return ageHrs >= SLA_HOURS;
+}
 
-let tickets      = [];
-let activeFilter = 'all';
-let refreshTimer = null;
-let modalId      = null;
-let modalDraft   = {};
+/* ── State ── */
+let tickets       = [];
+let statusFilter  = 'all';           // all | open | progress | resolved | sla
+let regionFilter  = new Set();       // empty = all regions
+let reviewFilter  = 'all';           // all | pending | done
+let sortDir       = 'new';           // new | old
+let refreshTimer  = null;
+let modalId       = null;
+let modalDraft    = {};
 
-/* ── helpers ── */
 const $  = id => document.getElementById(id);
 const show = id => $(id).classList.remove('hidden');
 const hide = id => $(id).classList.add('hidden');
@@ -770,6 +730,7 @@ function submitPin(){
   if(pin !== ADMIN_PIN){ err.textContent='Incorrect PIN.'; show('pin-error'); return; }
   hide('auth-screen');
   show('admin-screen');
+  buildRegionDropdown();
   loadTickets();
   refreshTimer = setInterval(loadTickets, 15000);
 }
@@ -780,93 +741,179 @@ function logout(){
   if(refreshTimer){ clearInterval(refreshTimer); refreshTimer = null; }
 }
 
-/* ── Filtering ── */
-function navFilter(f, btn){
-  activeFilter = f;
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b===btn));
-  document.querySelectorAll('.filter-pill').forEach(b => b.classList.toggle('active', b.dataset.filter===f));
-  document.querySelectorAll('.region-card').forEach(b => b.classList.toggle('active', b.dataset.filter===f));
-  updateTopbar();
+/* ── Sidebar collapse ── */
+function toggleSidebar(){ $('sidebar').classList.toggle('collapsed'); }
+
+/* ── Dropdowns ── */
+function toggleDD(id){
+  const el = $(id);
+  const willOpen = !el.classList.contains('open');
+  document.querySelectorAll('.dd').forEach(d => { d.classList.remove('open'); d.querySelector('.dd-panel').classList.add('hidden'); });
+  if(willOpen){ el.classList.add('open'); el.querySelector('.dd-panel').classList.remove('hidden'); }
+}
+document.addEventListener('click', e => {
+  if(!e.target.closest('.dd')) document.querySelectorAll('.dd').forEach(d => { d.classList.remove('open'); d.querySelector('.dd-panel').classList.add('hidden'); });
+});
+function buildRegionDropdown(){
+  const panel = $('dd-region-panel');
+  const keys = Object.keys(REGION_DEFS);
+  panel.innerHTML = keys.map(k => `
+    <label class="dd-opt">
+      <input type="checkbox" value="${k}" onchange="toggleRegionOpt('${k}', this.checked)">
+      <span class="swatch" style="background:${getSwatchColor(k)}"></span> ${escHTML(REGION_DEFS[k].label)}
+    </label>`).join('') + `
+    <div class="dd-sep"></div>
+    <label class="dd-opt"><input type="checkbox" value="unmapped" onchange="toggleRegionOpt('unmapped', this.checked)"> <span class="swatch" style="background:#93A2B0"></span> Unmapped</label>
+    <div class="dd-sep"></div>
+    <button class="dd-clear" onclick="clearRegionFilter()">Clear region filter</button>`;
+}
+function getSwatchColor(k){ return { chennai:'#BF4E2C', karnakerala:'#B8780F', tamilnadu:'#4F7858', coimbatore:'#6A4FA0' }[k] || '#93A2B0'; }
+function toggleRegionOpt(key, checked){
+  if(checked) regionFilter.add(key); else regionFilter.delete(key);
+  syncRegionDDCount();
   renderTickets();
 }
-function setPill(f, btn){
-  activeFilter = f;
-  document.querySelectorAll('.filter-pill').forEach(b => b.classList.toggle('active', b.dataset.filter===f));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.filter===f));
-  document.querySelectorAll('.region-card').forEach(b => b.classList.toggle('active', b.dataset.filter===f));
-  updateTopbar();
+function clearRegionFilter(){
+  regionFilter.clear();
+  $('dd-region-panel').querySelectorAll('input[type=checkbox]').forEach(c => c.checked = false);
+  syncRegionDDCount();
   renderTickets();
 }
-function updateTopbar(){
+function syncRegionDDCount(){
+  const badge = $('region-dd-count');
+  const trigger = $('dd-region').querySelector('.dd-trigger');
+  if(regionFilter.size){ badge.textContent = regionFilter.size; show('region-dd-count'); trigger.classList.add('filled'); }
+  else { hide('region-dd-count'); trigger.classList.remove('filled'); }
+}
+function setSort(dir){
+  sortDir = dir;
+  $('sort-dd-label').textContent = dir==='new' ? 'Newest first' : 'Oldest first';
+  toggleDD('dd-sort');
+  renderTickets();
+}
+function toggleSortDirection(){ setSort(sortDir==='new' ? 'old' : 'new'); }
+
+/* ── Filtering: sidebar + KPI cards drive statusFilter; dropdowns refine ── */
+function setStatusFilter(f){
+  statusFilter = f;
+  syncNavActive();
+  updateHeader();
+  renderTickets();
+}
+function setRegionOnly(key){
+  // clicking a region in the sidebar jumps straight to "just this region", all statuses
+  regionFilter = new Set([key]);
+  buildRegionDropdown();
+  $('dd-region-panel').querySelector(`input[value="${key}"]`).checked = true;
+  syncRegionDDCount();
+  statusFilter = 'all';
+  syncNavActive('region-'+key);
+  updateHeader('region-'+key);
+  renderTickets();
+}
+function setReviewFilter(v){
+  reviewFilter = v;
+  const radios = document.querySelectorAll('input[name=revopt]');
+  radios.forEach(r => r.checked = (r.parentElement.textContent.trim().toLowerCase().startsWith(v==='all'?'any':v)));
+  $('review-dd-count').textContent = v==='all' ? '' : (v==='pending'?'Pending':'Done');
+  if(v==='all') hide('review-dd-count'); else show('review-dd-count');
+  $('dd-review').querySelector('.dd-trigger').classList.toggle('filled', v!=='all');
+  if(document.activeElement && document.activeElement.tagName!=='INPUT'){ /* no-op */ }
+  syncNavActive(v==='all' ? null : 'review-'+v);
+  renderTickets();
+}
+function syncNavActive(explicitKey){
+  const key = explicitKey || statusFilter;
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === key));
+  document.querySelectorAll('.stat-card').forEach(b => b.classList.toggle('active', b.dataset.filter === statusFilter));
+}
+function updateHeader(explicitKey){
+  const key = explicitKey || statusFilter;
   const map = {
-    'all':           ['All Tickets',        'Showing all submitted tickets'],
-    'open':          ['Open Tickets',        'Tickets awaiting first action'],
-    'progress':      ['In Progress',         'Tickets currently being handled'],
-    'resolved':      ['Resolved',            'Closed and completed tickets'],
-    'region-chennai':      ['Chennai Region',           'Coordinator: Shyam Kumar'],
-    'region-karnakerala':  ['Karnataka & Kerala Region','Coordinator: Praveen Rao'],
-    'region-tamilnadu':    ['Tamil Nadu Region',        'Coordinator: Guna Karthick'],
-    'region-coimbatore':   ['Coimbatore Region',        'Coordinator: TBD'],
-    'review-pending':['Review Pending',      'Students awaiting a 1-on-1 review session'],
-    'review-done':   ['Review Completed',    'Students who have had a 1-on-1 session'],
+    'all':                 ['All Tickets',            'Showing all submitted tickets'],
+    'open':                ['Unresolved',              'Tickets awaiting first action'],
+    'progress':            ['In Progress',              'Tickets currently being handled'],
+    'resolved':            ['Resolved',                 'Closed and completed tickets'],
+    'sla':                 ['SLA Risk',                 `Open ${SLA_HOURS}+ hours without resolution`],
+    'region-chennai':      ['Chennai',                  'Coordinator: Shyam Kumar'],
+    'region-karnakerala':  ['Karnataka & Kerala',       'Coordinator: Praveen Rao'],
+    'region-tamilnadu':    ['Tamil Nadu',               'Coordinator: Guna Karthick'],
+    'region-coimbatore':   ['Coimbatore',               'Coordinator: TBD'],
+    'review-pending':      ['Review Pending',           'Students awaiting a 1-on-1 review session'],
+    'review-done':         ['Review Completed',         'Students who have had a 1-on-1 session'],
   };
-  const [t,s] = map[activeFilter] || ['Tickets',''];
+  const [t,s] = map[key] || ['Tickets',''];
   $('topbar-title').textContent = t;
-  $('topbar-sub').textContent   = s;
+  $('breadcrumb-current').textContent = t;
 }
 
 function getFiltered(){
   const q = ($('search-input')?.value||'').toLowerCase().trim();
-  return tickets
-    .filter(t => {
-      if(activeFilter==='all') return true;
-      if(activeFilter==='review-pending') return !t.reviewed;
-      if(activeFilter==='review-done')    return !!t.reviewed;
-      if(activeFilter.startsWith('region-')){
-        const regionKey = activeFilter.replace('region-','');
-        return resolveRegion(t.college) === regionKey;
-      }
-      return t.status === activeFilter;
-    })
-    .filter(t => {
-      if(!q) return true;
-      return (t.roll_number||'').toLowerCase().includes(q)
-          || (t.student_name||'').toLowerCase().includes(q)
-          || (t.subject||'').toLowerCase().includes(q)
-          || (t.category||'').toLowerCase().includes(q)
-          || (t.college||'').toLowerCase().includes(q);
-    })
-    .sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+  let list = tickets.filter(t => {
+    if(statusFilter==='sla') return isSlaRisk(t);
+    if(statusFilter==='all') return true;
+    return t.status === statusFilter;
+  });
+  if(regionFilter.size){
+    list = list.filter(t => {
+      const key = resolveRegion(t.college);
+      return regionFilter.has(key || 'unmapped');
+    });
+  }
+  if(reviewFilter==='pending') list = list.filter(t => !t.reviewed);
+  if(reviewFilter==='done')    list = list.filter(t => !!t.reviewed);
+  if(q){
+    list = list.filter(t =>
+      (t.roll_number||'').toLowerCase().includes(q) ||
+      (t.student_name||'').toLowerCase().includes(q) ||
+      (t.subject||'').toLowerCase().includes(q) ||
+      (t.category||'').toLowerCase().includes(q) ||
+      (t.college||'').toLowerCase().includes(q));
+  }
+  list.sort((a,b) => sortDir==='new'
+    ? new Date(b.created_at) - new Date(a.created_at)
+    : new Date(a.created_at) - new Date(b.created_at));
+  return list;
 }
 
 /* ── Stats ── */
 function renderStats(){
+  const slaCount = tickets.filter(isSlaRisk).length;
   $('cnt-all').textContent  = tickets.length;
   $('cnt-open').textContent = tickets.filter(t=>t.status==='open').length;
   $('cnt-prog').textContent = tickets.filter(t=>t.status==='progress').length;
   $('cnt-res').textContent  = tickets.filter(t=>t.status==='resolved').length;
-  $('nav-cnt-all').textContent    = tickets.length;
-  $('nav-cnt-open').textContent   = tickets.filter(t=>t.status==='open').length;
-  $('nav-cnt-prog').textContent   = tickets.filter(t=>t.status==='progress').length;
-  $('nav-cnt-res').textContent    = tickets.filter(t=>t.status==='resolved').length;
+  $('cnt-open-sub').textContent = slaCount + ' at SLA risk';
+
+  $('nav-cnt-all').textContent  = tickets.length;
+  $('nav-cnt-open').textContent = tickets.filter(t=>t.status==='open').length;
+  $('nav-cnt-prog').textContent = tickets.filter(t=>t.status==='progress').length;
+  $('nav-cnt-res').textContent  = tickets.filter(t=>t.status==='resolved').length;
+  $('nav-cnt-sla').textContent  = slaCount;
+
   const pending = tickets.filter(t=>!t.reviewed).length;
   const done    = tickets.filter(t=>!!t.reviewed).length;
   $('nav-cnt-review').textContent   = pending;
   $('nav-cnt-reviewed').textContent = done;
 
   const regionCounts = { chennai:0, karnakerala:0, tamilnadu:0, coimbatore:0 };
-  tickets.forEach(t => {
-    const key = resolveRegion(t.college);
-    if(key && regionCounts.hasOwnProperty(key)) regionCounts[key]++;
-  });
-  $('cnt-r-chennai').textContent     = regionCounts.chennai;
-  $('cnt-r-karnakerala').textContent = regionCounts.karnakerala;
-  $('cnt-r-tamilnadu').textContent   = regionCounts.tamilnadu;
-  $('cnt-r-coimbatore').textContent  = regionCounts.coimbatore;
+  tickets.forEach(t => { const key = resolveRegion(t.college); if(key && regionCounts.hasOwnProperty(key)) regionCounts[key]++; });
   $('nav-cnt-r-chennai').textContent     = regionCounts.chennai;
   $('nav-cnt-r-karnakerala').textContent = regionCounts.karnakerala;
   $('nav-cnt-r-tamilnadu').textContent   = regionCounts.tamilnadu;
   $('nav-cnt-r-coimbatore').textContent  = regionCounts.coimbatore;
+}
+
+/* ── Active filter chips ── */
+function renderChips(){
+  const chips = [];
+  if(regionFilter.size){
+    chips.push(`<span class="active-chip">Region: ${regionFilter.size} selected<button onclick="clearRegionFilter()" aria-label="Clear region filter">✕</button></span>`);
+  }
+  if(reviewFilter!=='all'){
+    chips.push(`<span class="active-chip">Review: ${reviewFilter==='pending'?'Pending':'Done'}<button onclick="setReviewFilter('all')" aria-label="Clear review filter">✕</button></span>`);
+  }
+  $('active-chips').innerHTML = chips.join(' ');
 }
 
 /* ── Load ── */
@@ -887,6 +934,7 @@ async function loadTickets(){
 /* ── Render Table ── */
 function renderTickets(){
   renderStats();
+  renderChips();
   const filtered = getFiltered();
   const tbody    = $('ticket-tbody');
   const empty    = $('empty-state');
@@ -906,8 +954,9 @@ function renderTickets(){
       ? `<span class="review-badge review-yes">✓ Done</span>`
       : `<span class="review-badge review-no">Pending</span>`;
     const rInfo = getRegionInfo(t.college);
-    const regionBadge = `<span class="region-badge ${rInfo.cls}" title="${escHTML(rInfo.coordinator)}">${escHTML(rInfo.label)}</span>`;
-    return `<tr class="status-${t.status}">
+    const regionBadge = `<span class="region-badge ${rInfo.cls}" title="${escHTML(rInfo.coordinator)}"><span class="dot"></span>${escHTML(rInfo.label)}</span>`;
+    const slaFlag = isSlaRisk(t) ? `<div class="sla-flag"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5 14.8 13.5H1.2L8 1.5zM8 6v3.2M8 11.3h.01"/></svg>SLA risk</div>` : '';
+    return `<tr>
       <td><span class="roll-mono">${escHTML(t.roll_number)}</span></td>
       <td>
         <div class="subj-text">${escHTML(t.subject)}</div>
@@ -915,7 +964,7 @@ function renderTickets(){
       </td>
       <td>${regionBadge}</td>
       <td><span class="cat-pill">${escHTML(t.category)}</span></td>
-      <td><span class="stamp ${stampCls}">${stampLbl}</span></td>
+      <td><span class="stamp ${stampCls}">${stampLbl}</span>${slaFlag}</td>
       <td>${reviewBadge}</td>
       <td><span class="time-text">${fmtRel(t.created_at)}</span></td>
       <td><button class="action-btn" onclick="openModal('${t.id}')">Edit →</button></td>
@@ -938,7 +987,7 @@ function openModal(id){
   $('modal-review').checked    = !!t.reviewed;
 
   const rInfo = getRegionInfo(t.college);
-  $('modal-region-badge').innerHTML = `<span class="region-badge ${rInfo.cls}">${escHTML(rInfo.label)}</span>`;
+  $('modal-region-badge').innerHTML = `<span class="region-badge ${rInfo.cls}"><span class="dot"></span>${escHTML(rInfo.label)}</span>`;
   $('modal-region-coord').textContent = rInfo.key ? `Coordinator: ${rInfo.coordinator}` : 'College not yet mapped to a region';
 
   hide('modal-saved');
@@ -951,9 +1000,7 @@ function closeModal(){
   modalId = null;
   modalDraft = {};
 }
-function modalEdit(field, val){
-  modalDraft[field] = val;
-}
+function modalEdit(field, val){ modalDraft[field] = val; }
 async function saveModal(){
   if(!modalId) return;
   const saveBtn = document.querySelector('#ticket-modal .btn-dark');
@@ -993,9 +1040,7 @@ async function saveModal(){
 }
 
 /* ── keyboard shortcuts ── */
-document.addEventListener('keydown', e => {
-  if(e.key === 'Escape') closeModal();
-});
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
 </script>
 </body>
 </html>
