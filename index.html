@@ -1,3 +1,4 @@
+cat > /home/claude/dashboard.html << 'ENDOFFILE'
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1122,14 +1123,12 @@ function renderTickets(){
     const rInfo = getRegionInfo(t.college);
     const regionRow = `<span class="dot-row"><span class="dot ${rInfo.dot}"></span>${escHTML(rInfo.label)}</span>`;
     const slaFlag = isSlaRisk(t) ? `<div class="sla-tag">⚑ SLA risk</div>` : '';
-    const avColor = avatarColor(t.student_name);
     const prio = getPriority(t);
     const prioBadge = `<span class="prio-pill prio-${prio}">${prio==='high'?'⚑ ':''}${PRIORITY_LABEL[prio]}</span>`;
     return `<tr class="ticket-row" onclick="openModal('${t.id}')">
       <td><span class="roll-mono">${escHTML(t.roll_number)}</span></td>
       <td>
         <div class="subj-row">
-          <div class="avatar" style="background:${avColor}">${initials(t.student_name)}</div>
           <div>
             <div class="subj-text">${escHTML(t.subject)}</div>
             <div class="meta-text">${escHTML(t.student_name)}${t.college?' · '+escHTML(t.college):''}</div>
