@@ -86,8 +86,6 @@
   .auth-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; background: var(--bg); }
   .auth-box { width: 100%; max-width: 380px; }
   .auth-header { text-align: center; margin-bottom: 26px; }
-  .auth-logo { width: 46px; height: 46px; border-radius: 13px; background: var(--blue); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; box-shadow: var(--shadow-md); }
-  .auth-logo svg { width: 24px; height: 24px; }
   .auth-header h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.01em; }
   .auth-header p  { font-size: 13px; color: var(--text-light); margin-top: 7px; }
   .auth-panel { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 26px; box-shadow: var(--shadow-md); }
@@ -131,8 +129,6 @@
 
   .sidebar-top { padding: 18px 18px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid var(--border); }
   .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
-  .brand-mark { width: 34px; height: 34px; border-radius: 10px; background: var(--blue); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .brand-mark svg { width: 18px; height: 18px; }
   .brand-text { min-width: 0; }
   .brand-text .b1 { font-size: 14.5px; font-weight: 800; letter-spacing: -0.01em; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .brand-text .b2 { font-size: 10.5px; color: var(--text-faint); font-weight: 600; white-space: nowrap; }
@@ -342,9 +338,6 @@
 <div id="auth-screen" class="auth-wrap">
   <div class="auth-box">
     <div class="auth-header">
-      <div class="auth-logo">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M12 3 3 8v3c0 5 3.8 9.4 9 10 5.2-.6 9-5 9-10V8l-9-5z"/><path d="m9 12 2 2 4-4"/></svg>
-      </div>
       <h1>FACE Prep Help Desk</h1>
       <p>Enter your admin PIN to manage campus tickets.</p>
     </div>
@@ -367,9 +360,6 @@
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-top">
         <div class="brand">
-          <div class="brand-mark">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M12 3 3 8v3c0 5 3.8 9.4 9 10 5.2-.6 9-5 9-10V8l-9-5z"/><path d="m9 12 2 2 4-4"/></svg>
-          </div>
           <div class="brand-text">
             <div class="b1">FACE Prep</div>
             <div class="b2">Help Desk</div>
@@ -408,7 +398,7 @@
               Resolved <span class="nav-count" id="nav-cnt-res" style="margin-left:auto">0</span>
             </button>
             <button class="sub-row" data-filter="sla" onclick="setStatusFilter('sla')">
-              SLA risk (48h+) <span class="nav-count urgent" id="nav-cnt-sla" style="margin-left:auto">0</span>
+              SLA risk (7d+) <span class="nav-count urgent" id="nav-cnt-sla" style="margin-left:auto">0</span>
             </button>
           </div>
         </div>
@@ -693,7 +683,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const ADMIN_PIN = '1212';
-const SLA_HOURS = 48;
+const SLA_HOURS = 24 * 7; // 7 days
 
 /* ── Category → default priority map ──
    Used whenever a ticket has no explicit `priority` value saved yet.
@@ -794,7 +784,7 @@ function getRegionInfo(collegeName){
   return { key, label: def.label, kam: def.kam, dot: def.dot };
 }
 function isSlaRisk(t){
-  if(t.status !== 'open') return false;
+  if(t.status === 'resolved') return false;
   const ageHrs = (Date.now() - new Date(t.created_at).getTime()) / 3600000;
   return ageHrs >= SLA_HOURS;
 }
