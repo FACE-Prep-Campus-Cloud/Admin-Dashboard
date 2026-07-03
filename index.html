@@ -998,10 +998,10 @@ function setPriorityOnly(key){
   buildPriorityDropdown();
   $('dd-priority-panel').querySelector(`input[value="${key}"]`).checked = true;
   syncPriorityDDCount();
-  // High priority is treated as an "active work" view: once a ticket is
-  // resolved it should disappear from here and only show under Resolved,
-  // matching the High priority KPI count (which already excludes resolved).
-  statusFilter = (key === 'high') ? 'active' : 'all';
+  // Every priority view is treated as an "active work" view: once a ticket
+  // is resolved it should disappear from here and only show under Resolved,
+  // matching the priority KPI counts (which already exclude resolved).
+  statusFilter = 'active';
   syncStatusDD();
   syncNavActive('priority-'+key);
   updateHeader('priority-'+key);
@@ -1133,8 +1133,8 @@ function renderStats(){
   $('nav-cnt-followup7').textContent = followUp7Count;
 
   $('nav-cnt-p-high').textContent   = tickets.filter(t=>getPriority(t)==='high' && t.status!=='resolved').length;
-  $('nav-cnt-p-medium').textContent = tickets.filter(t=>getPriority(t)==='medium').length;
-  $('nav-cnt-p-low').textContent    = tickets.filter(t=>getPriority(t)==='low').length;
+  $('nav-cnt-p-medium').textContent = tickets.filter(t=>getPriority(t)==='medium' && t.status!=='resolved').length;
+  $('nav-cnt-p-low').textContent    = tickets.filter(t=>getPriority(t)==='low' && t.status!=='resolved').length;
 
   const pending = tickets.filter(t=>!t.reviewed).length;
   const done    = tickets.filter(t=>!!t.reviewed).length;
