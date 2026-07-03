@@ -83,14 +83,96 @@
   }
 
   /* ── AUTH ── */
-  .auth-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; background: var(--bg); }
-  .auth-box { width: 100%; max-width: 380px; }
+  .auth-wrap {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;
+    position: relative; overflow: hidden;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(52,87,232,0.10), transparent 45%),
+      radial-gradient(circle at 85% 80%, rgba(124,58,237,0.10), transparent 45%),
+      linear-gradient(160deg, #F6F7FA 0%, #EEF1F6 55%, #EAEDF4 100%);
+  }
+  .auth-orb {
+    position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.55; pointer-events: none;
+    animation: orbFloat 16s ease-in-out infinite;
+  }
+  .auth-orb.o1 { width: 340px; height: 340px; top: -90px; left: -90px; background: radial-gradient(circle, rgba(52,87,232,0.35), transparent 70%); animation-duration: 18s; }
+  .auth-orb.o2 { width: 300px; height: 300px; bottom: -100px; right: -80px; background: radial-gradient(circle, rgba(124,58,237,0.30), transparent 70%); animation-duration: 22s; animation-delay: -4s; }
+  .auth-orb.o3 { width: 220px; height: 220px; top: 55%; left: 68%; background: radial-gradient(circle, rgba(22,163,74,0.22), transparent 70%); animation-duration: 20s; animation-delay: -9s; }
+  @keyframes orbFloat {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    33%      { transform: translate(30px,-24px) scale(1.08); }
+    66%      { transform: translate(-22px,18px) scale(0.95); }
+  }
+
+  .auth-grid-overlay {
+    position: absolute; inset: 0; pointer-events: none; opacity: 0.5;
+    background-image:
+      linear-gradient(to right, rgba(20,21,26,0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(20,21,26,0.035) 1px, transparent 1px);
+    background-size: 42px 42px;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 30%, transparent 75%);
+  }
+
+  .auth-box { width: 100%; max-width: 380px; position: relative; z-index: 1; animation: authRise .65s cubic-bezier(.16,1,.3,1) both; }
+  @keyframes authRise {
+    from { opacity: 0; transform: translateY(18px) scale(0.985); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
   .auth-header { text-align: center; margin-bottom: 26px; }
-  .auth-header h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.01em; }
+  .auth-badge {
+    display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px;
+    background: var(--blue-soft); color: var(--blue); font-size: 11.5px; font-weight: 700;
+    letter-spacing: 0.03em; margin-bottom: 14px; border: 1px solid rgba(52,87,232,0.15);
+  }
+  .auth-badge .pulse-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); position: relative; flex-shrink: 0; }
+  .auth-badge .pulse-dot::after {
+    content: ''; position: absolute; inset: -4px; border-radius: 50%; background: rgba(22,163,74,0.35);
+    animation: pulseRing 1.8s ease-out infinite;
+  }
+  @keyframes pulseRing {
+    0%   { transform: scale(0.6); opacity: 0.9; }
+    100% { transform: scale(2.4); opacity: 0; }
+  }
+
+  .auth-header h1 {
+    font-size: 24px; font-weight: 800; letter-spacing: -0.01em;
+    background: linear-gradient(100deg, #14151A 20%, #3457E8 55%, #7C3AED 85%);
+    background-size: 200% auto;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: shine 5s linear infinite;
+  }
+  @keyframes shine {
+    to { background-position: -200% center; }
+  }
   .auth-header p  { font-size: 13px; color: var(--text-light); margin-top: 7px; }
-  .auth-panel { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 26px; box-shadow: var(--shadow-md); }
+
+  .auth-panel {
+    background: rgba(255,255,255,0.82); backdrop-filter: blur(14px) saturate(160%);
+    border: 1px solid var(--border); border-radius: 18px; padding: 28px;
+    box-shadow: var(--shadow-lg); position: relative; overflow: hidden;
+  }
+  .auth-panel::before {
+    content: ''; position: absolute; top: 0; left: -30%; width: 160%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--blue), var(--violet), transparent);
+    animation: sweep 3.2s ease-in-out infinite;
+  }
+  @keyframes sweep {
+    0%   { transform: translateX(-30%); opacity: 0; }
+    15%  { opacity: 1; }
+    50%  { transform: translateX(20%); opacity: 1; }
+    85%  { opacity: 0; }
+    100% { transform: translateX(30%); opacity: 0; }
+  }
+
   .field-label { display: block; font-size: 12px; font-weight: 600; color: var(--text-light); margin-bottom: 7px; }
-  .error-msg { font-size: 13px; color: var(--red); margin: 8px 0; }
+  .error-msg { font-size: 13px; color: var(--red); margin: 8px 0; animation: shake .35s ease; }
+  @keyframes shake {
+    10%, 90% { transform: translateX(-1px); }
+    20%, 80% { transform: translateX(2px); }
+    30%, 50%, 70% { transform: translateX(-4px); }
+    40%, 60% { transform: translateX(4px); }
+  }
   input, select, textarea {
     background: var(--card); border: 1px solid var(--border); border-radius: 9px;
     color: var(--text); font-size: 14px; padding: 10px 13px; outline: none; transition: border-color .15s, box-shadow .15s; width: 100%;
@@ -98,6 +180,13 @@
   input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-soft); }
   input::placeholder { color: var(--text-faint); }
   input:disabled, select:disabled { background: var(--slate-soft); color: var(--text-faint); cursor: not-allowed; }
+
+  .pin-input-wrap { position: relative; }
+  .pin-input-wrap .lock-icon {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-faint);
+    pointer-events: none; display: flex; transition: color .15s;
+  }
+  .pin-input-wrap input:focus ~ .lock-icon { color: var(--blue); }
 
   /* ── BUTTONS ── */
   .btn {
@@ -112,6 +201,27 @@
   .btn-ghost { background: var(--card); color: var(--text-light); border: 1px solid var(--border); }
   .btn-ghost:hover { color: var(--text); border-color: #C7CCD3; }
   .btn-full { width: 100%; }
+
+  .btn-primary.btn-auth {
+    position: relative; overflow: hidden; padding: 11px 16px; font-size: 13.5px;
+    background: linear-gradient(100deg, var(--blue), #4C6BF0);
+    box-shadow: 0 6px 16px -6px rgba(52,87,232,0.55);
+  }
+  .btn-primary.btn-auth:hover { box-shadow: 0 8px 20px -6px rgba(52,87,232,0.65); }
+  .btn-primary.btn-auth::after {
+    content: ''; position: absolute; top: 0; left: -60%; width: 40%; height: 100%;
+    background: linear-gradient(115deg, transparent, rgba(255,255,255,0.35), transparent);
+    transform: skewX(-20deg); animation: shimmerBtn 3s ease-in-out infinite;
+  }
+  @keyframes shimmerBtn {
+    0%   { left: -60%; }
+    50%  { left: 130%; }
+    100% { left: 130%; }
+  }
+  .btn-auth .arrow { transition: transform .18s; }
+  .btn-auth:hover .arrow { transform: translateX(3px); }
+
+  .auth-footnote { text-align: center; font-size: 11.5px; color: var(--text-faint); margin-top: 18px; }
 
   /* ── SHELL ── */
   .shell { display: flex; min-height: 100vh; }
@@ -399,25 +509,43 @@
     .topbar, .page-body { padding-left: 18px; padding-right: 18px; }
     .ticket-grid { grid-template-columns: 1fr; }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .auth-orb, .auth-header h1, .auth-panel::before, .btn-primary.btn-auth::after, .auth-badge .pulse-dot::after, .auth-box {
+      animation: none !important;
+    }
+  }
 </style>
 </head>
 <body>
 
 <!-- ── AUTH ── -->
 <div id="auth-screen" class="auth-wrap">
+  <div class="auth-orb o1"></div>
+  <div class="auth-orb o2"></div>
+  <div class="auth-orb o3"></div>
+  <div class="auth-grid-overlay"></div>
+
   <div class="auth-box">
     <div class="auth-header">
+      <div class="auth-badge"><span class="pulse-dot"></span>Live campus support</div>
       <h1>FACE Prep Help Desk</h1>
       <p>Enter your admin PIN to manage campus tickets.</p>
     </div>
     <div class="auth-panel">
       <div style="margin-bottom:16px">
         <label class="field-label">Admin PIN</label>
-        <input id="pin-input" type="password" placeholder="Enter PIN" onkeydown="if(event.key==='Enter')submitPin()" />
+        <div class="pin-input-wrap">
+          <input id="pin-input" type="password" placeholder="Enter PIN" onkeydown="if(event.key==='Enter')submitPin()" />
+          <span class="lock-icon">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="7" width="10" height="7" rx="1.6"/><path d="M5.2 7V5a2.8 2.8 0 0 1 5.6 0v2"/></svg>
+          </span>
+        </div>
       </div>
       <div id="pin-error" class="error-msg hidden"></div>
-      <button class="btn btn-primary btn-full" onclick="submitPin()">Enter dashboard →</button>
+      <button class="btn btn-primary btn-full btn-auth" onclick="submitPin()">Enter dashboard <span class="arrow">→</span></button>
     </div>
+    <div class="auth-footnote">Authorized personnel only · FACE Prep</div>
   </div>
 </div>
 
