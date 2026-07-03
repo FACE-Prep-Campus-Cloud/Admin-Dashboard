@@ -993,7 +993,10 @@ function setPriorityOnly(key){
   buildPriorityDropdown();
   $('dd-priority-panel').querySelector(`input[value="${key}"]`).checked = true;
   syncPriorityDDCount();
-  statusFilter = 'all';
+  // High priority is treated as an "active work" view: once a ticket is
+  // resolved it should disappear from here and only show under Resolved,
+  // matching the High priority KPI count (which already excludes resolved).
+  statusFilter = (key === 'high') ? 'active' : 'all';
   syncStatusDD();
   syncNavActive('priority-'+key);
   updateHeader('priority-'+key);
@@ -1073,6 +1076,7 @@ function getFiltered(){
   const q = ($('search-input')?.value||'').toLowerCase().trim();
   let list = tickets.filter(t => {
     if(statusFilter==='sla') return isSlaRisk(t);
+    if(statusFilter==='active') return t.status !== 'resolved';
     if(statusFilter==='all') return true;
     return t.status === statusFilter;
   });
