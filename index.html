@@ -58,8 +58,8 @@
   }
 
   .review-badge {
-    display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 999px;
-    font-size: 12px; font-weight: 600; white-space: nowrap;
+    display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 4px 8px; border-radius: 10px;
+    font-size: 10.5px; font-weight: 600; white-space: normal; text-align: center; line-height: 1.3;
   }
   .review-yes { background: var(--green-soft); color: var(--green); }
   .review-no  { background: var(--slate-soft); color: var(--text-light); }
@@ -1172,7 +1172,7 @@ function renderTickets(){
   grid.innerHTML = filtered.map(t => {
     const statusDot = {open:'dot-red',progress:'dot-amber',resolved:'dot-green'}[t.status]||'dot-slate';
     const statusLbl = {open:'Unresolved',progress:'In Progress',resolved:'Resolved'}[t.status]||t.status;
-    const reviewBadge = t.reviewed ? `<span class="review-badge review-yes">✓ Done</span>` : `<span class="review-badge review-no">Pending</span>`;
+    const reviewBadge = t.reviewed ? `<span class="review-badge review-yes">✓ Done</span>` : `<span class="review-badge review-no">1 on 1 review pending</span>`;
     const rInfo = getRegionInfo(t.college);
     const slaFlag = isSlaRisk(t) ? `<div class="sla-tag">⚑ SLA risk</div>` : '';
     const prio = getPriority(t);
