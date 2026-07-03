@@ -443,8 +443,11 @@
             <button class="sub-row" data-filter="resolved" onclick="setStatusFilter('resolved')">
               Resolved <span class="nav-count" id="nav-cnt-res" style="margin-left:auto">0</span>
             </button>
-            <button class="sub-row" data-filter="sla" onclick="setStatusFilter('sla')">
-              SLA risk <span class="nav-count urgent" id="nav-cnt-sla" style="margin-left:auto">0</span>
+            <button class="sub-row" data-filter="followup3" onclick="setStatusFilter('followup3')">
+              Follow up due (3 days) <span class="nav-count urgent" id="nav-cnt-followup3" style="margin-left:auto">0</span>
+            </button>
+            <button class="sub-row" data-filter="followup7" onclick="setStatusFilter('followup7')">
+              Follow up due (7 days) <span class="nav-count urgent" id="nav-cnt-followup7" style="margin-left:auto">0</span>
             </button>
           </div>
         </div>
@@ -553,7 +556,7 @@
             <div class="stat-body">
               <div class="s-lbl">Unresolved</div>
               <div class="s-val" id="cnt-open">0</div>
-              <div class="s-sub warn" id="cnt-open-sub">0 at SLA risk</div>
+              <div class="s-sub warn" id="cnt-open-sub">0 follow-up due</div>
             </div>
           </button>
           <button class="stat-card" data-filter="progress" onclick="setStatusFilter('progress')">
@@ -710,16 +713,16 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const ADMIN_PIN = '1212';
 
-/* ── SLA configuration ──
-   SLA risk counts WORKING days (Mon–Fri; Sat/Sun excluded) since the
+/* ── Follow-up Due configuration ──
+   Follow-up due counts WORKING days (Mon–Fri; Sat/Sun excluded) since the
    ticket was created, and only applies while the ticket is unresolved.
-   Categories in SLA_CATEGORIES_7D get a 7-working-day grace period
+   Categories in FOLLOWUP_CATEGORIES_7D get a 7-working-day grace period
    (these tend to involve outside parties / paperwork turnaround).
    Every other category — anything NOT in that list — is treated as a
-   faster-turnaround issue and flagged at risk after just 3 working days. */
-const SLA_WORKING_DAYS_7D = 7;
-const SLA_WORKING_DAYS_3D = 3;
-const SLA_CATEGORIES_7D = new Set([
+   faster-turnaround issue and flagged as follow-up due after 3 working days. */
+const FOLLOWUP_WORKING_DAYS_7D = 7;
+const FOLLOWUP_WORKING_DAYS_3D = 3;
+const FOLLOWUP_CATEGORIES_7D = new Set([
   'Fees & Accounts',
   'Scholarship & Financial Aid',
   'Infrastructure',
@@ -844,11 +847,20 @@ function getRegionInfo(collegeName){
   const def = REGION_DEFS[key];
   return { key, label: def.label, kam: def.kam, dot: def.dot };
 }
-function isSlaRisk(t){
+function isFollowUpDue3(t){
   if(t.status === 'resolved') return false;
-  const threshold = SLA_CATEGORIES_7D.has(t.category) ? SLA_WORKING_DAYS_7D : SLA_WORKING_DAYS_3D;
+  if(FOLLOWUP_CATEGORIES_7D.has(t.category)) return false;
   const wd = workingDaysElapsed(new Date(t.created_at), new Date());
-  return wd >= threshold;
+  return wd >= FOLLOWUP_WORKING_DAYS_3D;
+}
+function isFollowUpDue7(t){
+  if(t.status === 'resolved') return false;
+  if(!FOLLOWUP_CATEGORIES_7D.has(t.category)) return false;
+  const wd = workingDaysElapsed(new Date(t.created_at), new Date());
+  return wd >= FOLLOWUP_WORKING_DAYS_7D;
+}
+function isFollowUpDue(t){
+  return isFollowUpDue3(t) || isFollowUpDue7(t);
 }
 function initials(name){
   const parts = String(name||'?').trim().split(/\s+/);
@@ -1017,7 +1029,7 @@ function syncStatusDD(){
   const map = { all:0, open:1, progress:2, resolved:3 };
   const radios = document.querySelectorAll('input[name=statusopt]');
   radios.forEach((r,i) => r.checked = (map[statusFilter] === i));
-  $('dd-status').querySelector('.dd-trigger').classList.toggle('filled', statusFilter!=='all' && statusFilter!=='sla');
+  $('dd-status').querySelector('.dd-trigger').classList.toggle('filled', statusFilter!=='all' && statusFilter!=='followup3' && statusFilter!=='followup7');
 }
 function setRegionOnly(key){
   regionFilter = new Set([key]);
@@ -1051,7 +1063,8 @@ function updateHeader(explicitKey){
     'open':                'Unresolved',
     'progress':            'In Progress',
     'resolved':            'Resolved',
-    'sla':                 'SLA Risk',
+    'followup3':           'Follow-up Due (3 Days)',
+    'followup7':           'Follow-up Due (7 Days)',
     'region-chennai':      'Chennai',
     'region-karnakerala':  'Karnataka & Kerala',
     'region-tamilnadu':    'Tamil Nadu',
@@ -1068,7 +1081,8 @@ function updateHeader(explicitKey){
 function getFiltered(){
   const q = ($('search-input')?.value||'').toLowerCase().trim();
   let list = tickets.filter(t => {
-    if(statusFilter==='sla') return isSlaRisk(t);
+    if(statusFilter==='followup3') return isFollowUpDue3(t);
+    if(statusFilter==='followup7') return isFollowUpDue7(t);
     if(statusFilter==='active') return t.status !== 'resolved';
     if(statusFilter==='all') return true;
     return t.status === statusFilter;
@@ -1101,19 +1115,22 @@ function getFiltered(){
 
 /* ── Stats ── */
 function renderStats(){
-  const slaCount = tickets.filter(isSlaRisk).length;
+  const followUp3Count = tickets.filter(isFollowUpDue3).length;
+  const followUp7Count = tickets.filter(isFollowUpDue7).length;
+  const followUpCount  = followUp3Count + followUp7Count;
   $('cnt-all').textContent  = tickets.length;
   $('cnt-open').textContent = tickets.filter(t=>t.status==='open').length;
   $('cnt-prog').textContent = tickets.filter(t=>t.status==='progress').length;
   $('cnt-res').textContent  = tickets.filter(t=>t.status==='resolved').length;
-  $('cnt-open-sub').textContent = slaCount + ' at SLA risk';
+  $('cnt-open-sub').textContent = followUpCount + ' follow-up due';
 
   $('nav-cnt-all').textContent   = tickets.length;
   $('nav-cnt-all-2').textContent = tickets.length;
   $('nav-cnt-open').textContent  = tickets.filter(t=>t.status==='open').length;
   $('nav-cnt-prog').textContent  = tickets.filter(t=>t.status==='progress').length;
   $('nav-cnt-res').textContent   = tickets.filter(t=>t.status==='resolved').length;
-  $('nav-cnt-sla').textContent   = slaCount;
+  $('nav-cnt-followup3').textContent = followUp3Count;
+  $('nav-cnt-followup7').textContent = followUp7Count;
 
   $('nav-cnt-p-high').textContent   = tickets.filter(t=>getPriority(t)==='high' && t.status!=='resolved').length;
   $('nav-cnt-p-medium').textContent = tickets.filter(t=>getPriority(t)==='medium').length;
@@ -1176,7 +1193,7 @@ function renderTickets(){
     const statusLbl = {open:'Unresolved',progress:'In Progress',resolved:'Resolved'}[t.status]||t.status;
     const reviewBadge = t.reviewed ? `<span class="review-badge review-yes">✓ Done</span>` : `<span class="review-badge review-no">1 on 1 review pending</span>`;
     const rInfo = getRegionInfo(t.college);
-    const slaFlag = isSlaRisk(t) ? `<div class="sla-tag">⚑ SLA risk</div>` : '';
+    const slaFlag = isFollowUpDue(t) ? `<div class="sla-tag">⚑ Follow-up due</div>` : '';
     const prio = getPriority(t);
 
     return `<div class="ticket-card" onclick="openModal('${t.id}')">
