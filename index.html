@@ -97,6 +97,7 @@
   }
   input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-soft); }
   input::placeholder { color: var(--text-faint); }
+  input:disabled, select:disabled { background: var(--slate-soft); color: var(--text-faint); cursor: not-allowed; }
 
   /* ── BUTTONS ── */
   .btn {
@@ -273,6 +274,7 @@
     position: relative;
   }
   .ticket-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+  .ticket-card.is-closed { opacity: 0.88; }
 
   .ticket-edge { width: 6px; flex-shrink: 0; border-radius: 14px 0 0 14px; }
   .ticket-edge.high   { background: var(--red); }
@@ -296,6 +298,7 @@
   .ticket-bottom-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
   .ticket-bottom-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
   .ticket-time { font-size: 12px; color: var(--text-faint); white-space: nowrap; }
+  .closed-by-tag { font-size: 11.5px; color: var(--green); font-weight: 600; white-space: nowrap; }
 
   .ticket-stub {
     width: 92px; flex-shrink: 0;
@@ -354,6 +357,10 @@
     background: var(--blue-soft); border: 1px solid rgba(52,87,232,0.18); border-radius: 11px; margin-bottom: 14px; font-size: 12.5px;
   }
   .region-info-block .ri-coord { color: var(--blue); font-weight: 500; }
+  .closed-info-block {
+    display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+    background: var(--green-soft); border: 1px solid rgba(22,163,74,0.22); border-radius: 11px; margin-bottom: 14px; font-size: 13px; color: var(--green); font-weight: 600;
+  }
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
   .form-group { display: flex; flex-direction: column; gap: 7px; }
   .form-group.full { grid-column: 1 / -1; }
@@ -369,8 +376,19 @@
   .toggle-thumb { position: absolute; left: 3px; top: 3px; width: 18px; height: 18px; border-radius: 50%; background: white; transition: transform .2s; pointer-events: none; box-shadow: 0 1px 3px rgba(0,0,0,0.25); }
   .toggle-switch input:checked ~ .toggle-track { background: var(--green); }
   .toggle-switch input:checked ~ .toggle-thumb { transform: translateX(20px); }
+  .toggle-switch input:disabled ~ .toggle-track { opacity: 0.55; cursor: not-allowed; }
   .modal-actions { display: flex; align-items: center; gap: 10px; padding-top: 4px; }
   .saved-msg { font-size: 12.5px; color: var(--green); font-weight: 600; }
+
+  .closer-name-wrap {
+    grid-column: 1 / -1; background: var(--amber-soft); border: 1px solid rgba(217,132,12,0.3); border-radius: 11px;
+    padding: 14px 16px; display: none; flex-direction: column; gap: 8px;
+  }
+  .closer-name-wrap.show { display: flex; }
+  .closer-name-wrap strong { font-size: 13px; color: var(--amber); }
+  .closer-name-wrap span { font-size: 11.5px; color: var(--text-light); }
+  .field-error { font-size: 12px; color: var(--red); font-weight: 600; display: none; }
+  .field-error.show { display: block; }
 
   @media (max-width: 860px) {
     .sidebar { position: fixed; z-index: 40; left: -244px; }
@@ -669,12 +687,17 @@
         <span class="ri-coord" id="modal-region-coord"></span>
       </div>
 
+      <div class="closed-info-block hidden" id="modal-closed-block">
+        <span>🔒</span>
+        <span id="modal-closed-text"></span>
+      </div>
+
       <div class="desc-block" id="modal-desc"></div>
 
       <div class="form-grid">
         <div class="form-group">
           <label class="field-label">Status</label>
-          <select id="modal-status" onchange="modalEdit('status', this.value)">
+          <select id="modal-status" onchange="onStatusChange(this.value)">
             <option value="open">Unresolved</option>
             <option value="progress">In Progress</option>
             <option value="resolved">Resolved</option>
@@ -696,10 +719,17 @@
             <div class="toggle-thumb"></div>
           </label>
         </div>
+
+        <div class="closer-name-wrap" id="closer-name-wrap">
+          <strong>Closing this ticket</strong>
+          <span>Enter your name to confirm you're resolving this ticket. This will be recorded on the ticket and can't be changed afterward.</span>
+          <input id="modal-closer" type="text" placeholder="Your full name" oninput="onCloserInput(this.value)" />
+          <div class="field-error" id="closer-error">Please enter your name to resolve this ticket.</div>
+        </div>
       </div>
 
       <div class="modal-actions">
-        <button class="btn btn-primary" onclick="saveModal()">Save changes</button>
+        <button class="btn btn-primary" id="modal-save-btn" onclick="saveModal()">Save changes</button>
         <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
         <span id="modal-saved" class="saved-msg hidden">✓ Saved</span>
       </div>
@@ -884,6 +914,7 @@ let sortDir       = 'new';
 let refreshTimer  = null;
 let modalId       = null;
 let modalDraft    = {};
+let modalLocked   = false; // true once the open ticket is already resolved — fully read-only
 
 const $  = id => document.getElementById(id);
 const show = id => $(id).classList.remove('hidden');
@@ -1199,8 +1230,10 @@ function renderTickets(){
       ? `<span class="review-badge review-yes">✓ 1:1 done</span>`
       : `<span class="review-badge review-no">☐ 1:1 pending</span>`;
     const slaFlag = isFollowUpDue(t) ? `<span class="sla-tag">⚑ Follow-up due</span>` : '';
+    const closedTag = (t.status === 'resolved' && t.closed_by)
+      ? `<span class="closed-by-tag">🔒 Closed by ${escHTML(t.closed_by)}</span>` : '';
 
-    return `<div class="ticket-card" onclick="openModal('${t.id}')">
+    return `<div class="ticket-card ${t.status==='resolved'?'is-closed':''}" onclick="openModal('${t.id}')">
       <div class="ticket-edge ${prio}"></div>
       <div class="ticket-main">
         <div class="ticket-top-row">
@@ -1222,6 +1255,7 @@ function renderTickets(){
           <div class="ticket-bottom-left">
             <span class="dot-row"><span class="dot ${statusDot}"></span>${statusLbl}</span>
             ${slaFlag}
+            ${closedTag}
           </div>
           <span class="ticket-time">${fmtRel(t.created_at)}</span>
         </div>
@@ -1239,7 +1273,8 @@ function openModal(id){
   const t = tickets.find(x=>x.id===id);
   if(!t) return;
   modalId    = id;
-  modalDraft = { status: t.status, note: t.admin_note||'', reviewed: !!t.reviewed };
+  modalDraft = { status: t.status, note: t.admin_note||'', reviewed: !!t.reviewed, closer: '' };
+  modalLocked = (t.status === 'resolved');
 
   $('modal-title').textContent = t.subject || 'No subject';
   $('modal-meta').textContent  = `${t.roll_number} · ${t.student_name}${t.college?' · '+t.college:''} · ${t.category} · ${fmtRel(t.created_at)}`;
@@ -1247,10 +1282,31 @@ function openModal(id){
   $('modal-status').value      = t.status;
   $('modal-note').value        = t.admin_note||'';
   $('modal-review').checked    = !!t.reviewed;
+  $('modal-closer').value      = '';
+  hide('closer-error');
+  $('closer-name-wrap').classList.remove('show');
 
   const rInfo = getRegionInfo(t.college);
   $('modal-region-badge').innerHTML = `<span class="dot-row"><span class="dot ${rInfo.dot}"></span>${escHTML(rInfo.label)}</span>`;
-$('modal-region-coord').textContent = rInfo.key ? `Coordinator: ${rInfo.kam}` : 'College not yet mapped to a region';
+  $('modal-region-coord').textContent = rInfo.key ? `Coordinator: ${rInfo.kam}` : 'College not yet mapped to a region';
+
+  // Fields that must lock permanently once a ticket is resolved
+  const fields = [$('modal-status'), $('modal-note'), $('modal-review')];
+  const saveBtn = $('modal-save-btn');
+
+  if(modalLocked){
+    fields.forEach(f => f.disabled = true);
+    saveBtn.classList.add('hidden');
+    show('modal-closed-block');
+    $('modal-closed-text').textContent = t.closed_by
+      ? `Closed by ${t.closed_by}${t.closed_at ? ' on ' + new Date(t.closed_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) : ''}. This ticket is locked and can no longer be edited.`
+      : 'This ticket is resolved and locked. It can no longer be edited.';
+  } else {
+    fields.forEach(f => f.disabled = false);
+    saveBtn.classList.remove('hidden');
+    hide('modal-closed-block');
+  }
+
   hide('modal-saved');
   show('ticket-modal');
   document.body.style.overflow = 'hidden';
@@ -1260,11 +1316,37 @@ function closeModal(){
   document.body.style.overflow = '';
   modalId = null;
   modalDraft = {};
+  modalLocked = false;
 }
-function modalEdit(field, val){ modalDraft[field] = val; }
+function modalEdit(field, val){ if(modalLocked) return; modalDraft[field] = val; }
+
+function onStatusChange(val){
+  if(modalLocked) return;
+  modalDraft.status = val;
+  const wrap = $('closer-name-wrap');
+  if(val === 'resolved'){
+    wrap.classList.add('show');
+  } else {
+    wrap.classList.remove('show');
+    hide('closer-error');
+  }
+}
+function onCloserInput(val){
+  modalDraft.closer = val;
+  if(val.trim()) hide('closer-error');
+}
+
 async function saveModal(){
-  if(!modalId) return;
-  const saveBtn = document.querySelector('#ticket-modal .btn-primary');
+  if(!modalId || modalLocked) return;
+
+  // Require a closer name before a ticket can be marked resolved
+  if(modalDraft.status === 'resolved' && !(modalDraft.closer || '').trim()){
+    show('closer-error');
+    $('modal-closer').focus();
+    return;
+  }
+
+  const saveBtn = $('modal-save-btn');
   const savedMsg = $('modal-saved');
   saveBtn.disabled = true;
   saveBtn.textContent = 'Saving…';
@@ -1276,6 +1358,10 @@ async function saveModal(){
     reviewed:   !!modalDraft.reviewed,
     updated_at: new Date().toISOString()
   };
+  if(modalDraft.status === 'resolved'){
+    payload.closed_by = modalDraft.closer.trim();
+    payload.closed_at = new Date().toISOString();
+  }
 
   const { error } = await sb.from('tickets').update(payload).eq('id', modalId);
 
