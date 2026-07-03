@@ -1110,7 +1110,7 @@ function renderStats(){
   $('cnt-prog').textContent = tickets.filter(t=>t.status==='progress').length;
   $('cnt-res').textContent  = tickets.filter(t=>t.status==='resolved').length;
   $('cnt-open-sub').textContent = slaCount + ' at SLA risk';
-  $('cnt-p-high').textContent = tickets.filter(t=>getPriority(t)==='high').length;
+  $('cnt-p-high').textContent = tickets.filter(t=>getPriority(t)==='high' && t.status!=='resolved').length;
 
   $('nav-cnt-all').textContent   = tickets.length;
   $('nav-cnt-all-2').textContent = tickets.length;
@@ -1119,7 +1119,7 @@ function renderStats(){
   $('nav-cnt-res').textContent   = tickets.filter(t=>t.status==='resolved').length;
   $('nav-cnt-sla').textContent   = slaCount;
 
-  $('nav-cnt-p-high').textContent   = tickets.filter(t=>getPriority(t)==='high').length;
+  $('nav-cnt-p-high').textContent   = tickets.filter(t=>getPriority(t)==='high' && t.status!=='resolved').length;
   $('nav-cnt-p-medium').textContent = tickets.filter(t=>getPriority(t)==='medium').length;
   $('nav-cnt-p-low').textContent    = tickets.filter(t=>getPriority(t)==='low').length;
 
