@@ -36,7 +36,33 @@
     --shadow-lg: 0 16px 40px -12px rgba(20,21,26,0.18);
   }
 
-  body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--bg); min-height: 100vh; -webkit-font-smoothing: antialiased; font-size: 14px; }
+  body[data-theme="dark"] {
+    --bg: #0F1115;
+    --card: #171A21;
+    --border: #262B35;
+    --border-soft: #1F232B;
+    --text: #EDEEF2;
+    --text-light: #9AA1AC;
+    --text-faint: #6B7280;
+    --blue: #5B7CFF;
+    --blue-dark: #7C97FF;
+    --blue-soft: rgba(91,124,255,0.14);
+    --green: #34D07C;
+    --green-soft: rgba(52,208,124,0.12);
+    --amber: #F0A93A;
+    --amber-soft: rgba(240,169,58,0.12);
+    --red: #F0554C;
+    --red-soft: rgba(240,85,76,0.12);
+    --violet: #A582FF;
+    --violet-soft: rgba(165,130,255,0.14);
+    --slate: #8A93A3;
+    --slate-soft: #1D2129;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 18px -6px rgba(0,0,0,0.55);
+    --shadow-lg: 0 20px 44px -12px rgba(0,0,0,0.6);
+  }
+
+  body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--bg); min-height: 100vh; -webkit-font-smoothing: antialiased; font-size: 14px; transition: background .25s ease, color .25s ease; }
   .hidden { display: none !important; }
   button, input, select { font-family: inherit; }
   :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
@@ -77,9 +103,18 @@
   .prio-medium { background: var(--amber-soft); color: var(--amber); }
   .prio-low    { background: var(--slate-soft); color: var(--text-light); }
 
+  .avatar-wrap { position: relative; flex-shrink: 0; }
   .avatar {
     width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
     font-size: 11.5px; font-weight: 700; color: #fff;
+  }
+  .avatar-wrap.is-new::after {
+    content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid var(--blue);
+    animation: newPulse 1.8s ease-out infinite;
+  }
+  @keyframes newPulse {
+    0%   { transform: scale(0.85); opacity: 0.9; }
+    100% { transform: scale(1.35); opacity: 0; }
   }
 
   /* ── AUTH ── */
@@ -89,7 +124,7 @@
     background:
       radial-gradient(circle at 15% 20%, rgba(52,87,232,0.10), transparent 45%),
       radial-gradient(circle at 85% 80%, rgba(124,58,237,0.10), transparent 45%),
-      linear-gradient(160deg, #F6F7FA 0%, #EEF1F6 55%, #EAEDF4 100%);
+      linear-gradient(160deg, var(--bg) 0%, var(--bg) 55%, var(--bg) 100%);
   }
   .auth-orb {
     position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.55; pointer-events: none;
@@ -107,11 +142,20 @@
   .auth-grid-overlay {
     position: absolute; inset: 0; pointer-events: none; opacity: 0.5;
     background-image:
-      linear-gradient(to right, rgba(20,21,26,0.035) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(20,21,26,0.035) 1px, transparent 1px);
+      linear-gradient(to right, rgba(127,127,127,0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(127,127,127,0.06) 1px, transparent 1px);
     background-size: 42px 42px;
     mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 30%, transparent 75%);
   }
+
+  .theme-toggle-auth {
+    position: absolute; top: 20px; right: 20px; z-index: 2;
+    width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border); background: var(--card);
+    display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-light);
+    box-shadow: var(--shadow-sm); transition: transform .15s, color .15s;
+  }
+  .theme-toggle-auth:hover { color: var(--text); transform: translateY(-1px); }
+  .theme-toggle-auth svg { width: 16px; height: 16px; }
 
   .auth-box { width: 100%; max-width: 380px; position: relative; z-index: 1; animation: authRise .65s cubic-bezier(.16,1,.3,1) both; }
   @keyframes authRise {
@@ -135,18 +179,9 @@
     100% { transform: scale(2.4); opacity: 0; }
   }
 
-  .auth-logo {
-    height: 46px; width: auto; max-width: 220px; object-fit: contain; margin: 0 auto 14px;
-    display: block; filter: drop-shadow(0 4px 10px rgba(52,87,232,0.18));
-    animation: logoPop .6s cubic-bezier(.16,1,.3,1) both;
-  }
-  @keyframes logoPop {
-    from { opacity: 0; transform: translateY(-6px) scale(0.94); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-  }
   .auth-header h1 {
-    font-size: 20px; font-weight: 800; letter-spacing: -0.01em;
-    background: linear-gradient(100deg, #14151A 20%, #3457E8 55%, #7C3AED 85%);
+    font-size: 24px; font-weight: 800; letter-spacing: -0.01em;
+    background: linear-gradient(100deg, var(--text) 20%, var(--blue) 55%, var(--violet) 85%);
     background-size: 200% auto;
     -webkit-background-clip: text; background-clip: text; color: transparent;
     animation: shine 5s linear infinite;
@@ -157,7 +192,7 @@
   .auth-header p  { font-size: 13px; color: var(--text-light); margin-top: 7px; }
 
   .auth-panel {
-    background: rgba(255,255,255,0.82); backdrop-filter: blur(14px) saturate(160%);
+    background: var(--card); backdrop-filter: blur(14px) saturate(160%);
     border: 1px solid var(--border); border-radius: 18px; padding: 28px;
     box-shadow: var(--shadow-lg); position: relative; overflow: hidden;
   }
@@ -190,12 +225,20 @@
   input::placeholder { color: var(--text-faint); }
   input:disabled, select:disabled { background: var(--slate-soft); color: var(--text-faint); cursor: not-allowed; }
 
-  .pin-input-wrap { position: relative; }
-  .pin-input-wrap .lock-icon {
-    position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-faint);
-    pointer-events: none; display: flex; transition: color .15s;
+  /* OTP-style PIN boxes */
+  .otp-row { display: flex; gap: 10px; justify-content: center; }
+  .otp-box {
+    width: 52px; height: 58px; text-align: center; font-size: 22px; font-weight: 700;
+    font-family: 'JetBrains Mono', monospace; border-radius: 12px; padding: 0;
+    transition: border-color .15s, box-shadow .15s, transform .1s;
   }
-  .pin-input-wrap input:focus ~ .lock-icon { color: var(--blue); }
+  .otp-box:focus { transform: translateY(-2px); }
+  .otp-box.filled { border-color: var(--blue); background: var(--blue-soft); }
+  .otp-box.shake-err { animation: shake .35s ease; border-color: var(--red) !important; background: var(--red-soft) !important; }
+
+  .auth-links { display: flex; justify-content: center; margin-top: 14px; }
+  .auth-link { font-size: 12px; color: var(--text-faint); text-decoration: none; cursor: pointer; transition: color .15s; }
+  .auth-link:hover { color: var(--blue); }
 
   /* ── BUTTONS ── */
   .btn {
@@ -203,13 +246,15 @@
     padding: 9px 16px; border-radius: 9px; font-size: 13px; font-weight: 600; cursor: pointer;
     transition: opacity .15s, transform .1s, background .12s, border-color .12s; border: none; white-space: nowrap;
   }
-  .btn:active { transform: scale(0.97); }
+  .btn:active { transform: scale(0.94); }
   .btn-primary { background: var(--blue); color: #fff; }
   .btn-primary:hover { background: var(--blue-dark); }
   .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
   .btn-ghost { background: var(--card); color: var(--text-light); border: 1px solid var(--border); }
   .btn-ghost:hover { color: var(--text); border-color: #C7CCD3; }
   .btn-full { width: 100%; }
+  .btn-icon { padding: 8px; width: 34px; height: 34px; }
+  .btn-icon svg { width: 14px; height: 14px; }
 
   .btn-primary.btn-auth {
     position: relative; overflow: hidden; padding: 11px 16px; font-size: 13.5px;
@@ -238,7 +283,7 @@
   /* ── SIDEBAR ── */
   .sidebar {
     width: 244px; flex-shrink: 0; background: var(--card); border-right: 1px solid var(--border);
-    display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow-y: auto; transition: width .18s ease;
+    display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow-y: auto; transition: width .18s ease, background .25s ease;
   }
   .sidebar.collapsed { width: 76px; }
   .sidebar.collapsed .brand-text, .sidebar.collapsed .sec-label, .sidebar.collapsed .nav-label,
@@ -249,8 +294,10 @@
 
   .sidebar-top { padding: 18px 18px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid var(--border); }
   .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
-  .brand-logo { height: 34px; width: auto; max-width: 168px; object-fit: contain; flex-shrink: 0; display: block; }
-  .sidebar.collapsed .brand-logo { height: 30px; max-width: 40px; }
+  .brand-mark {
+    width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--blue), var(--violet)); color: #fff; font-weight: 800; font-size: 14px;
+  }
   .brand-text { min-width: 0; }
   .brand-text .b1 { font-size: 14.5px; font-weight: 800; letter-spacing: -0.01em; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .brand-text .b2 { font-size: 10.5px; color: var(--text-faint); font-weight: 600; white-space: nowrap; }
@@ -292,13 +339,20 @@
   .sub-row.active { background: var(--blue-soft); color: var(--blue); font-weight: 600; }
   .sub-row .nav-count.urgent { background: var(--red-soft); color: var(--red); }
 
-  .sidebar-foot { padding: 12px; border-top: 1px solid var(--border); }
+  .sidebar-foot { padding: 12px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
   .btn-logout {
     display: flex; align-items: center; gap: 9px; width: 100%; padding: 9px 10px; border-radius: 9px; border: none;
     cursor: pointer; font-size: 13.5px; color: var(--text-light); background: transparent; transition: background .12s, color .12s;
   }
   .btn-logout:hover { background: var(--red-soft); color: var(--red); }
   .btn-logout svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+  .theme-row {
+    display: flex; align-items: center; gap: 9px; width: 100%; padding: 9px 10px; border-radius: 9px; border: none;
+    cursor: pointer; font-size: 13.5px; color: var(--text-light); background: transparent; transition: background .12s, color .12s;
+  }
+  .theme-row:hover { background: var(--slate-soft); color: var(--text); }
+  .theme-row svg { width: 16px; height: 16px; flex-shrink: 0; }
 
   /* ── MAIN ── */
   .main-content { flex: 1; min-width: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
@@ -311,7 +365,7 @@
   .breadcrumb b { color: var(--text); font-weight: 600; }
   .topbar-right { display: flex; align-items: center; gap: 10px; }
   .search-wrap { position: relative; }
-  .search-wrap input { padding-left: 34px; width: 260px; font-size: 13px; background: var(--card); }
+  .search-wrap input { padding-left: 34px; width: 240px; font-size: 13px; background: var(--card); }
   .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-faint); font-size: 14px; pointer-events: none; }
 
   .page-body {
@@ -319,27 +373,42 @@
     display: flex; flex-direction: column; min-height: 0; overflow: hidden;
   }
 
-  /* ── STATS ── */
-  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; flex-shrink: 0; }
-  .stat-card {
-    background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 12px 16px;
-    display: flex; flex-direction: row; align-items: center; gap: 12px; cursor: pointer; text-align: left;
-    transition: box-shadow .12s, transform .12s, border-color .12s; box-shadow: var(--shadow-sm);
+  /* ── INSIGHTS PANEL ── */
+  .insights-panel {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px;
+    margin-bottom: 14px; flex-shrink: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 22px;
+    box-shadow: var(--shadow-sm); animation: authRise .3s ease both;
   }
-  .stat-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .insight-block h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-faint); margin-bottom: 12px; }
+  .insight-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+  .insight-bar-label { width: 118px; flex-shrink: 0; font-size: 12px; color: var(--text-light); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .insight-bar-track { flex: 1; height: 8px; border-radius: 999px; background: var(--slate-soft); overflow: hidden; }
+  .insight-bar-fill { height: 100%; border-radius: 999px; transition: width .5s cubic-bezier(.16,1,.3,1); }
+  .insight-bar-val { width: 26px; text-align: right; flex-shrink: 0; font-size: 12px; font-weight: 700; color: var(--text); }
+
+  /* ── STATS ── */
+  .stats-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 14px; flex-shrink: 0; }
+  .stat-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px;
+    display: flex; flex-direction: row; align-items: center; gap: 10px; cursor: pointer; text-align: left;
+    transition: box-shadow .12s, transform .12s, border-color .12s; box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
+  }
+  .stat-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
   .stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
   .stat-card.active { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-soft); }
-  .stat-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+  .stat-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .stat-icon svg { width: 14px; height: 14px; }
   .stat-icon.i-slate  { background: var(--text); }
   .stat-icon.i-red    { background: var(--red); }
   .stat-icon.i-amber  { background: var(--amber); }
   .stat-icon.i-green  { background: var(--green); }
+  .stat-icon.i-violet { background: var(--violet); }
   .stat-icon svg { color: #fff; }
-  .s-lbl { font-size: 12px; color: var(--text-light); font-weight: 500; white-space: nowrap; }
-  .s-val { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
-  .s-sub { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .s-lbl { font-size: 11.5px; color: var(--text-light); font-weight: 500; white-space: nowrap; }
+  .s-val { font-size: 19px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+  .s-sub { display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; color: var(--text-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .s-sub.warn { color: var(--red); font-weight: 600; }
+  .stat-spark { flex-shrink: 0; opacity: 0.9; }
 
   /* ── TOOLBAR ── */
   .toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; flex-shrink: 0; }
@@ -373,6 +442,9 @@
   .active-chip button { background: none; border: none; color: var(--blue); opacity: 0.6; cursor: pointer; font-size: 13px; line-height: 1; padding: 0; }
   .active-chip button:hover { opacity: 1; }
 
+  .kbd-hint { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text-faint); margin-left: auto; }
+  .kbd-hint kbd { font-family: 'JetBrains Mono', monospace; font-size: 10px; background: var(--slate-soft); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; }
+
   /* ── TICKET GRID (ticket-stub cards) ── */
   .ticket-grid-wrap { background: transparent; flex: 1; min-height: 0; overflow-y: auto; padding-bottom: 40px; }
   .ticket-grid {
@@ -389,11 +461,13 @@
     overflow: visible;
     box-shadow: var(--shadow-sm);
     cursor: pointer;
-    transition: box-shadow .12s, transform .12s;
+    transition: box-shadow .12s, transform .12s, outline-color .1s;
     position: relative;
+    outline: 2px solid transparent; outline-offset: 2px;
   }
   .ticket-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
   .ticket-card.is-closed { opacity: 0.88; }
+  .ticket-card.kbd-focus { outline-color: var(--blue); box-shadow: var(--shadow-md); transform: translateY(-1px); }
 
   .ticket-edge { width: 6px; flex-shrink: 0; border-radius: 14px 0 0 14px; }
   .ticket-edge.high   { background: var(--red); }
@@ -418,6 +492,19 @@
   .ticket-bottom-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
   .ticket-time { font-size: 12px; color: var(--text-faint); white-space: nowrap; }
   .closed-by-tag { font-size: 11.5px; color: var(--green); font-weight: 600; white-space: nowrap; }
+
+  .ticket-quick-actions {
+    position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; opacity: 0; transform: translateY(-4px);
+    transition: opacity .14s, transform .14s; z-index: 2;
+  }
+  .ticket-card:hover .ticket-quick-actions { opacity: 1; transform: translateY(0); }
+  .qa-btn {
+    width: 27px; height: 27px; border-radius: 8px; border: 1px solid var(--border); background: var(--card);
+    display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-light);
+    box-shadow: var(--shadow-sm); transition: background .12s, color .12s, transform .1s;
+  }
+  .qa-btn:hover { background: var(--blue-soft); color: var(--blue); transform: scale(1.06); }
+  .qa-btn svg { width: 13px; height: 13px; }
 
   .ticket-stub {
     width: 92px; flex-shrink: 0;
@@ -446,16 +533,35 @@
     color: var(--text-light);
   }
 
-  .empty-state { padding: 64px 24px; text-align: center; color: var(--text-light); font-size: 14px; }
-  .empty-icon { font-size: 28px; margin-bottom: 12px; opacity: 0.4; }
+  .empty-state { padding: 54px 24px; text-align: center; color: var(--text-light); font-size: 14px; }
+  .empty-state svg { margin-bottom: 14px; opacity: 0.7; }
   .empty-state p { margin-top: 6px; font-size: 12px; color: var(--text-faint); }
+
+  /* skeleton loading */
+  .skel-card { display: flex; background: var(--card); border: 1px solid var(--border); border-radius: 14px; height: 132px; overflow: hidden; }
+  .skel-edge { width: 6px; background: var(--slate-soft); }
+  .skel-main { flex: 1; padding: 15px 16px; display: flex; flex-direction: column; gap: 12px; }
+  .skel-bar { border-radius: 6px; background: linear-gradient(90deg, var(--slate-soft) 25%, var(--border-soft) 37%, var(--slate-soft) 63%); background-size: 400% 100%; animation: skelShimmer 1.4s ease infinite; }
+  @keyframes skelShimmer { 0% { background-position: 100% 50%; } 100% { background-position: 0 50%; } }
+
+  /* ── TOASTS ── */
+  .toast-stack { position: fixed; top: 18px; right: 18px; z-index: 200; display: flex; flex-direction: column; gap: 8px; }
+  .toast {
+    display: flex; align-items: center; gap: 10px; background: var(--card); border: 1px solid var(--border);
+    border-radius: 11px; padding: 11px 14px; box-shadow: var(--shadow-lg); font-size: 13px; font-weight: 500;
+    color: var(--text); animation: toastIn .25s cubic-bezier(.16,1,.3,1) both; max-width: 300px;
+  }
+  .toast.leaving { animation: toastOut .2s ease both; }
+  @keyframes toastIn { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes toastOut { to { opacity: 0; transform: translateX(24px); } }
+  .toast .toast-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); flex-shrink: 0; }
 
   /* ── MODAL ── */
   .modal-overlay {
     position: fixed; inset: 0; background: rgba(20,21,26,0.45); display: flex; align-items: center; justify-content: center;
     padding: 24px; z-index: 100; backdrop-filter: blur(2px);
   }
-  .modal-box { background: var(--card); border: 1px solid var(--border); border-radius: 18px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); }
+  .modal-box { background: var(--card); border: 1px solid var(--border); border-radius: 18px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); position: relative; }
   .modal-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 22px 22px 0; }
   .modal-title { font-size: 18px; font-weight: 700; line-height: 1.3; letter-spacing: -0.01em; }
   .modal-meta  { font-size: 12.5px; color: var(--text-light); margin-top: 5px; }
@@ -480,9 +586,27 @@
     display: flex; align-items: center; gap: 10px; padding: 12px 16px;
     background: var(--green-soft); border: 1px solid rgba(22,163,74,0.22); border-radius: 11px; margin-bottom: 14px; font-size: 13px; color: var(--green); font-weight: 600;
   }
+
+  /* activity timeline */
+  .timeline { margin-bottom: 18px; }
+  .timeline-item { display: flex; gap: 10px; position: relative; padding-bottom: 16px; }
+  .timeline-item:last-child { padding-bottom: 0; }
+  .timeline-item::before {
+    content: ''; position: absolute; left: 4px; top: 16px; bottom: 0; width: 1.5px; background: var(--border);
+  }
+  .timeline-item:last-child::before { display: none; }
+  .timeline-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--blue); margin-top: 4px; flex-shrink: 0; box-shadow: 0 0 0 3px var(--blue-soft); }
+  .timeline-dot.done { background: var(--green); box-shadow: 0 0 0 3px var(--green-soft); }
+  .timeline-body strong { font-size: 12.5px; font-weight: 600; display: block; }
+  .timeline-body span { font-size: 11.5px; color: var(--text-faint); }
+
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
   .form-group { display: flex; flex-direction: column; gap: 7px; }
   .form-group.full { grid-column: 1 / -1; }
+  .form-group.full .label-row { display: flex; align-items: center; justify-content: space-between; }
+  .autosave-tag { font-size: 11px; color: var(--text-faint); display: inline-flex; align-items: center; gap: 4px; opacity: 0; transition: opacity .2s; }
+  .autosave-tag.show { opacity: 1; }
+  .autosave-tag.saved { color: var(--green); }
   .review-toggle-wrap {
     grid-column: 1 / -1; background: var(--slate-soft); border: 1px solid var(--border); border-radius: 11px;
     padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
@@ -509,24 +633,53 @@
   .field-error { font-size: 12px; color: var(--red); font-weight: 600; display: none; }
   .field-error.show { display: block; }
 
+  /* resolve confirmation burst */
+  .resolve-burst {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.0); pointer-events: none; z-index: 5; opacity: 0;
+  }
+  body[data-theme="dark"] .resolve-burst { background: rgba(0,0,0,0.0); }
+  .resolve-burst.play { animation: burstFade .9s ease forwards; }
+  @keyframes burstFade { 0% { opacity: 0; } 10% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; } }
+  .resolve-check {
+    width: 76px; height: 76px; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center;
+    transform: scale(0); box-shadow: 0 10px 30px -8px rgba(22,163,74,0.6);
+  }
+  .resolve-burst.play .resolve-check { animation: checkPop .5s cubic-bezier(.34,1.56,.64,1) forwards; }
+  @keyframes checkPop { 0% { transform: scale(0); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
+  .resolve-check svg { width: 34px; height: 34px; stroke: white; }
+  .resolve-check path { stroke-dasharray: 24; stroke-dashoffset: 24; animation: checkDraw .35s ease .25s forwards; }
+  @keyframes checkDraw { to { stroke-dashoffset: 0; } }
+
   @media (max-width: 860px) {
     .sidebar { position: fixed; z-index: 40; left: -244px; }
     .sidebar.mobile-open { left: 0; }
     .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .insights-panel { grid-template-columns: 1fr; }
     .form-grid { grid-template-columns: 1fr; }
     .search-wrap input { width: 170px; }
     .topbar, .page-body { padding-left: 18px; padding-right: 18px; }
     .ticket-grid { grid-template-columns: 1fr; }
   }
 
+  @media print {
+    .sidebar, .topbar, .toolbar, .stats-row, .insights-panel, .modal-overlay, .toast-stack, .ticket-quick-actions { display: none !important; }
+    body, .bg, .page-body, .ticket-grid-wrap { background: #fff !important; overflow: visible !important; height: auto !important; }
+    .main-content { height: auto !important; overflow: visible !important; }
+    .ticket-grid { grid-template-columns: 1fr 1fr !important; }
+    .ticket-card { break-inside: avoid; box-shadow: none !important; border: 1px solid #ccc !important; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .auth-orb, .auth-header h1, .auth-panel::before, .btn-primary.btn-auth::after, .auth-badge .pulse-dot::after, .auth-box {
+    .auth-orb, .auth-header h1, .auth-panel::before, .btn-primary.btn-auth::after, .auth-badge .pulse-dot::after, .auth-box, .avatar-wrap.is-new::after {
       animation: none !important;
     }
   }
 </style>
 </head>
 <body>
+
+<div class="toast-stack" id="toast-stack"></div>
 
 <!-- ── AUTH ── -->
 <div id="auth-screen" class="auth-wrap">
@@ -535,25 +688,31 @@
   <div class="auth-orb o3"></div>
   <div class="auth-grid-overlay"></div>
 
+  <button class="theme-toggle-auth" onclick="toggleTheme()" id="theme-toggle-auth-btn" title="Toggle dark mode" aria-label="Toggle dark mode">
+    <svg id="theme-toggle-auth-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="3.2"/><path d="M8 1.5v1.4M8 13.1v1.4M2.6 8H1.2M14.8 8h-1.4M3.9 3.9l1 1M11.1 11.1l1 1M11.1 3.9l-1 1M3.9 11.1l1 1"/></svg>
+  </button>
+
   <div class="auth-box">
     <div class="auth-header">
-      <img src="Face prep logo3.png" alt="FACE Prep" class="auth-logo" />
       <div class="auth-badge"><span class="pulse-dot"></span>Live campus support</div>
-      <h1>Campus Help Desk</h1>
+      <h1>FACE Prep Help Desk</h1>
       <p>Enter your admin PIN to manage campus tickets.</p>
     </div>
     <div class="auth-panel">
-      <div style="margin-bottom:16px">
-        <label class="field-label">Admin PIN</label>
-        <div class="pin-input-wrap">
-          <input id="pin-input" type="password" placeholder="Enter PIN" onkeydown="if(event.key==='Enter')submitPin()" />
-          <span class="lock-icon">
-            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="7" width="10" height="7" rx="1.6"/><path d="M5.2 7V5a2.8 2.8 0 0 1 5.6 0v2"/></svg>
-          </span>
+      <div style="margin-bottom:18px">
+        <label class="field-label" style="text-align:center;display:block;">Admin PIN</label>
+        <div class="otp-row" id="otp-row">
+          <input class="otp-box" type="password" inputmode="numeric" maxlength="1" data-idx="0" />
+          <input class="otp-box" type="password" inputmode="numeric" maxlength="1" data-idx="1" />
+          <input class="otp-box" type="password" inputmode="numeric" maxlength="1" data-idx="2" />
+          <input class="otp-box" type="password" inputmode="numeric" maxlength="1" data-idx="3" />
         </div>
       </div>
-      <div id="pin-error" class="error-msg hidden"></div>
+      <div id="pin-error" class="error-msg hidden" style="text-align:center;"></div>
       <button class="btn btn-primary btn-full btn-auth" onclick="submitPin()">Enter dashboard <span class="arrow">→</span></button>
+      <div class="auth-links">
+        <a class="auth-link" onclick="alert('Please contact your campus IT administrator to reset your admin PIN.')">Forgot PIN? Contact IT support</a>
+      </div>
     </div>
     <div class="auth-footnote">Authorized personnel only · FACE Prep</div>
   </div>
@@ -567,7 +726,11 @@
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-top">
         <div class="brand">
-          <img src="Face prep logo3.png" alt="FACE Prep Help Desk" class="brand-logo" />
+          <div class="brand-mark">FP</div>
+          <div class="brand-text">
+            <div class="b1">FACE Prep</div>
+            <div class="b2">Help Desk</div>
+          </div>
         </div>
         <button class="collapse-btn" onclick="toggleSidebar()" title="Collapse sidebar" aria-label="Collapse sidebar">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M10 3.5 5.5 8l4.5 4.5"/></svg>
@@ -672,6 +835,10 @@
       </nav>
 
       <div class="sidebar-foot">
+        <button class="theme-row" onclick="toggleTheme()">
+          <svg id="theme-toggle-side-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="3.2"/><path d="M8 1.5v1.4M8 13.1v1.4M2.6 8H1.2M14.8 8h-1.4M3.9 3.9l1 1M11.1 11.1l1 1M11.1 3.9l-1 1M3.9 11.1l1 1"/></svg>
+          <span class="logout-label" id="theme-row-label">Dark mode</span>
+        </button>
         <button class="btn-logout" onclick="logout()">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 2.5H3.5a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1H6"/><polyline points="10.5,5 13.5,8 10.5,11"/><line x1="13.5" y1="8" x2="6" y2="8"/></svg>
           <span class="logout-label">Log out</span>
@@ -691,6 +858,15 @@
             <span class="search-icon">⌕</span>
             <input id="search-input" type="text" placeholder="Search roll no., name, college, subject…" oninput="renderTickets()" />
           </div>
+          <button class="btn btn-ghost btn-icon" onclick="toggleInsights()" title="Toggle insights">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 13.5V9M6 13.5V5M10 13.5V7.5M14 13.5V2.5"/></svg>
+          </button>
+          <button class="btn btn-ghost btn-icon" onclick="exportCSV()" title="Export CSV">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 1.5v8.5M8 10 5 7M8 10l3-3"/><path d="M2.5 12v1.5a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V12"/></svg>
+          </button>
+          <button class="btn btn-ghost btn-icon" onclick="window.print()" title="Print">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4.5 6V2.5h7V6M4.5 11.5h7V14h-7z"/><rect x="1.5" y="6" width="13" height="6" rx="1"/></svg>
+          </button>
           <button class="btn btn-ghost" onclick="loadTickets()" title="Refresh">
             <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13.5 2.5A6.5 6.5 0 1 1 8 1.5"/><polyline points="13.5,2.5 13.5,6 10,6"/></svg>
             Refresh
@@ -700,6 +876,17 @@
 
       <div class="page-body">
 
+        <div class="insights-panel hidden" id="insights-panel">
+          <div class="insight-block">
+            <h4>Tickets by category</h4>
+            <div id="insight-category"></div>
+          </div>
+          <div class="insight-block">
+            <h4>Tickets by region</h4>
+            <div id="insight-region"></div>
+          </div>
+        </div>
+
         <div class="stats-row">
           <button class="stat-card" data-filter="all" onclick="setStatusFilter('all')">
             <div class="stat-icon i-slate"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1.5" y="1.5" width="13" height="13" rx="2"/><line x1="4.5" y1="5.5" x2="11.5" y2="5.5"/><line x1="4.5" y1="8" x2="11.5" y2="8"/></svg></div>
@@ -708,6 +895,7 @@
               <div class="s-val" id="cnt-all">0</div>
               <div class="s-sub">All submitted requests</div>
             </div>
+            <svg class="stat-spark" id="spark-all" width="52" height="28"></svg>
           </button>
           <button class="stat-card" data-filter="open" onclick="setStatusFilter('open')">
             <div class="stat-icon i-red"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><line x1="8" y1="5" x2="8" y2="8.5"/><circle cx="8" cy="10.5" r="0.4" fill="currentColor"/></svg></div>
@@ -732,7 +920,16 @@
               <div class="s-val" id="cnt-res">0</div>
               <div class="s-sub">Closed out tickets</div>
             </div>
+            <svg class="stat-spark" id="spark-res" width="52" height="28"></svg>
           </button>
+          <div class="stat-card" style="cursor:default;">
+            <div class="stat-icon i-violet"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><path d="M8 4.5v3.5l2.2 1.3"/></svg></div>
+            <div class="stat-body">
+              <div class="s-lbl">Avg. resolution</div>
+              <div class="s-val" id="cnt-avgres">—</div>
+              <div class="s-sub">Time to close a ticket</div>
+            </div>
+          </div>
         </div>
 
         <div class="toolbar">
@@ -790,15 +987,12 @@
           </div>
 
           <span id="active-chips"></span>
+          <span class="kbd-hint"><kbd>J</kbd><kbd>K</kbd> navigate <kbd>Enter</kbd> open</span>
         </div>
 
         <div class="ticket-grid-wrap">
           <div id="ticket-grid" class="ticket-grid"></div>
-          <div id="empty-state" class="empty-state hidden">
-            <div class="empty-icon">📭</div>
-            <strong>No tickets found</strong>
-            <p>Try a different filter or search term.</p>
-          </div>
+          <div id="empty-state" class="empty-state hidden"></div>
         </div>
 
       </div>
@@ -809,6 +1003,9 @@
 <!-- ── TICKET MODAL ── -->
 <div id="ticket-modal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal()">
   <div class="modal-box">
+    <div class="resolve-burst" id="resolve-burst">
+      <div class="resolve-check"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17 19 7"/></svg></div>
+    </div>
     <div class="modal-header">
       <div>
         <div class="modal-title" id="modal-title"></div>
@@ -832,6 +1029,8 @@
 
       <div class="desc-block" id="modal-desc"></div>
 
+      <div class="timeline" id="modal-timeline"></div>
+
       <div class="form-grid">
         <div class="form-group">
           <label class="field-label">Status</label>
@@ -842,7 +1041,10 @@
           </select>
         </div>
         <div class="form-group full">
-          <label class="field-label">Admin note (shown to student)</label>
+          <div class="label-row">
+            <label class="field-label">Admin note (shown to student)</label>
+            <span class="autosave-tag" id="autosave-tag">Saving…</span>
+          </div>
           <input id="modal-note" type="text" placeholder="e.g. Forwarded to exam cell" oninput="modalEdit('note', this.value)" />
         </div>
 
@@ -883,71 +1085,36 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const ADMIN_PIN = '1212';
 
-/* ── Follow-up Due configuration ──
-   Follow-up due counts WORKING days (Mon–Fri; Sat/Sun excluded) since the
-   ticket was created, and only applies while the ticket is unresolved.
-   Categories in FOLLOWUP_CATEGORIES_7D get a 7-working-day grace period
-   (these tend to involve outside parties / paperwork turnaround).
-   Every other category — anything NOT in that list — is treated as a
-   faster-turnaround issue and flagged as follow-up due after 3 working days. */
+/* ── Follow-up Due configuration ── */
 const FOLLOWUP_WORKING_DAYS_7D = 7;
 const FOLLOWUP_WORKING_DAYS_3D = 3;
 const FOLLOWUP_CATEGORIES_7D = new Set([
-  'Fees & Accounts',
-  'Scholarship & Financial Aid',
-  'Infrastructure',
-  'Placement & Internships',
-  'Certificates & Documents',
-  'Ragging / Harassment',
-  'Other',
+  'Fees & Accounts','Scholarship & Financial Aid','Infrastructure','Placement & Internships',
+  'Certificates & Documents','Ragging / Harassment','Other',
 ]);
 
-/* Counts weekdays (Mon-Fri) strictly between `start` and `end`.
-   Walks day-by-day from start (exclusive) to end (inclusive) and
-   counts each day that isn't a Saturday or Sunday. */
 function workingDaysElapsed(start, end){
-  const cur = new Date(start);
-  cur.setHours(0,0,0,0);
-  const stop = new Date(end);
-  stop.setHours(0,0,0,0);
+  const cur = new Date(start); cur.setHours(0,0,0,0);
+  const stop = new Date(end); stop.setHours(0,0,0,0);
   let count = 0;
   while(cur < stop){
     cur.setDate(cur.getDate() + 1);
-    const day = cur.getDay(); // 0 = Sun, 6 = Sat
+    const day = cur.getDay();
     if(day !== 0 && day !== 6) count++;
   }
   return count;
 }
 
-/* ── Category → default priority map ──
-   Used whenever a ticket has no explicit `priority` value saved yet.
-   Admins can always override per-ticket in the modal; the override is
-   persisted to the `priority` column and takes precedence forever after. */
 const CATEGORY_PRIORITY_MAP = {
-  'Ragging / Harassment':      'high',
-  'Health & Wellness':         'high',
-  'Examinations':               'high',
-  'Technical / Portal':         'high',
-  'Fees & Accounts':            'high',
-  'Certificates & Documents':   'high',
-
-  'Academics':                  'medium',
-  'Teaching Issue':             'medium',
-  'Scholarship & Financial Aid':'medium',
-  'Placement & Internships':    'medium',
-  'Hostel & Mess':              'medium',
-  'Infrastructure':             'medium',
-
-  'Library':                    'low',
-  'Transport':                  'low',
-  'Sports & Extracurricular':   'low',
-  'Other':                      'low',
+  'Ragging / Harassment':'high','Health & Wellness':'high','Examinations':'high','Technical / Portal':'high',
+  'Fees & Accounts':'high','Certificates & Documents':'high',
+  'Academics':'medium','Teaching Issue':'medium','Scholarship & Financial Aid':'medium','Placement & Internships':'medium',
+  'Hostel & Mess':'medium','Infrastructure':'medium',
+  'Library':'low','Transport':'low','Sports & Extracurricular':'low','Other':'low',
 };
 const PRIORITY_LABEL = { high: 'High', medium: 'Medium', low: 'Low' };
 const PRIORITY_RANK  = { high: 0, medium: 1, low: 2 };
-function getPriority(t){
-  return t.priority || CATEGORY_PRIORITY_MAP[t.category] || 'medium';
-}
+function getPriority(t){ return t.priority || CATEGORY_PRIORITY_MAP[t.category] || 'medium'; }
 
 /* ── Region map ── */
 const REGION_DEFS = {
@@ -1029,9 +1196,7 @@ function isFollowUpDue7(t){
   const wd = workingDaysElapsed(new Date(t.created_at), new Date());
   return wd >= FOLLOWUP_WORKING_DAYS_7D;
 }
-function isFollowUpDue(t){
-  return isFollowUpDue3(t) || isFollowUpDue7(t);
-}
+function isFollowUpDue(t){ return isFollowUpDue3(t) || isFollowUpDue7(t); }
 function initials(name){
   const parts = String(name||'?').trim().split(/\s+/);
   return ((parts[0]?.[0]||'') + (parts[1]?.[0]||'')).toUpperCase() || '?';
@@ -1041,9 +1206,14 @@ function avatarColor(name){
   let h = 0; for(const c of String(name||'')) h = (h*31 + c.charCodeAt(0)) % 997;
   return palette[h % palette.length];
 }
+function isNewTicket(t){
+  return (Date.now() - new Date(t.created_at).getTime()) < (2*60*60*1000);
+}
 
 /* ── State ── */
 let tickets       = [];
+let knownTicketIds= new Set();
+let firstLoadDone = false;
 let statusFilter  = 'all';
 let regionFilter  = new Set();
 let priorityFilter= new Set();
@@ -1052,7 +1222,9 @@ let sortDir       = 'new';
 let refreshTimer  = null;
 let modalId       = null;
 let modalDraft    = {};
-let modalLocked   = false; // true once the open ticket is already resolved — fully read-only
+let modalLocked   = false;
+let kbdFocusIdx   = -1;
+let autosaveTimer = null;
 
 const $  = id => document.getElementById(id);
 const show = id => $(id).classList.remove('hidden');
@@ -1069,13 +1241,77 @@ function fmtRel(iso){
   if(d<30) return d+'d ago';
   return new Date(iso).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
 }
+function fmtAbs(iso){
+  return new Date(iso).toLocaleString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+}
 
-/* ── Auth ── */
+/* ── Theme ── */
+function applyThemeIcon(){
+  const dark = document.body.getAttribute('data-theme') === 'dark';
+  const paths = dark
+    ? '<path d="M13.5 9.3A5.8 5.8 0 0 1 6.7 2.5 5.8 5.8 0 1 0 13.5 9.3z"/>'
+    : '<circle cx="8" cy="8" r="3.2"/><path d="M8 1.5v1.4M8 13.1v1.4M2.6 8H1.2M14.8 8h-1.4M3.9 3.9l1 1M11.1 11.1l1 1M11.1 3.9l-1 1M3.9 11.1l1 1"/>';
+  const authIcon = $('theme-toggle-auth-icon'); if(authIcon) authIcon.innerHTML = paths;
+  const sideIcon = $('theme-toggle-side-icon'); if(sideIcon) sideIcon.innerHTML = paths;
+  const lbl = $('theme-row-label'); if(lbl) lbl.textContent = dark ? 'Light mode' : 'Dark mode';
+}
+function toggleTheme(){
+  const cur = document.body.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.body.setAttribute('data-theme', next);
+  applyThemeIcon();
+  renderSparklines();
+}
+applyThemeIcon();
+
+/* ── Toasts ── */
+function showToast(msg){
+  const stack = $('toast-stack');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = `<span class="toast-dot"></span><span>${escHTML(msg)}</span>`;
+  stack.appendChild(el);
+  setTimeout(() => {
+    el.classList.add('leaving');
+    setTimeout(() => el.remove(), 220);
+  }, 4200);
+}
+
+/* ── Auth (OTP boxes) ── */
+(function setupOtp(){
+  const boxes = () => Array.from(document.querySelectorAll('.otp-box'));
+  document.addEventListener('input', e => {
+    if(!e.target.classList.contains('otp-box')) return;
+    e.target.value = e.target.value.replace(/[^0-9]/g,'').slice(0,1);
+    e.target.classList.toggle('filled', !!e.target.value);
+    const all = boxes();
+    const idx = all.indexOf(e.target);
+    if(e.target.value && idx < all.length - 1) all[idx+1].focus();
+    if(e.target.value && idx === all.length - 1) submitPin();
+  });
+  document.addEventListener('keydown', e => {
+    if(!e.target.classList.contains('otp-box')) return;
+    const all = boxes();
+    const idx = all.indexOf(e.target);
+    if(e.key === 'Backspace' && !e.target.value && idx > 0){ all[idx-1].focus(); }
+    if(e.key === 'Enter') submitPin();
+  });
+})();
+function getOtpValue(){
+  return Array.from(document.querySelectorAll('.otp-box')).map(b => b.value).join('');
+}
+function clearOtp(err){
+  const boxes = Array.from(document.querySelectorAll('.otp-box'));
+  boxes.forEach(b => { b.value=''; b.classList.remove('filled'); if(err) b.classList.add('shake-err'); });
+  if(err) setTimeout(() => boxes.forEach(b => b.classList.remove('shake-err')), 400);
+  boxes[0]?.focus();
+}
 function submitPin(){
-  const pin = $('pin-input').value;
+  const pin = getOtpValue();
   const err = $('pin-error');
-  if(!pin){ err.textContent='Enter the admin PIN.'; show('pin-error'); return; }
-  if(pin !== ADMIN_PIN){ err.textContent='Incorrect PIN.'; show('pin-error'); return; }
+  if(pin.length < 4){ err.textContent='Enter all 4 digits.'; show('pin-error'); return; }
+  if(pin !== ADMIN_PIN){ err.textContent='Incorrect PIN.'; show('pin-error'); clearOtp(true); return; }
+  hide('pin-error');
   hide('auth-screen');
   show('admin-screen');
   buildRegionDropdown();
@@ -1085,14 +1321,16 @@ function submitPin(){
 }
 function logout(){
   hide('admin-screen'); show('auth-screen');
-  $('pin-input').value = '';
+  clearOtp(false);
   hide('pin-error');
+  firstLoadDone = false; knownTicketIds = new Set();
   if(refreshTimer){ clearInterval(refreshTimer); refreshTimer = null; }
 }
 
 /* ── Sidebar ── */
 function toggleSidebar(){ $('sidebar').classList.toggle('collapsed'); }
 function toggleGroup(id){ $(id).classList.toggle('open'); }
+function toggleInsights(){ $('insights-panel').classList.toggle('hidden'); renderInsights(); }
 
 /* ── Dropdowns ── */
 function toggleDD(id){
@@ -1119,14 +1357,12 @@ function buildRegionDropdown(){
 }
 function toggleRegionOpt(key, checked){
   if(checked) regionFilter.add(key); else regionFilter.delete(key);
-  syncRegionDDCount();
-  renderTickets();
+  syncRegionDDCount(); renderTickets();
 }
 function clearRegionFilter(){
   regionFilter.clear();
   $('dd-region-panel').querySelectorAll('input[type=checkbox]').forEach(c => c.checked = false);
-  syncRegionDDCount();
-  renderTickets();
+  syncRegionDDCount(); renderTickets();
 }
 function syncRegionDDCount(){
   const badge = $('region-dd-count');
@@ -1135,7 +1371,6 @@ function syncRegionDDCount(){
   else { hide('region-dd-count'); trigger.classList.remove('filled'); }
 }
 
-/* ── Priority dropdown ── */
 const PRIORITY_HEX = { high: '#DC2626', medium: '#D9840C', low: '#9AA1AC' };
 function buildPriorityDropdown(){
   const panel = $('dd-priority-panel');
@@ -1149,14 +1384,12 @@ function buildPriorityDropdown(){
 }
 function togglePriorityOpt(key, checked){
   if(checked) priorityFilter.add(key); else priorityFilter.delete(key);
-  syncPriorityDDCount();
-  renderTickets();
+  syncPriorityDDCount(); renderTickets();
 }
 function clearPriorityFilter(){
   priorityFilter.clear();
   $('dd-priority-panel').querySelectorAll('input[type=checkbox]').forEach(c => c.checked = false);
-  syncPriorityDDCount();
-  renderTickets();
+  syncPriorityDDCount(); renderTickets();
 }
 function syncPriorityDDCount(){
   const badge = $('priority-dd-count');
@@ -1169,9 +1402,6 @@ function setPriorityOnly(key){
   buildPriorityDropdown();
   $('dd-priority-panel').querySelector(`input[value="${key}"]`).checked = true;
   syncPriorityDDCount();
-  // Every priority view is treated as an "active work" view: once a ticket
-  // is resolved it should disappear from here and only show under Resolved,
-  // matching the priority KPI counts (which already exclude resolved).
   statusFilter = 'active';
   syncStatusDD();
   syncNavActive('priority-'+key);
@@ -1186,15 +1416,10 @@ function setSort(dir){
   toggleDD('dd-sort');
   renderTickets();
 }
-function toggleSortDirection(){ setSort(sortDir==='new' ? 'old' : 'new'); }
 
-/* ── Filtering: sidebar + KPI cards + Status dropdown all set statusFilter ── */
 function setStatusFilter(f){
   statusFilter = f;
-  syncStatusDD();
-  syncNavActive();
-  updateHeader();
-  renderTickets();
+  syncStatusDD(); syncNavActive(); updateHeader(); renderTickets();
 }
 function syncStatusDD(){
   const map = { all:0, open:1, progress:2, resolved:3 };
@@ -1225,26 +1450,16 @@ function setReviewFilter(v){
 function syncNavActive(explicitKey){
   const key = explicitKey || statusFilter;
   document.querySelectorAll('.sub-row, .nav-row[data-filter]').forEach(b => b.classList.toggle('active', b.dataset.filter === key));
-  document.querySelectorAll('.stat-card').forEach(b => b.classList.toggle('active', b.dataset.filter === statusFilter || b.dataset.filter === key));
+  document.querySelectorAll('.stat-card[data-filter]').forEach(b => b.classList.toggle('active', b.dataset.filter === statusFilter || b.dataset.filter === key));
 }
 function updateHeader(explicitKey){
   const key = explicitKey || statusFilter;
   const map = {
-    'all':                 'All Tickets',
-    'open':                'Unresolved',
-    'progress':            'In Progress',
-    'resolved':            'Resolved',
-    'followup3':           'Follow-up Due (3 Days)',
-    'followup7':           'Follow-up Due (7 Days)',
-    'region-chennai':      'Chennai',
-    'region-karnakerala':  'Karnataka & Kerala',
-    'region-tamilnadu':    'Tamil Nadu',
-    'region-coimbatore':   'Coimbatore',
-    'review-pending':      'Review Pending',
-    'review-done':         'Review Done',
-    'priority-high':       'High Priority',
-    'priority-medium':     'Medium Priority',
-    'priority-low':        'Low Priority',
+    'all':'All Tickets','open':'Unresolved','progress':'In Progress','resolved':'Resolved',
+    'followup3':'Follow-up Due (3 Days)','followup7':'Follow-up Due (7 Days)',
+    'region-chennai':'Chennai','region-karnakerala':'Karnataka & Kerala','region-tamilnadu':'Tamil Nadu','region-coimbatore':'Coimbatore',
+    'review-pending':'Review Pending','review-done':'Review Done',
+    'priority-high':'High Priority','priority-medium':'Medium Priority','priority-low':'Low Priority',
   };
   $('breadcrumb-current').textContent = map[key] || 'Tickets';
 }
@@ -1261,9 +1476,7 @@ function getFiltered(){
   if(regionFilter.size){
     list = list.filter(t => { const key = resolveRegion(t.college); return regionFilter.has(key || 'unmapped'); });
   }
-  if(priorityFilter.size){
-    list = list.filter(t => priorityFilter.has(getPriority(t)));
-  }
+  if(priorityFilter.size){ list = list.filter(t => priorityFilter.has(getPriority(t))); }
   if(reviewFilter==='pending') list = list.filter(t => !t.reviewed);
   if(reviewFilter==='done')    list = list.filter(t => !!t.reviewed);
   if(q){
@@ -1282,6 +1495,75 @@ function getFiltered(){
       : new Date(a.created_at) - new Date(b.created_at));
   }
   return list;
+}
+
+/* ── Sparklines (last 7 days) ── */
+function buildSparkPath(counts, w, h){
+  const max = Math.max(...counts, 1);
+  const step = w / (counts.length - 1 || 1);
+  return counts.map((c,i) => `${i*step},${h - (c/max)*(h-4) - 2}`).join(' ');
+}
+function renderSparklines(){
+  const days = 7;
+  const now = new Date(); now.setHours(0,0,0,0);
+  const createdCounts = new Array(days).fill(0);
+  const resolvedCounts = new Array(days).fill(0);
+  tickets.forEach(t => {
+    const d = new Date(t.created_at); d.setHours(0,0,0,0);
+    const diff = Math.round((now - d) / 86400000);
+    if(diff >= 0 && diff < days) createdCounts[days-1-diff]++;
+    if(t.status === 'resolved' && t.closed_at){
+      const cd = new Date(t.closed_at); cd.setHours(0,0,0,0);
+      const cdiff = Math.round((now - cd) / 86400000);
+      if(cdiff >= 0 && cdiff < days) resolvedCounts[days-1-cdiff]++;
+    }
+  });
+  const dark = document.body.getAttribute('data-theme') === 'dark';
+  const drawInto = (id, counts, color) => {
+    const el = $(id); if(!el) return;
+    const w = 52, h = 28;
+    const pts = buildSparkPath(counts, w, h);
+    el.innerHTML = `<polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>`;
+  };
+  drawInto('spark-all', createdCounts, dark ? '#5B7CFF' : '#3457E8');
+  drawInto('spark-res', resolvedCounts, dark ? '#34D07C' : '#16A34A');
+}
+
+/* ── Insights panel ── */
+function renderInsightBars(containerId, counts, colorMap, defaultColor){
+  const el = $(containerId);
+  const entries = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0,8);
+  const max = Math.max(...entries.map(e=>e[1]), 1);
+  el.innerHTML = entries.map(([label, val]) => `
+    <div class="insight-bar-row">
+      <span class="insight-bar-label" title="${escHTML(label)}">${escHTML(label)}</span>
+      <span class="insight-bar-track"><span class="insight-bar-fill" style="width:${(val/max)*100}%;background:${colorMap[label]||defaultColor}"></span></span>
+      <span class="insight-bar-val">${val}</span>
+    </div>`).join('') || '<div style="font-size:12px;color:var(--text-faint)">No data yet</div>';
+}
+function renderInsights(){
+  if($('insights-panel').classList.contains('hidden')) return;
+  const byCategory = {};
+  tickets.forEach(t => { byCategory[t.category||'Other'] = (byCategory[t.category||'Other']||0) + 1; });
+  renderInsightBars('insight-category', byCategory, {}, 'var(--blue)');
+
+  const byRegion = {};
+  tickets.forEach(t => { const info = getRegionInfo(t.college); byRegion[info.label] = (byRegion[info.label]||0) + 1; });
+  const regionColorMap = {};
+  Object.keys(REGION_DEFS).forEach(k => regionColorMap[REGION_DEFS[k].label] = REGION_HEX[k]);
+  regionColorMap['Unmapped'] = REGION_HEX.unmapped;
+  renderInsightBars('insight-region', byRegion, regionColorMap, 'var(--violet)');
+}
+
+/* ── Avg resolution time ── */
+function renderAvgResolution(){
+  const resolved = tickets.filter(t => t.status==='resolved' && t.closed_at);
+  if(!resolved.length){ $('cnt-avgres').textContent = '—'; return; }
+  const totalMs = resolved.reduce((sum,t) => sum + (new Date(t.closed_at) - new Date(t.created_at)), 0);
+  const avgMs = totalMs / resolved.length;
+  const hours = avgMs / 3600000;
+  if(hours < 24){ $('cnt-avgres').textContent = hours.toFixed(1) + 'h'; }
+  else { $('cnt-avgres').textContent = (hours/24).toFixed(1) + 'd'; }
 }
 
 /* ── Stats ── */
@@ -1318,6 +1600,10 @@ function renderStats(){
   $('nav-cnt-r-karnakerala').textContent = regionCounts.karnakerala;
   $('nav-cnt-r-tamilnadu').textContent   = regionCounts.tamilnadu;
   $('nav-cnt-r-coimbatore').textContent  = regionCounts.coimbatore;
+
+  renderAvgResolution();
+  renderSparklines();
+  renderInsights();
 }
 
 function renderChips(){
@@ -1328,12 +1614,38 @@ function renderChips(){
   $('active-chips').innerHTML = chips.join(' ');
 }
 
+/* ── Skeleton loading ── */
+function renderSkeleton(){
+  const grid = $('ticket-grid');
+  hide('empty-state');
+  let html = '';
+  for(let i=0;i<6;i++){
+    html += `<div class="skel-card"><div class="skel-edge"></div><div class="skel-main">
+      <div class="skel-bar" style="width:40%;height:12px;"></div>
+      <div class="skel-bar" style="width:70%;height:16px;"></div>
+      <div class="skel-bar" style="width:50%;height:12px;"></div>
+      <div class="skel-bar" style="width:90%;height:10px;margin-top:auto;"></div>
+    </div></div>`;
+  }
+  grid.innerHTML = html;
+}
+
 /* ── Load ── */
 async function loadTickets(){
+  if(!firstLoadDone) renderSkeleton();
   try {
     const { data, error } = await sb.from('tickets').select('*').order('created_at', { ascending: false });
     if(error) throw error;
-    tickets = data || [];
+    const newData = data || [];
+
+    if(firstLoadDone){
+      const newIds = newData.filter(t => !knownTicketIds.has(t.id));
+      if(newIds.length === 1) showToast(`New ticket from ${newIds[0].student_name || 'a student'}`);
+      else if(newIds.length > 1) showToast(`${newIds.length} new tickets received`);
+    }
+    knownTicketIds = new Set(newData.map(t => t.id));
+    tickets = newData;
+    firstLoadDone = true;
     renderTickets();
   } catch(e){
     console.error(e);
@@ -1343,6 +1655,21 @@ async function loadTickets(){
   }
 }
 
+/* ── Empty state illustration ── */
+function emptyStateSvg(){
+  return `<svg width="120" height="90" viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="15" y="20" width="90" height="58" rx="10" fill="var(--slate-soft)" stroke="var(--border)" stroke-width="1.5"/>
+    <path d="M15 34h90" stroke="var(--border)" stroke-width="1.5"/>
+    <circle cx="28" cy="27" r="2" fill="var(--text-faint)"/>
+    <circle cx="36" cy="27" r="2" fill="var(--text-faint)"/>
+    <circle cx="44" cy="27" r="2" fill="var(--text-faint)"/>
+    <rect x="30" y="44" width="60" height="7" rx="3.5" fill="var(--border)"/>
+    <rect x="30" y="56" width="40" height="7" rx="3.5" fill="var(--border)"/>
+    <circle cx="90" cy="66" r="16" fill="var(--blue-soft)" stroke="var(--blue)" stroke-width="1.5"/>
+    <path d="M84 66h12M90 60v12" stroke="var(--blue)" stroke-width="2" stroke-linecap="round"/>
+  </svg>`;
+}
+
 /* ── Render ticket cards ── */
 function renderTickets(){
   renderStats();
@@ -1350,16 +1677,17 @@ function renderTickets(){
   const filtered = getFiltered();
   const grid  = $('ticket-grid');
   const empty = $('empty-state');
+  kbdFocusIdx = -1;
 
   if(filtered.length === 0){
     grid.innerHTML = '';
     show('empty-state');
-    empty.innerHTML = '<div class="empty-icon">📭</div><strong>No tickets found</strong><p>Try a different filter or search term.</p>';
+    empty.innerHTML = emptyStateSvg() + '<strong>No tickets found</strong><p>Try a different filter or search term.</p>';
     return;
   }
   hide('empty-state');
 
-  grid.innerHTML = filtered.map(t => {
+  grid.innerHTML = filtered.map((t,i) => {
     const statusDot = {open:'dot-red',progress:'dot-amber',resolved:'dot-green'}[t.status]||'dot-slate';
     const statusLbl = {open:'Unresolved',progress:'In Progress',resolved:'Resolved'}[t.status]||t.status;
     const rInfo = getRegionInfo(t.college);
@@ -1370,9 +1698,16 @@ function renderTickets(){
     const slaFlag = isFollowUpDue(t) ? `<span class="sla-tag">⚑ Follow-up due</span>` : '';
     const closedTag = (t.status === 'resolved' && t.closed_by)
       ? `<span class="closed-by-tag">🔒 Closed by ${escHTML(t.closed_by)}</span>` : '';
+    const newRing = isNewTicket(t) ? 'is-new' : '';
+    const quickActions = t.status !== 'resolved' ? `
+      <div class="ticket-quick-actions">
+        ${t.status==='open' ? `<button class="qa-btn" title="Start progress" onclick="event.stopPropagation();quickSetStatus('${t.id}','progress')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 8h8M9 4l4 4-4 4"/></svg></button>` : ''}
+        <button class="qa-btn" title="Open ticket" onclick="event.stopPropagation();openModal('${t.id}')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3.5H3a1 1 0 0 0-1 1v8.5a1 1 0 0 0 1 1h8.5a1 1 0 0 0 1-1V10M9 3.5h3.5V7M12.5 3.5 7 9"/></svg></button>
+      </div>` : '';
 
-    return `<div class="ticket-card ${t.status==='resolved'?'is-closed':''}" onclick="openModal('${t.id}')">
+    return `<div class="ticket-card ${t.status==='resolved'?'is-closed':''}" data-idx="${i}" onclick="openModal('${t.id}')">
       <div class="ticket-edge ${prio}"></div>
+      ${quickActions}
       <div class="ticket-main">
         <div class="ticket-top-row">
           <div class="ticket-top-left">
@@ -1382,7 +1717,9 @@ function renderTickets(){
           <span class="dot-row"><span class="dot ${rInfo.dot}"></span>${escHTML(rInfo.label)}</span>
         </div>
         <div class="ticket-id-row">
-          <div class="avatar" style="background:${avatarColor(t.student_name)}">${initials(t.student_name)}</div>
+          <div class="avatar-wrap ${newRing}">
+            <div class="avatar" style="background:${avatarColor(t.student_name)}">${initials(t.student_name)}</div>
+          </div>
           <div style="min-width:0;">
             <div class="ticket-subject">${escHTML(t.subject)}</div>
             <div class="ticket-student">${escHTML(t.student_name)}${t.college?' · '+escHTML(t.college):''}</div>
@@ -1404,9 +1741,94 @@ function renderTickets(){
       </div>
     </div>`;
   }).join('');
+
+  window._filteredCache = filtered;
+}
+
+/* ── Quick actions ── */
+async function quickSetStatus(id, status){
+  const { error } = await sb.from('tickets').update({ status, updated_at: new Date().toISOString() }).eq('id', id);
+  if(error){ console.error(error); showToast('Could not update ticket'); return; }
+  tickets = tickets.map(t => t.id === id ? { ...t, status } : t);
+  renderTickets();
+  showToast('Ticket marked in progress');
+}
+
+/* ── Keyboard navigation ── */
+document.addEventListener('keydown', e => {
+  if($('ticket-modal') && !$('ticket-modal').classList.contains('hidden')){
+    if(e.key === 'Escape') closeModal();
+    return;
+  }
+  if($('admin-screen').classList.contains('hidden')) return;
+  const active = document.activeElement;
+  if(active && ['INPUT','SELECT','TEXTAREA'].includes(active.tagName)) return;
+
+  const cards = Array.from(document.querySelectorAll('.ticket-card'));
+  if(!cards.length) return;
+
+  if(e.key === 'j' || e.key === 'J'){
+    kbdFocusIdx = Math.min(kbdFocusIdx + 1, cards.length - 1);
+    updateKbdFocus(cards);
+  } else if(e.key === 'k' || e.key === 'K'){
+    kbdFocusIdx = Math.max(kbdFocusIdx - 1, 0);
+    updateKbdFocus(cards);
+  } else if(e.key === 'Enter'){
+    if(kbdFocusIdx >= 0 && cards[kbdFocusIdx]) cards[kbdFocusIdx].click();
+  }
+});
+function updateKbdFocus(cards){
+  cards.forEach(c => c.classList.remove('kbd-focus'));
+  const c = cards[kbdFocusIdx];
+  if(c){ c.classList.add('kbd-focus'); c.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+}
+
+/* ── CSV export ── */
+function exportCSV(){
+  const list = window._filteredCache || tickets;
+  if(!list.length){ showToast('No tickets to export'); return; }
+  const cols = ['roll_number','student_name','college','category','subject','status','priority','reviewed','created_at','closed_by','closed_at'];
+  const rows = [cols.join(',')];
+  list.forEach(t => {
+    const row = cols.map(c => {
+      let v = c === 'priority' ? getPriority(t) : t[c];
+      v = (v === null || v === undefined) ? '' : String(v);
+      if(v.includes(',') || v.includes('"') || v.includes('\n')) v = '"' + v.replace(/"/g,'""') + '"';
+      return v;
+    });
+    rows.push(row.join(','));
+  });
+  const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `facePrep-tickets-${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+  showToast('CSV exported');
 }
 
 /* ── Modal ── */
+function buildTimeline(t){
+  const items = [];
+  items.push({ label: 'Ticket created', time: t.created_at, done: true });
+  if(t.updated_at && t.updated_at !== t.created_at && t.status !== 'resolved'){
+    items.push({ label: 'Last updated', time: t.updated_at, done: true });
+  }
+  if(t.status === 'resolved' && t.closed_at){
+    items.push({ label: t.closed_by ? `Resolved by ${t.closed_by}` : 'Resolved', time: t.closed_at, done: true });
+  } else {
+    items.push({ label: 'Awaiting resolution', time: null, done: false });
+  }
+  return items.map(it => `
+    <div class="timeline-item">
+      <div class="timeline-dot ${it.done ? 'done' : ''}"></div>
+      <div class="timeline-body">
+        <strong>${escHTML(it.label)}</strong>
+        <span>${it.time ? fmtAbs(it.time) : 'Pending'}</span>
+      </div>
+    </div>`).join('');
+}
+
 function openModal(id){
   const t = tickets.find(x=>x.id===id);
   if(!t) return;
@@ -1423,12 +1845,13 @@ function openModal(id){
   $('modal-closer').value      = '';
   hide('closer-error');
   $('closer-name-wrap').classList.remove('show');
+  $('modal-timeline').innerHTML = buildTimeline(t);
+  $('autosave-tag').classList.remove('show','saved');
 
   const rInfo = getRegionInfo(t.college);
   $('modal-region-badge').innerHTML = `<span class="dot-row"><span class="dot ${rInfo.dot}"></span>${escHTML(rInfo.label)}</span>`;
   $('modal-region-coord').textContent = rInfo.key ? `Coordinator: ${rInfo.kam}` : 'College not yet mapped to a region';
 
-  // Fields that must lock permanently once a ticket is resolved
   const fields = [$('modal-status'), $('modal-note'), $('modal-review')];
   const saveBtn = $('modal-save-btn');
 
@@ -1452,32 +1875,53 @@ function openModal(id){
 function closeModal(){
   hide('ticket-modal');
   document.body.style.overflow = '';
-  modalId = null;
-  modalDraft = {};
-  modalLocked = false;
+  modalId = null; modalDraft = {}; modalLocked = false;
+  if(autosaveTimer) clearTimeout(autosaveTimer);
 }
-function modalEdit(field, val){ if(modalLocked) return; modalDraft[field] = val; }
+function modalEdit(field, val){
+  if(modalLocked) return;
+  modalDraft[field] = val;
+  if(field === 'note') scheduleAutosave();
+}
+function scheduleAutosave(){
+  const tag = $('autosave-tag');
+  tag.textContent = 'Saving…'; tag.classList.remove('saved'); tag.classList.add('show');
+  if(autosaveTimer) clearTimeout(autosaveTimer);
+  autosaveTimer = setTimeout(async () => {
+    if(!modalId || modalLocked) return;
+    const { error } = await sb.from('tickets').update({ admin_note: modalDraft.note, updated_at: new Date().toISOString() }).eq('id', modalId);
+    if(!error){
+      tickets = tickets.map(t => t.id === modalId ? { ...t, admin_note: modalDraft.note } : t);
+      tag.textContent = '✓ Note saved'; tag.classList.add('saved');
+      setTimeout(() => tag.classList.remove('show'), 1800);
+    } else {
+      tag.textContent = 'Save failed';
+    }
+  }, 900);
+}
 
 function onStatusChange(val){
   if(modalLocked) return;
   modalDraft.status = val;
   const wrap = $('closer-name-wrap');
-  if(val === 'resolved'){
-    wrap.classList.add('show');
-  } else {
-    wrap.classList.remove('show');
-    hide('closer-error');
-  }
+  if(val === 'resolved'){ wrap.classList.add('show'); }
+  else { wrap.classList.remove('show'); hide('closer-error'); }
 }
 function onCloserInput(val){
   modalDraft.closer = val;
   if(val.trim()) hide('closer-error');
 }
 
+function playResolveBurst(){
+  const burst = $('resolve-burst');
+  burst.classList.remove('play');
+  void burst.offsetWidth;
+  burst.classList.add('play');
+}
+
 async function saveModal(){
   if(!modalId || modalLocked) return;
 
-  // Require a closer name before a ticket can be marked resolved
   if(modalDraft.status === 'resolved' && !(modalDraft.closer || '').trim()){
     show('closer-error');
     $('modal-closer').focus();
@@ -1490,13 +1934,14 @@ async function saveModal(){
   saveBtn.textContent = 'Saving…';
   hide('modal-saved');
 
+  const wasResolving = modalDraft.status === 'resolved';
   const payload = {
     status:     modalDraft.status,
     admin_note: modalDraft.note,
     reviewed:   !!modalDraft.reviewed,
     updated_at: new Date().toISOString()
   };
-  if(modalDraft.status === 'resolved'){
+  if(wasResolving){
     payload.closed_by = modalDraft.closer.trim();
     payload.closed_at = new Date().toISOString();
   }
@@ -1521,10 +1966,14 @@ async function saveModal(){
   show('modal-saved');
   saveBtn.disabled = false;
   saveBtn.textContent = 'Save changes';
-  setTimeout(() => { hide('modal-saved'); closeModal(); }, 1200);
-}
 
-document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
+  if(wasResolving){
+    playResolveBurst();
+    setTimeout(() => { hide('modal-saved'); closeModal(); }, 1400);
+  } else {
+    setTimeout(() => { hide('modal-saved'); closeModal(); }, 1200);
+  }
+}
 </script>
 </body>
 </html>
