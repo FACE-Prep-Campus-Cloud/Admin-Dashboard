@@ -265,7 +265,6 @@
     cursor: pointer;
     transition: box-shadow .12s, transform .12s;
     position: relative;
-    min-height: 190px; 
   }
   .ticket-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
 
@@ -276,7 +275,7 @@
 
   .ticket-main {
     flex: 1; min-width: 0;
-    padding: 22px 20px 18px 18px;
+    padding: 15px 16px 13px 14px;
     display: flex; flex-direction: column; gap: 9px;
   }
   .ticket-top-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
@@ -296,7 +295,7 @@
     border-radius: 0 14px 14px 0;
     position: relative;
     display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-    padding: 20px 6px 16px;
+    padding: 14px 6px 12px;
     gap: 8px;
   }
   .ticket-stub::before, .ticket-stub::after {
@@ -441,7 +440,7 @@
               Resolved <span class="nav-count" id="nav-cnt-res" style="margin-left:auto">0</span>
             </button>
             <button class="sub-row" data-filter="sla" onclick="setStatusFilter('sla')">
-              SLA risk (7d+) <span class="nav-count urgent" id="nav-cnt-sla" style="margin-left:auto">0</span>
+              SLA risk (7wd+) <span class="nav-count urgent" id="nav-cnt-sla" style="margin-left:auto">0</span>
             </button>
           </div>
         </div>
@@ -698,7 +697,40 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const ADMIN_PIN = '1212';
-const SLA_HOURS = 24 * 7; // 7 days
+
+/* ── SLA configuration ──
+   SLA risk applies only to the categories below, and only counts
+   WORKING days (Mon–Fri; Sat/Sun excluded) since the ticket was created.
+   A ticket in one of these categories that has been open (not resolved)
+   for 7 or more working days is flagged as SLA risk. Tickets in any
+   other category never show the SLA risk flag, regardless of age. */
+const SLA_WORKING_DAYS = 7;
+const SLA_CATEGORIES = new Set([
+  'Fees & Accounts',
+  'Scholarship & Financial Aid',
+  'Infrastructure',
+  'Placement & Internships',
+  'Certificates & Documents',
+  'Ragging / Harassment',
+  'Other',
+]);
+
+/* Counts weekdays (Mon-Fri) strictly between `start` and `end`.
+   Walks day-by-day from start (exclusive) to end (inclusive) and
+   counts each day that isn't a Saturday or Sunday. */
+function workingDaysElapsed(start, end){
+  const cur = new Date(start);
+  cur.setHours(0,0,0,0);
+  const stop = new Date(end);
+  stop.setHours(0,0,0,0);
+  let count = 0;
+  while(cur < stop){
+    cur.setDate(cur.getDate() + 1);
+    const day = cur.getDay(); // 0 = Sun, 6 = Sat
+    if(day !== 0 && day !== 6) count++;
+  }
+  return count;
+}
 
 /* ── Category → default priority map ──
    Used whenever a ticket has no explicit `priority` value saved yet.
@@ -800,8 +832,9 @@ function getRegionInfo(collegeName){
 }
 function isSlaRisk(t){
   if(t.status === 'resolved') return false;
-  const ageHrs = (Date.now() - new Date(t.created_at).getTime()) / 3600000;
-  return ageHrs >= SLA_HOURS;
+  if(!SLA_CATEGORIES.has(t.category)) return false;
+  const wd = workingDaysElapsed(new Date(t.created_at), new Date());
+  return wd >= SLA_WORKING_DAYS;
 }
 function initials(name){
   const parts = String(name||'?').trim().split(/\s+/);
