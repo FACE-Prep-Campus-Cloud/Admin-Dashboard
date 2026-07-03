@@ -444,7 +444,7 @@
               Resolved <span class="nav-count" id="nav-cnt-res" style="margin-left:auto">0</span>
             </button>
             <button class="sub-row" data-filter="sla" onclick="setStatusFilter('sla')">
-              SLA risk (7wd+) <span class="nav-count urgent" id="nav-cnt-sla" style="margin-left:auto">0</span>
+              SLA risk <span class="nav-count urgent" id="nav-cnt-sla" style="margin-left:auto">0</span>
             </button>
           </div>
         </div>
@@ -711,13 +711,15 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const ADMIN_PIN = '1212';
 
 /* ── SLA configuration ──
-   SLA risk applies only to the categories below, and only counts
-   WORKING days (Mon–Fri; Sat/Sun excluded) since the ticket was created.
-   A ticket in one of these categories that has been open (not resolved)
-   for 7 or more working days is flagged as SLA risk. Tickets in any
-   other category never show the SLA risk flag, regardless of age. */
-const SLA_WORKING_DAYS = 7;
-const SLA_CATEGORIES = new Set([
+   SLA risk counts WORKING days (Mon–Fri; Sat/Sun excluded) since the
+   ticket was created, and only applies while the ticket is unresolved.
+   Categories in SLA_CATEGORIES_7D get a 7-working-day grace period
+   (these tend to involve outside parties / paperwork turnaround).
+   Every other category — anything NOT in that list — is treated as a
+   faster-turnaround issue and flagged at risk after just 3 working days. */
+const SLA_WORKING_DAYS_7D = 7;
+const SLA_WORKING_DAYS_3D = 3;
+const SLA_CATEGORIES_7D = new Set([
   'Fees & Accounts',
   'Scholarship & Financial Aid',
   'Infrastructure',
@@ -844,9 +846,9 @@ function getRegionInfo(collegeName){
 }
 function isSlaRisk(t){
   if(t.status === 'resolved') return false;
-  if(!SLA_CATEGORIES.has(t.category)) return false;
+  const threshold = SLA_CATEGORIES_7D.has(t.category) ? SLA_WORKING_DAYS_7D : SLA_WORKING_DAYS_3D;
   const wd = workingDaysElapsed(new Date(t.created_at), new Date());
-  return wd >= SLA_WORKING_DAYS;
+  return wd >= threshold;
 }
 function initials(name){
   const parts = String(name||'?').trim().split(/\s+/);
