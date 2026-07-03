@@ -251,7 +251,7 @@
   .ticket-grid-wrap { background: transparent; }
   .ticket-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
     gap: 18px;
   }
 
@@ -265,7 +265,6 @@
     cursor: pointer;
     transition: box-shadow .12s, transform .12s;
     position: relative;
-    min-height: 260px;
   }
   .ticket-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
 
@@ -276,8 +275,8 @@
 
   .ticket-main {
     flex: 1; min-width: 0;
-    padding: 26px 22px 22px 20px;
-    display: flex; flex-direction: column; gap: 14px;
+    padding: 15px 16px 13px 14px;
+    display: flex; flex-direction: column; gap: 9px;
   }
   .ticket-top-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .ticket-subject {
@@ -296,7 +295,7 @@
     border-radius: 0 14px 14px 0;
     position: relative;
     display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-    padding: 24px 6px 20px;
+    padding: 14px 6px 12px;
     gap: 8px;
   }
   .ticket-stub::before, .ticket-stub::after {
