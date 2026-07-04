@@ -1833,14 +1833,12 @@ function renderTickets(){
           </div>
           <span class="dot-row"><span class="dot ${rInfo.dot}"></span>${escHTML(rInfo.label)}</span>
         </div>
-        <div class="ticket-id-row">
-          <div class="avatar-wrap ${newRing}">
-            <div class="avatar" style="background:${avatarColor(t.student_name)}">${initials(t.student_name)}</div>
-          </div>
-          <div style="min-width:0;">
-            <div class="ticket-subject">${escHTML(t.subject)}</div>
-            <div class="ticket-student">${escHTML(t.student_name)}${t.college?' · '+escHTML(t.college):''}</div>
-          </div>
+      <div class="ticket-id-row">
+  <div style="min-width:0;">
+    <div class="ticket-subject">${escHTML(t.subject)}</div>
+    <div class="ticket-student">${escHTML(t.student_name)}${t.college?' · '+escHTML(t.college):''}</div>
+  </div>
+</div>
         </div>
         <hr class="ticket-perf" />
         <div class="ticket-bottom-row">
