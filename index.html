@@ -679,6 +679,11 @@
   .resolve-check path { stroke-dasharray: 24; stroke-dashoffset: 24; animation: checkDraw .35s ease .25s forwards; }
   @keyframes checkDraw { to { stroke-dashoffset: 0; } }
 
+  /* refresh spin */
+  @keyframes spinIcon { to { transform: rotate(360deg); } }
+  #refresh-icon.spinning { animation: spinIcon 0.7s linear infinite; }
+  #refresh-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
   @media (max-width: 860px) {
     .sidebar { position: fixed; z-index: 40; left: -244px; }
     .sidebar.mobile-open { left: 0; }
@@ -887,8 +892,8 @@
           <button class="btn btn-ghost btn-icon" onclick="toggleInsights()" title="Toggle insights">
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 13.5V9M6 13.5V5M10 13.5V7.5M14 13.5V2.5"/></svg>
           </button>
-                    <button class="btn btn-ghost" onclick="loadTickets()" title="Refresh">
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13.5 2.5A6.5 6.5 0 1 1 8 1.5"/><polyline points="13.5,2.5 13.5,6 10,6"/></svg>
+          <button class="btn btn-ghost" id="refresh-btn" onclick="loadTickets(true)" title="Refresh">
+            <svg id="refresh-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13.5 2.5A6.5 6.5 0 1 1 8 1.5"/><polyline points="13.5,2.5 13.5,6 10,6"/></svg>
             Refresh
           </button>
         </div>
@@ -1716,8 +1721,13 @@ function renderSkeleton(){
 }
 
 /* ── Load ── */
-async function loadTickets(){
+async function loadTickets(manual){
   if(!firstLoadDone) renderSkeleton();
+
+  const btn = $('refresh-btn');
+  const icon = $('refresh-icon');
+  if(manual && btn){ btn.disabled = true; icon.classList.add('spinning'); }
+
   try {
     const { data, error } = await sb.from('tickets').select('*').order('created_at', { ascending: false });
     if(error) throw error;
@@ -1727,6 +1737,7 @@ async function loadTickets(){
       const newIds = newData.filter(t => !knownTicketIds.has(t.id));
       if(newIds.length === 1) showToast(`New ticket from ${newIds[0].student_name || 'a student'}`);
       else if(newIds.length > 1) showToast(`${newIds.length} new tickets received`);
+      else if(manual) showToast('Tickets refreshed');
     }
     knownTicketIds = new Set(newData.map(t => t.id));
     tickets = newData;
@@ -1734,9 +1745,12 @@ async function loadTickets(){
     renderTickets();
   } catch(e){
     console.error(e);
+    showToast('Refresh failed: ' + (e.message || 'check console'));
     $('ticket-grid').innerHTML = '';
     show('empty-state');
     $('empty-state').innerHTML = '<div class="empty-icon">⚠️</div><strong>Couldn\'t load tickets</strong><p>Check your connection and refresh.</p>';
+  } finally {
+    if(manual && btn){ btn.disabled = false; icon.classList.remove('spinning'); }
   }
 }
 
