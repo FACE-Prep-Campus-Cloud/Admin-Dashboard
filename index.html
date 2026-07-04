@@ -684,6 +684,20 @@
   #refresh-icon.spinning { animation: spinIcon 0.7s linear infinite; }
   #refresh-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
+  /* ── ATTACHMENT (added) ── */
+  .modal-attachment { margin-bottom: 18px; }
+  .modal-attachment img {
+    max-width: 100%; max-height: 320px; border-radius: 10px;
+    border: 1px solid var(--border); cursor: zoom-in; display: block;
+  }
+  .admin-lightbox {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 300; cursor: zoom-out; padding: 24px;
+  }
+  .admin-lightbox img { max-width: 100%; max-height: 100%; border-radius: 8px; }
+  .ticket-attach-flag { display:inline-flex; align-items:center; gap:3px; font-size:11px; color: var(--text-faint); }
+
   @media (max-width: 860px) {
     .sidebar { position: fixed; z-index: 40; left: -244px; }
     .sidebar.mobile-open { left: 0; }
@@ -1054,6 +1068,10 @@
       </div>
 
       <div class="desc-block" id="modal-desc"></div>
+
+      <div class="modal-attachment hidden" id="modal-attachment">
+        <img id="modal-attachment-img" src="" alt="Ticket attachment" onclick="openAdminLightbox(this.src)" />
+      </div>
 
       <div class="timeline" id="modal-timeline"></div>
 
@@ -1797,6 +1815,7 @@ function renderTickets(){
     const slaFlag = isFollowUpDue(t) ? `<span class="sla-tag">⚑ Follow-up due</span>` : '';
     const closedTag = (t.status === 'resolved' && t.closed_by)
       ? `<span class="closed-by-tag">🔒 Closed by ${escHTML(t.closed_by)}</span>` : '';
+    const attachFlag = t.image_url ? `<span class="ticket-attach-flag">📎 Attachment</span>` : '';
     const newRing = isNewTicket(t) ? 'is-new' : '';
     const quickActions = t.status !== 'resolved' ? `
       <div class="ticket-quick-actions">
@@ -1829,6 +1848,7 @@ function renderTickets(){
           <div class="ticket-bottom-left">
             <span class="dot-row"><span class="dot ${statusDot}"></span>${statusLbl}</span>
             ${slaFlag}
+            ${attachFlag}
             ${closedTag}
           </div>
           <span class="ticket-time">${fmtRel(t.created_at)}</span>
@@ -1851,6 +1871,19 @@ async function quickSetStatus(id, status){
   tickets = tickets.map(t => t.id === id ? { ...t, status } : t);
   renderTickets();
   showToast('Ticket marked in progress');
+}
+
+/* ── Attachment lightbox (added) ── */
+function openAdminLightbox(url){
+  if(!url) return;
+  const box = document.createElement('div');
+  box.className = 'admin-lightbox';
+  box.onclick = () => box.remove();
+  const img = document.createElement('img');
+  img.src = url;
+  img.alt = 'Ticket attachment enlarged';
+  box.appendChild(img);
+  document.body.appendChild(box);
 }
 
 /* ── Keyboard navigation ── */
@@ -1938,6 +1971,14 @@ function openModal(id){
   $('modal-title').textContent = t.subject || 'No subject';
   $('modal-meta').textContent  = `${t.roll_number} · ${t.student_name}${t.college?' · '+t.college:''} · ${t.category} · ${fmtRel(t.created_at)}`;
   $('modal-desc').textContent  = t.description || '(No description provided)';
+
+  if(t.image_url){
+    $('modal-attachment-img').src = t.image_url;
+    show('modal-attachment');
+  } else {
+    hide('modal-attachment');
+  }
+
   $('modal-status').value      = t.status;
   $('modal-note').value        = t.admin_note||'';
   $('modal-review').checked    = !!t.reviewed;
