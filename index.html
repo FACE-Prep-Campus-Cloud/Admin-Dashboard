@@ -1803,7 +1803,7 @@ function renderTickets(){
   }
   hide('empty-state');
 
-  grid.innerHTML = filtered.map((t,i) => {
+grid.innerHTML = filtered.map((t,i) => {
     const statusDot = {open:'dot-red',progress:'dot-amber',resolved:'dot-green'}[t.status]||'dot-slate';
     const statusLbl = {open:'Unresolved',progress:'In Progress',resolved:'Resolved'}[t.status]||t.status;
     const rInfo = getRegionInfo(t.college);
@@ -1815,7 +1815,6 @@ function renderTickets(){
     const closedTag = (t.status === 'resolved' && t.closed_by)
       ? `<span class="closed-by-tag">🔒 Closed by ${escHTML(t.closed_by)}</span>` : '';
     const attachFlag = t.image_url ? `<span class="ticket-attach-flag">📎 Attachment</span>` : '';
-    const newRing = isNewTicket(t) ? 'is-new' : '';
     const quickActions = t.status !== 'resolved' ? `
       <div class="ticket-quick-actions">
         ${t.status==='open' ? `<button class="qa-btn" title="Start progress" onclick="event.stopPropagation();quickSetStatus('${t.id}','progress')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 8h8M9 4l4 4-4 4"/></svg></button>` : ''}
@@ -1833,12 +1832,11 @@ function renderTickets(){
           </div>
           <span class="dot-row"><span class="dot ${rInfo.dot}"></span>${escHTML(rInfo.label)}</span>
         </div>
-      <div class="ticket-id-row">
-  <div style="min-width:0;">
-    <div class="ticket-subject">${escHTML(t.subject)}</div>
-    <div class="ticket-student">${escHTML(t.student_name)}${t.college?' · '+escHTML(t.college):''}</div>
-  </div>
-</div>
+        <div class="ticket-id-row">
+          <div style="min-width:0;">
+            <div class="ticket-subject">${escHTML(t.subject)}</div>
+            <div class="ticket-student">${escHTML(t.student_name)}${t.college?' · '+escHTML(t.college):''}</div>
+          </div>
         </div>
         <hr class="ticket-perf" />
         <div class="ticket-bottom-row">
@@ -1860,7 +1858,6 @@ function renderTickets(){
 
   window._filteredCache = filtered;
 }
-
 /* ── Quick actions ── */
 async function quickSetStatus(id, status){
   const { error } = await sb.from('tickets').update({ status, updated_at: new Date().toISOString() }).eq('id', id);
