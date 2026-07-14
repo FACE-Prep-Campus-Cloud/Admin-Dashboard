@@ -11,6 +11,7 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
+    --ui-scale: 1;
     --bg: #F4F5F7;
     --card: #FFFFFF;
     --border: #E7E9EC;
@@ -34,6 +35,13 @@
     --shadow-sm: 0 1px 2px rgba(20,21,26,0.04);
     --shadow-md: 0 4px 16px -6px rgba(20,21,26,0.10);
     --shadow-lg: 0 16px 40px -12px rgba(20,21,26,0.18);
+  }
+
+  #scale-root {
+    transform: scale(var(--ui-scale));
+    transform-origin: top left;
+    width: calc(100% / var(--ui-scale));
+    height: calc(100vh / var(--ui-scale));
   }
 
   body[data-theme="dark"] {
@@ -62,13 +70,13 @@
     --shadow-lg: 0 20px 44px -12px rgba(0,0,0,0.6);
   }
 
+html, body { height: 100%; margin: 0; overflow: hidden; }
   body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--bg); min-height: 100vh; -webkit-font-smoothing: antialiased; font-size: 14px; transition: background .25s ease, color .25s ease; }
   .hidden { display: none !important; }
   button, input, select { font-family: inherit; }
   :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
   ul { list-style: none; }
 
-  /* ── STATUS / PRIORITY DOTS ── */
   .dot-row { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 500; white-space: nowrap; }
   .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
   .dot-red    { background: var(--red); }
@@ -87,8 +95,8 @@
     display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 4px 8px; border-radius: 10px;
     font-size: 10.5px; font-weight: 600; white-space: normal; text-align: center; line-height: 1.3;
   }
-  .review-yes { background: var(--green-soft); color: var(--green); }
-  .review-no  { background: var(--slate-soft); color: var(--text-light); }
+.review-yes { background: var(--green-soft); color: var(--green); }
+  .review-no  { background: var(--red-soft); color: var(--red); }
 
   .cat-pill {
     display: inline-block; padding: 3px 10px; border-radius: 7px; font-size: 12px; font-weight: 500;
@@ -116,11 +124,8 @@
     100% { transform: scale(1.35); opacity: 0; }
   }
 
-  /* ══════════════════════════════════════════════════════════
-     ── AUTH (Glass-on-blur style) ──
-     ══════════════════════════════════════════════════════════ */
   .auth-wrap {
-    min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;
+    min-height: calc(100vh / var(--ui-scale)); display: flex; align-items: center; justify-content: center; padding: 24px;
     position: relative; overflow: hidden;
     background: #EDEBF7;
   }
@@ -175,7 +180,6 @@
     to   { opacity: 1; transform: translateY(0) scale(1); }
   }
 
-  /* glass avatar badge that overlaps the top edge of the card */
   .auth-avatar {
     width: 68px; height: 68px; border-radius: 50%; background: rgba(20,21,26,0.10); backdrop-filter: blur(8px);
     border: 1px solid rgba(20,21,26,0.12); display: flex; align-items: center; justify-content: center;
@@ -232,7 +236,6 @@
   input::placeholder { color: var(--text-faint); }
   input:disabled, select:disabled { background: var(--slate-soft); color: var(--text-faint); cursor: not-allowed; }
 
-  /* OTP-style PIN boxes — glass style */
   .otp-row { display: flex; gap: 9px; justify-content: center; }
   .otp-box {
     width: 48px; height: 54px; text-align: center; font-size: 20px; font-weight: 700;
@@ -258,7 +261,23 @@
   .auth-remember input[type=checkbox] { width: 14px; height: 14px; accent-color: var(--blue); }
   body[data-theme="dark"] .auth-remember { color: rgba(255,255,255,0.65); }
 
-  /* ── BUTTONS ── */
+  .auth-role-toggle { display: flex; gap: 8px; margin-bottom: 18px; }
+  .role-tab {
+    flex: 1; padding: 9px 8px; border-radius: 10px; border: 1px solid rgba(20,21,26,0.15);
+    background: rgba(20,21,26,0.05); color: var(--text); font-size: 12px; font-weight: 700;
+    cursor: pointer; transition: background .15s, color .15s, border-color .15s; text-align: center;
+  }
+  .role-tab.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+  body[data-theme="dark"] .role-tab { border-color: rgba(255,255,255,0.28); background: rgba(255,255,255,0.1); color: #fff; }
+  body[data-theme="dark"] .role-tab.active { background: #fff; color: #14151A; border-color: #fff; }
+
+  #session-tag {
+    font-size: 11.5px; color: var(--text-light); padding: 8px 18px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  #session-tag b { color: var(--text); font-weight: 700; }
+  .sidebar.collapsed #session-tag { display: none; }
+
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 7px;
     padding: 9px 16px; border-radius: 9px; font-size: 13px; font-weight: 600; cursor: pointer;
@@ -289,14 +308,37 @@
   .auth-footnote { text-align: center; font-size: 11.5px; color: var(--text-faint); margin-top: 18px; }
   body[data-theme="dark"] .auth-footnote { color: rgba(255,255,255,0.45); }
 
-  /* ── SHELL ── */
-  .shell { display: flex; min-height: 100vh; }
+/* ── Desktop enlargement for the sign-in card ── */
+@media (min-width: 861px) {
+  .auth-box { max-width: 460px; }
+  .auth-avatar { width: 84px; height: 84px; margin-bottom: -42px; }
+  .auth-avatar svg { width: 32px; height: 32px; }
+  .auth-panel { padding: 56px 40px 34px; border-radius: 26px; }
+  .auth-header { margin-bottom: 26px; }
+  .auth-header h1 { font-size: 25px; }
+  .auth-header p { font-size: 14.5px; margin-top: 8px; }
+  .auth-role-toggle { gap: 10px; margin-bottom: 24px; }
+  .role-tab { padding: 12px 10px; font-size: 14px; border-radius: 12px; }
+  .field-label { font-size: 13.5px; margin-bottom: 9px; }
+  .otp-row { gap: 12px; }
+  .otp-box { width: 60px; height: 66px; font-size: 24px; border-radius: 12px; }
+  #manager-login-block input,
+  #manager-login-block select { font-size: 15.5px; padding: 13px 16px; border-radius: 11px; }
+  #manager-login-block > div { margin-bottom: 18px !important; }
+  .btn-primary.btn-auth { padding: 15px 18px; font-size: 14px; border-radius: 11px; margin-top: 4px; }
+  .auth-footnote { font-size: 13px; margin-top: 22px; }
+  .error-msg { font-size: 14px; }
+}
+  
+  .shell { display: flex; min-height: calc(100vh / var(--ui-scale)); }
 
-  /* ── SIDEBAR ── */
-  .sidebar {
+.sidebar {
     width: 244px; flex-shrink: 0; background: var(--card); border-right: 1px solid var(--border);
-    display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow-y: auto; transition: width .18s ease, background .25s ease;
+    display: flex; flex-direction: column; position: sticky; top: 0; height: calc(100vh / var(--ui-scale)); overflow-y: auto; transition: width .18s ease, background .25s ease;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
+  .sidebar::-webkit-scrollbar { display: none; }
   .sidebar.collapsed { width: 76px; }
   .sidebar.collapsed .brand-text, .sidebar.collapsed .sec-label, .sidebar.collapsed .nav-label,
   .sidebar.collapsed .nav-count, .sidebar.collapsed .chevron, .sidebar.collapsed .logout-label,
@@ -368,8 +410,7 @@
   .theme-row:hover { background: var(--slate-soft); color: var(--text); }
   .theme-row svg { width: 16px; height: 16px; flex-shrink: 0; }
 
-  /* ── MAIN ── */
-  .main-content { flex: 1; min-width: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+  .main-content { flex: 1; min-width: 0; display: flex; flex-direction: column; height: calc(100vh / var(--ui-scale)); overflow: hidden; }
 
   .topbar {
     display: flex; align-items: center; justify-content: space-between; padding: 14px 30px 10px;
@@ -387,7 +428,6 @@
     display: flex; flex-direction: column; min-height: 0; overflow: hidden;
   }
 
-  /* ── INSIGHTS PANEL ── */
   .insights-panel {
     background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px;
     margin-bottom: 14px; flex-shrink: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 22px;
@@ -400,7 +440,6 @@
   .insight-bar-fill { height: 100%; border-radius: 999px; transition: width .5s cubic-bezier(.16,1,.3,1); }
   .insight-bar-val { width: 26px; text-align: right; flex-shrink: 0; font-size: 12px; font-weight: 700; color: var(--text); }
 
-  /* ── STATS ── */
   .stats-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 14px; flex-shrink: 0; }
   .stat-card {
     background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px;
@@ -424,7 +463,6 @@
   .s-sub.warn { color: var(--red); font-weight: 600; }
   .stat-spark { flex-shrink: 0; opacity: 0.9; }
 
-  /* ── AVG RESOLUTION BREAKDOWN ── */
   .avgres-card { flex-direction: column; align-items: stretch; gap: 8px; }
   .avgres-top { display: flex; flex-direction: row; align-items: center; gap: 10px; width: 100%; }
   .avgres-mode-tag {
@@ -437,7 +475,6 @@
   .avgres-row .arb-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-light); }
   .avgres-row .arb-val { font-weight: 700; color: var(--text); flex-shrink: 0; }
 
-  /* ── TOOLBAR ── */
   .toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; flex-shrink: 0; }
   .dd { position: relative; }
   .dd-trigger {
@@ -472,8 +509,7 @@
   .kbd-hint { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text-faint); margin-left: auto; }
   .kbd-hint kbd { font-family: 'JetBrains Mono', monospace; font-size: 10px; background: var(--slate-soft); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; }
 
-  /* ── TICKET GRID (ticket-stub cards) ── */
-  .ticket-grid-wrap { background: transparent; flex: 1; min-height: 0; overflow-y: auto; padding-bottom: 40px; }
+.ticket-grid-wrap { background: transparent; flex: 1; min-height: 0; overflow-y: auto; padding-bottom: 40px; }
   .ticket-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
@@ -491,6 +527,7 @@
     transition: box-shadow .12s, transform .12s, outline-color .1s;
     position: relative;
     outline: 2px solid transparent; outline-offset: 2px;
+     height: 165px; 
   }
   .ticket-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
   .ticket-card.is-closed { opacity: 0.88; }
@@ -505,6 +542,7 @@
     flex: 1; min-width: 0;
     padding: 15px 16px 13px 14px;
     display: flex; flex-direction: column; gap: 10px;
+    overflow: hidden;
   }
   .ticket-top-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .ticket-top-left { display: flex; align-items: center; gap: 7px; min-width: 0; flex-wrap: wrap; }
@@ -533,14 +571,14 @@
   .qa-btn:hover { background: var(--blue-soft); color: var(--blue); transform: scale(1.06); }
   .qa-btn svg { width: 13px; height: 13px; }
 
-  .ticket-stub {
+.ticket-stub {
     width: 92px; flex-shrink: 0;
-    background: var(--slate-soft);
+    background:#F1EAE3;
     border-left: 1.5px dashed var(--border);
     border-radius: 0 14px 14px 0;
     position: relative;
     display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-    padding: 14px 6px 12px;
+    padding: 11px 6px 10px;
     gap: 8px;
   }
   .ticket-stub::before, .ticket-stub::after {
@@ -550,28 +588,26 @@
   .ticket-stub::before { top: -9px; }
   .ticket-stub::after  { bottom: -9px; }
 
-  .ticket-roll {
+ .ticket-roll {
     writing-mode: vertical-rl;
     transform: rotate(180deg);
     font-family: 'JetBrains Mono', monospace;
     font-weight: 700;
     font-size: 12px;
     letter-spacing: 0.06em;
-    color: var(--text-light);
+    color: #8A6D3B;
   }
 
   .empty-state { padding: 54px 24px; text-align: center; color: var(--text-light); font-size: 14px; }
   .empty-state svg { margin-bottom: 14px; opacity: 0.7; }
   .empty-state p { margin-top: 6px; font-size: 12px; color: var(--text-faint); }
 
-  /* skeleton loading */
   .skel-card { display: flex; background: var(--card); border: 1px solid var(--border); border-radius: 14px; height: 132px; overflow: hidden; }
   .skel-edge { width: 6px; background: var(--slate-soft); }
   .skel-main { flex: 1; padding: 15px 16px; display: flex; flex-direction: column; gap: 12px; }
   .skel-bar { border-radius: 6px; background: linear-gradient(90deg, var(--slate-soft) 25%, var(--border-soft) 37%, var(--slate-soft) 63%); background-size: 400% 100%; animation: skelShimmer 1.4s ease infinite; }
   @keyframes skelShimmer { 0% { background-position: 100% 50%; } 100% { background-position: 0 50%; } }
 
-  /* ── TOASTS ── */
   .toast-stack { position: fixed; top: 18px; right: 18px; z-index: 200; display: flex; flex-direction: column; gap: 8px; }
   .toast {
     display: flex; align-items: center; gap: 10px; background: var(--card); border: 1px solid var(--border);
@@ -583,7 +619,6 @@
   @keyframes toastOut { to { opacity: 0; transform: translateX(24px); } }
   .toast .toast-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); flex-shrink: 0; }
 
-  /* ── MODAL ── */
   .modal-overlay {
     position: fixed; inset: 0; background: rgba(20,21,26,0.45); display: flex; align-items: center; justify-content: center;
     padding: 24px; z-index: 100; backdrop-filter: blur(2px);
@@ -614,7 +649,6 @@
     background: var(--green-soft); border: 1px solid rgba(22,163,74,0.22); border-radius: 11px; margin-bottom: 14px; font-size: 13px; color: var(--green); font-weight: 600;
   }
 
-  /* activity timeline */
   .timeline { margin-bottom: 18px; }
   .timeline-item { display: flex; gap: 10px; position: relative; padding-bottom: 16px; }
   .timeline-item:last-child { padding-bottom: 0; }
@@ -660,7 +694,6 @@
   .field-error { font-size: 12px; color: var(--red); font-weight: 600; display: none; }
   .field-error.show { display: block; }
 
-  /* resolve confirmation burst */
   .resolve-burst {
     position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
     background: rgba(255,255,255,0.0); pointer-events: none; z-index: 5; opacity: 0;
@@ -678,12 +711,10 @@
   .resolve-check path { stroke-dasharray: 24; stroke-dashoffset: 24; animation: checkDraw .35s ease .25s forwards; }
   @keyframes checkDraw { to { stroke-dashoffset: 0; } }
 
-  /* refresh spin */
   @keyframes spinIcon { to { transform: rotate(360deg); } }
   #refresh-icon.spinning { animation: spinIcon 0.7s linear infinite; }
   #refresh-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-  /* ── ATTACHMENT (added) ── */
   .modal-attachment { margin-bottom: 18px; }
   .modal-attachment img {
     max-width: 100%; max-height: 320px; border-radius: 10px;
@@ -697,6 +728,134 @@
   .admin-lightbox img { max-width: 100%; max-height: 100%; border-radius: 8px; }
   .ticket-attach-flag { display:inline-flex; align-items:center; gap:3px; font-size:11px; color: var(--text-faint); }
 
+  /* ── PLATFORM SELECT (added) ── */
+  .platform-wrap {
+    min-height: calc(100vh / var(--ui-scale)); display: flex; align-items: center; justify-content: center; padding: 24px;
+    background: var(--bg);
+  }
+  .platform-box { width: 100%; max-width: 720px; text-align: center; }
+  .platform-box h1 { font-family: 'Poppins','Inter',sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+  .platform-box p.sub { font-size: 13px; color: var(--text-light); margin-bottom: 30px; }
+  .platform-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .platform-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 30px 22px;
+    cursor: pointer; box-shadow: var(--shadow-sm); transition: box-shadow .15s, transform .15s, border-color .15s;
+    display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center;
+  }
+  .platform-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); border-color: var(--blue); }
+  .platform-icon {
+    width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center;
+    color: #fff;
+  }
+  .platform-icon.p-blue { background: linear-gradient(135deg, var(--blue), var(--violet)); }
+  .platform-icon.p-green { background: linear-gradient(135deg, var(--green), #0EA5A4); }
+  .platform-icon svg { width: 26px; height: 26px; }
+  .platform-card h3 { font-size: 15.5px; font-weight: 700; }
+  .platform-card p { font-size: 12.5px; color: var(--text-light); line-height: 1.5; }
+  .platform-back { margin-top: 26px; }
+  @media (max-width: 640px) { .platform-cards { grid-template-columns: 1fr; } }
+
+  /* ── DAILY LOG SCREEN (added) ── */
+  .dlog-topbar {
+    display: flex; align-items: center; justify-content: space-between; padding: 16px 30px;
+    background: var(--card); border-bottom: 1px solid var(--border); flex-shrink: 0;
+  }
+.dlog-body { padding: 24px 30px; max-width: 1400px; width: 100%; margin: 0 auto; flex: 1; overflow-y: auto; }
+  .dlog-form-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px;
+    margin-bottom: 22px; box-shadow: var(--shadow-sm);
+  }
+  .dlog-form-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 14px; }
+  .dlog-entry {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px;
+    margin-bottom: 12px; box-shadow: var(--shadow-sm);
+  }
+  .dlog-entry-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+  .dlog-entry-date { font-size: 12.5px; font-weight: 700; color: var(--blue); }
+  .dlog-entry-meta { font-size: 11px; color: var(--text-faint); }
+  .dlog-entry-activity { font-size: 13.5px; line-height: 1.5; margin-bottom: 6px; white-space: pre-wrap; }
+  .dlog-entry-progress { font-size: 12.5px; color: var(--text-light); white-space: pre-wrap; border-top: 1px dashed var(--border); padding-top: 6px; margin-top: 6px; }
+
+  /* ── DAILY LOG CATEGORY / CALL TYPE (added) ── */
+  .dlog-call-hint { font-size: 11.5px; margin-top: 7px; font-weight: 600; }
+  .dlog-call-hint.hard { color: var(--red); }
+  .dlog-call-hint.soft { color: var(--text-faint); font-weight: 500; }
+  .dlog-cat-badge {
+    display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 700;
+    padding: 3px 9px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.03em;
+  }
+  .dlog-cat-badge.hard { background: var(--red-soft); color: var(--red); }
+  .dlog-cat-badge.soft { background: var(--slate-soft); color: var(--text-light); }
+
+  /* ── FIELD REGISTER — Daily Activity Log redesign (added) ── */
+  .ledger-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; border-bottom: 2px solid var(--text); padding-bottom: 14px; margin-bottom: 24px; }
+  .ledger-eyebrow { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint); font-weight: 700; }
+  .ledger-title { font-size: 20px; font-weight: 800; letter-spacing: -0.01em; color: var(--text); margin-top: 3px; }
+  .ledger-meta { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-light); text-align: right; line-height: 1.7; white-space: nowrap; flex-shrink: 0; }
+
+  .ledger-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px; margin-bottom: 30px; box-shadow: var(--shadow-sm); }
+  .ledger-card-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-faint); margin-bottom: 16px; }
+
+  .ledger-stamp-hint { display: flex; align-items: center; gap: 8px; margin-top: 9px; font-size: 12px; font-weight: 600; }
+  .ledger-stamp-hint.hard { color: var(--amber); }
+  .ledger-stamp-hint.soft { color: var(--text-faint); font-weight: 500; }
+  .ledger-stamp-hint .mini-stamp {
+    width: 20px; height: 20px; border-radius: 50%; border: 1.5px dashed currentColor; transform: rotate(-8deg);
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; line-height: 1;
+  }
+
+  .ledger-section-label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint); font-weight: 700; margin: 4px 0 4px; }
+
+  .ledger-row { display: flex; gap: 16px; align-items: flex-start; padding: 16px 2px; border-bottom: 1px dashed var(--border); }
+  .ledger-row:last-child { border-bottom: none; }
+  .ledger-stamp {
+    flex-shrink: 0; width: 48px; height: 48px; border-radius: 50%; border: 1.5px dashed var(--border);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-size: 8.5px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; line-height: 1.3;
+  }
+  .ledger-stamp.hard { border-color: var(--amber); color: var(--amber); transform: rotate(-6deg); }
+  .ledger-stamp.soft { border-color: var(--text-faint); color: var(--text-faint); transform: rotate(5deg); }
+
+  .ledger-row-body { flex: 1; min-width: 0; }
+  .ledger-row-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .ledger-row-cat { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .ledger-row-date { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-faint); flex-shrink: 0; white-space: nowrap; }
+  .ledger-row-activity { font-size: 13px; color: var(--text-light); margin-top: 4px; line-height: 1.55; white-space: pre-wrap; }
+  .ledger-row-notes { font-size: 12px; color: var(--text-faint); margin-top: 7px; padding-top: 7px; border-top: 1px dashed var(--border-soft); line-height: 1.5; white-space: pre-wrap; }
+  .ledger-row-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 9px; gap: 10px; flex-wrap: wrap; }
+  .ledger-row-logger { font-size: 11.5px; color: var(--text-faint); }
+  .ledger-row-status { font-size: 11px; font-weight: 700; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; }
+  .ledger-row-status.pending { color: var(--text-faint); }
+  .ledger-row-status.reviewed { color: var(--green); }
+
+  .review-cal-topbar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:14px; }
+  .review-cal-nav { display:flex; align-items:center; gap:8px; }
+  .review-cal-nav-btn { width:30px; height:30px; padding:0; display:flex; align-items:center; justify-content:center; border-radius:8px; border:1px solid var(--border); background:var(--card); cursor:pointer; color:var(--text-light); }
+  .review-cal-nav-btn:hover { background:var(--slate-soft); color:var(--text); }
+  .review-cal-month-label { font-size:15px; font-weight:700; min-width:150px; text-align:center; }
+  .review-calendar { border:1px solid var(--border); border-radius:14px; overflow:hidden; background:var(--card); box-shadow:var(--shadow-sm); }
+  .review-cal-weekdays { display:grid; grid-template-columns:repeat(7,1fr); background:var(--slate-soft); }
+  .review-cal-weekdays span { padding:8px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-faint); text-align:center; }
+  .review-cal-grid { display:grid; grid-template-columns:repeat(7,1fr); }
+  .review-cal-cell { min-height:92px; border-top:1px solid var(--border); border-right:1px solid var(--border); padding:6px; cursor:pointer; transition:background .12s; display:flex; flex-direction:column; gap:3px; }
+  .review-cal-cell:nth-child(7n) { border-right:none; }
+  .review-cal-cell:hover { background:var(--slate-soft); }
+  .review-cal-cell.outside { opacity:0.38; }
+  .review-cal-cell.is-today .review-cal-daynum { background:var(--blue); color:#fff; border-radius:50%; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; }
+  .review-cal-daynum { font-size:12px; color:var(--text-light); font-weight:600; }
+  .review-cal-pill { display:flex; align-items:center; gap:4px; font-size:10.5px; background:var(--slate-soft); border-radius:5px; padding:2px 5px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+  .review-cal-pill .cal-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+  .review-cal-pill .cal-dot.hard { background:var(--red); }
+  .review-cal-pill .cal-dot.soft { background:var(--text-faint); }
+  .review-cal-pill .cal-check { margin-left:auto; color:var(--green); font-size:11px; flex-shrink:0; }
+  .review-cal-more { font-size:10.5px; color:var(--text-faint); padding:1px 5px; }
+  .review-cal-legend { display:flex; gap:16px; margin-top:10px; font-size:11.5px; color:var(--text-light); align-items:center; }
+  .review-cal-legend .cal-dot { width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:5px; }
+
+ .dlog-layout { display:grid; grid-template-columns: minmax(0, 1fr) minmax(360px, 440px); gap:24px; align-items:start; }
+.dlog-layout > div { min-width: 0; }
+@media (max-width: 1100px) { .dlog-layout { grid-template-columns: 1fr; } }
+
   @media (max-width: 860px) {
     .sidebar { position: fixed; z-index: 40; left: -244px; }
     .sidebar.mobile-open { left: 0; }
@@ -707,6 +866,8 @@
     .search-wrap input { width: 170px; }
     .topbar, .page-body { padding-left: 18px; padding-right: 18px; }
     .ticket-grid { grid-template-columns: 1fr; }
+    .ledger-head { flex-direction: column; }
+    .ledger-meta { text-align: left; }
   }
 
   @media print {
@@ -715,6 +876,7 @@
     .main-content { height: auto !important; overflow: visible !important; }
     .ticket-grid { grid-template-columns: 1fr 1fr !important; }
     .ticket-card { break-inside: avoid; box-shadow: none !important; border: 1px solid #ccc !important; }
+    #scale-root { transform: none !important; width: 100% !important; height: auto !important; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -722,10 +884,66 @@
       animation: none !important;
     }
   }
+
+  .review-calendar {
+  border: none;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(20,21,26,0.08);
+}
+.review-cal-weekdays {
+  background: transparent;
+}
+.review-cal-weekdays span {
+  color: #94A3B8;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.review-cal-grid {
+  gap: 4px;
+}
+.review-cal-cell {
+  border: none;
+  border-radius: 10px;
+  min-height: 64px;
+  transition: background .12s;
+}
+.review-cal-cell:hover { background: #F1F5F9; }
+.review-cal-cell.outside { background: #F8FAFC; opacity: 1; }
+.review-cal-cell.outside .review-cal-daynum { color: #CBD5E1; }
+
+.review-cal-daynum { color: #334155; font-weight: 500; }
+
+.review-cal-cell.is-today {
+  background: #2DD9A8;
+}
+.review-cal-cell.is-today .review-cal-daynum {
+  background: transparent;
+  color: #fff;
+}
+.review-cal-cell.is-today .review-cal-pill,
+.review-cal-cell.is-today .review-cal-row-cat {
+  color: var(--text);
+}
+.review-cal-cell.is-today .review-cal-pill {
+  background: rgba(255,255,255,0.85);
+}
+
+.review-cal-nav-btn {
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #94A3B8;
+}
+.review-cal-nav-btn:hover { background: #F1F5F9; color: #334155; }
+.review-cal-month-label { font-weight: 500; color: #1E293B; }
+
+.review-cal-pill .cal-dot.hard,
+.review-cal-pill .cal-dot.soft { background: #2DD9A8; }
 </style>
 </head>
 <body>
-
+<div id="scale-root">
 <div class="toast-stack" id="toast-stack"></div>
 
 <!-- ── AUTH (Glass on blur) ── -->
@@ -747,22 +965,262 @@
     <div class="auth-panel">
       <div class="auth-header">
         <h1>FACE Prep Campus Help Desk</h1>
-        <p>Enter your admin PIN to manage campus tickets.</p>
+        <p>Sign in to manage campus tickets.</p>
       </div>
 
-      <div style="margin-bottom:14px">
-        <label class="field-label" style="text-align:center;display:block;">Admin PIN</label>
-        <div class="otp-row" id="otp-row">
-          <input class="otp-box" type="password" inputmode="numeric" maxlength="1" data-idx="0" />
-          <input class="otp-box" type="password" inputmode="numeric" maxlength="1" data-idx="1" />
-          <input class="otp-box" type="password" inputmode="numeric" maxlength="1" data-idx="2" />
-          <input class="otp-box" type="password" inputmode="numeric" maxlength="1" data-idx="3" />
+      <div class="auth-role-toggle">
+        <button type="button" class="role-tab active" id="role-tab-admin" onclick="setAuthRole('admin')">KAM</button>
+        <button type="button" class="role-tab" id="role-tab-manager" onclick="setAuthRole('manager')">Campus Manager</button>
+      </div>
+
+      <div id="admin-login-block">
+        <div style="margin-bottom:14px">
+          <label class="field-label" style="text-align:center;display:block;">PIN</label>
+          <div class="otp-row" id="otp-row">
+            <input class="otp-box" type="password" inputmode="numeric" maxlength="1" data-idx="0" />
+            <input class="otp-box" type="password" inputmode="numeric" maxlength="1" data-idx="1" />
+            <input class="otp-box" type="password" inputmode="numeric" maxlength="1" data-idx="2" />
+            <input class="otp-box" type="password" inputmode="numeric" maxlength="1" data-idx="3" />
+          </div>
         </div>
       </div>
+
+      <div id="manager-login-block" class="hidden">
+        <div style="margin-bottom:14px">
+          <label class="field-label">College</label>
+          <select id="manager-college-select"></select>
+        </div>
+        <div style="margin-bottom:14px">
+          <label class="field-label">Manager PIN</label>
+          <input id="manager-pin-input" type="password" inputmode="numeric" maxlength="6" placeholder="Enter your PIN" />
+        </div>
+      </div>
+
       <div id="pin-error" class="error-msg hidden" style="text-align:center;"></div>
-      <button class="btn btn-primary btn-full btn-auth" onclick="submitPin()">Enter dashboard <span class="arrow">→</span></button>
+      <button class="btn btn-primary btn-full btn-auth" onclick="submitLogin()">Enter dashboard <span class="arrow">→</span></button>
     </div>
     <div class="auth-footnote">Authorized personnel only · FACE Prep Campus</div>
+  </div>
+</div>
+
+<!-- ── PLATFORM SELECT (campus/senior manager only) ── -->
+<div id="platform-select-screen" class="hidden platform-wrap">
+  <div class="platform-box">
+    <h1>Welcome<span id="platform-select-college-name"></span></h1>
+    <p class="sub">Choose what you'd like to open.</p>
+    <div class="platform-cards">
+      <button class="platform-card" onclick="selectPlatform('tickets')">
+        <div class="platform-icon p-blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h3a2 2 0 0 0 4 0h3a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2h-3a2 2 0 0 0-4 0H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/></svg>
+        </div>
+        <h3>Ticketing Platform</h3>
+        <p id="platform-tickets-desc">View and manage student help-desk tickets raised by your college.</p>
+      </button>
+      <button class="platform-card" onclick="selectPlatform('dailylog')">
+        <div class="platform-icon p-green">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v3M16 2v3M4 8h16M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/><path d="M8 13h5M8 17h8"/></svg>
+        </div>
+        <h3 id="platform-second-title">Daily Activity Log</h3>
+        <p id="platform-second-desc">Log your daily activities and track your progress over time.</p>
+      </button>
+    </div>
+    <div class="platform-back">
+      <button class="btn btn-ghost" onclick="logout()">Log out</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── DAILY LOG SCREEN (campus/senior manager only) ── -->
+<div id="dailylog-screen" class="hidden" style="display:flex;flex-direction:column;height:calc(100vh / var(--ui-scale));overflow:hidden;">  <div class="dlog-topbar">
+    <div class="breadcrumb">Daily Activity Log / <b id="dlog-college-name-crumb">—</b></div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-ghost" onclick="backToPlatformSelect()">← Switch platform</button>
+      <button class="btn btn-ghost" onclick="logout()">Log out</button>
+    </div>
+  </div>
+  <div class="dlog-body">
+
+    <div class="ledger-head">
+      <div>
+        <div class="ledger-eyebrow">Field register</div>
+        <div class="ledger-title" id="dlog-college-name">—</div>
+      </div>
+      <div class="ledger-meta">
+        Entry No. <span id="dlog-entry-no">001</span><br>
+        <span id="dlog-today-label">—</span>
+      </div>
+    </div>
+
+    <div class="dlog-layout">
+      <div>
+        <div class="review-cal-topbar">
+          <span style="font-size:14px;color:var(--text-light);font-weight:600;">Your activity calendar</span>
+          <div class="review-cal-nav">
+            <button class="review-cal-nav-btn" onclick="dlogCalShift(-1)" aria-label="Previous month">‹</button>
+            <span class="review-cal-month-label" id="dlog-cal-month-label">—</span>
+            <button class="review-cal-nav-btn" onclick="dlogCalShift(1)" aria-label="Next month">›</button>
+            <button class="btn btn-ghost" onclick="dlogCalToday()">Today</button>
+          </div>
+        </div>
+        <div class="review-calendar">
+          <div class="review-cal-weekdays">
+            <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+          </div>
+          <div class="review-cal-grid" id="dlog-cal-grid"></div>
+        </div>
+        <div class="review-cal-legend">
+          <span><span class="cal-dot" style="background:var(--red)"></span>Hard call</span>
+          <span><span class="cal-dot" style="background:var(--text-faint)"></span>Soft call</span>
+        </div>
+        <div style="font-size:11px;color:var(--text-faint);margin-top:8px;">Click a day to see that day's entries.</div>
+      </div>
+
+      <div>
+        <div class="ledger-card">
+          <div class="ledger-card-title">New entry</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="field-label">Date</label>
+              <input id="dlog-date" type="date" />
+            </div>
+            <div class="form-group">
+              <label class="field-label">Logged by</label>
+              <input id="dlog-name" type="text" placeholder="Your name" />
+            </div>
+            <div class="form-group full">
+              <label class="field-label">Category</label>
+              <select id="dlog-category" onchange="onDlogCategoryChange(this.value)"></select>
+              <div class="dlog-call-hint" id="dlog-call-hint"></div>
+            </div>
+            <div class="form-group full">
+              <label class="field-label">Activity details</label>
+              <input id="dlog-activity" type="text" placeholder="e.g. Visited hostel block A, resolved 3 student queries" />
+            </div>
+            <div class="form-group full">
+              <label class="field-label">Progress / notes (optional)</label>
+              <input id="dlog-progress" type="text" placeholder="e.g. Escalated fee issue to finance team, pending reply" />
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button class="btn btn-primary" id="dlog-save-btn" onclick="saveDailyLog()">File entry</button>
+            <span id="dlog-saved" class="saved-msg hidden">✓ Saved</span>
+          </div>
+        </div>
+
+        <div class="ledger-section-label">Recent entries</div>
+        <div id="dlog-entries"></div>
+        <div id="dlog-empty" class="empty-state hidden"><p>No entries yet. Add your first daily log above.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── REVIEW PANEL (admin only) ── -->
+<div id="review-panel-screen" class="hidden" style="display:flex;flex-direction:column;height:calc(100vh / var(--ui-scale));overflow:hidden;">  <div class="dlog-topbar">
+    <div class="breadcrumb">Review Panel / <b id="review-college-name">—</b></div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-ghost" onclick="backToPlatformSelect()">← Switch platform</button>
+      <button class="btn btn-ghost" onclick="logout()">Log out</button>
+    </div>
+  </div>
+  <div class="dlog-body">
+    <div class="dlog-form-card">
+      <h3>Which college's activity log?</h3>
+      <div class="form-grid" style="margin-bottom:0;">
+        <div class="form-group">
+          <label class="field-label">College</label>
+          <select id="review-college-select" onchange="onReviewCollegeChange(this.value)"></select>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Show</label>
+          <select id="review-filter-select" onchange="setReviewLogFilter(this.value)">
+            <option value="all">All entries</option>
+            <option value="hard">Hard call only</option>
+            <option value="soft">Soft call only</option>
+            <option value="pending">Pending review</option>
+            <option value="reviewed">Reviewed</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-row" style="grid-template-columns:repeat(3,1fr);" id="review-stats-row">
+      <div class="stat-card" style="cursor:default;">
+        <div class="stat-icon i-slate"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1.5" y="1.5" width="13" height="13" rx="2"/><line x1="4.5" y1="5.5" x2="11.5" y2="5.5"/><line x1="4.5" y1="8" x2="11.5" y2="8"/></svg></div>
+        <div class="stat-body">
+          <div class="s-lbl">Total Entries</div>
+          <div class="s-val" id="review-cnt-all">0</div>
+        </div>
+      </div>
+      <div class="stat-card" style="cursor:default;">
+        <div class="stat-icon i-red"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 1.5 14.5 13H1.5z"/><line x1="8" y1="6" x2="8" y2="9.5"/><circle cx="8" cy="11.3" r="0.4" fill="currentColor"/></svg></div>
+        <div class="stat-body">
+          <div class="s-lbl">Hard call</div>
+          <div class="s-val" id="review-cnt-hard">0</div>
+        </div>
+      </div>
+      <div class="stat-card" style="cursor:default;">
+        <div class="stat-icon i-amber"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><path d="M8 4v4l2.5 2.5"/></svg></div>
+        <div class="stat-body">
+          <div class="s-lbl">Pending review</div>
+          <div class="s-val" id="review-cnt-pending">0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-cal-topbar">
+      <h3 style="font-size:14px;color:var(--text-light);margin:0;">Activity log calendar</h3>
+      <div class="review-cal-nav">
+        <button class="review-cal-nav-btn" onclick="reviewCalShift(-1)" aria-label="Previous month">‹</button>
+        <span class="review-cal-month-label" id="review-cal-month-label">—</span>
+        <button class="review-cal-nav-btn" onclick="reviewCalShift(1)" aria-label="Next month">›</button>
+        <button class="btn btn-ghost" onclick="reviewCalToday()">Today</button>
+      </div>
+    </div>
+    <div class="review-calendar">
+      <div class="review-cal-weekdays">
+        <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+      </div>
+      <div class="review-cal-grid" id="review-cal-grid"></div>
+    </div>
+    <div class="review-cal-legend">
+      <span><span class="cal-dot" style="background:var(--red)"></span>Hard call</span>
+      <span><span class="cal-dot" style="background:var(--text-faint)"></span>Soft call</span>
+      <span>✓ Reviewed</span>
+    </div>
+    <div id="review-empty" class="empty-state hidden"><p>No entries found for this college / filter.</p></div>
+  </div>
+</div>
+
+<div id="review-day-modal" class="modal-overlay hidden" onclick="if(event.target===this)closeReviewDayModal()">
+  <div class="modal-box" style="max-width:480px;">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="review-day-modal-title"></div>
+        <div class="modal-meta" id="review-day-modal-meta"></div>
+      </div>
+      <button class="modal-close" onclick="closeReviewDayModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <hr class="modal-div">
+      <div id="review-day-modal-entries"></div>
+    </div>
+  </div>
+</div>
+
+<div id="dlog-day-modal" class="modal-overlay hidden" onclick="if(event.target===this)closeDlogDayModal()">
+  <div class="modal-box" style="max-width:480px;">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="dlog-day-modal-title"></div>
+        <div class="modal-meta" id="dlog-day-modal-meta"></div>
+      </div>
+      <button class="modal-close" onclick="closeDlogDayModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <hr class="modal-div">
+      <div id="dlog-day-modal-entries"></div>
+    </div>
   </div>
 </div>
 
@@ -780,6 +1238,8 @@
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M10 3.5 5.5 8l4.5 4.5"/></svg>
         </button>
       </div>
+
+      <div id="session-tag"></div>
 
       <nav class="sidebar-nav" id="sidebar-nav">
         <button class="nav-row active" data-filter="all" onclick="setStatusFilter('all')">
@@ -837,7 +1297,7 @@
           </div>
         </div>
 
-        <div class="sec-label">Regions</div>
+        <div class="sec-label" id="regions-sec-label">Regions</div>
         <div class="nav-group open" id="grp-regions">
           <button class="nav-row" onclick="toggleGroup('grp-regions')">
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 1.5c-2.5 0-4.5 2-4.5 4.5 0 3.4 4.5 8.5 4.5 8.5s4.5-5.1 4.5-8.5c0-2.5-2-4.5-4.5-4.5z"/><circle cx="8" cy="6" r="1.6"/></svg>
@@ -902,6 +1362,10 @@
             <span class="search-icon">⌕</span>
             <input id="search-input" type="text" placeholder="Search roll no., name, college" oninput="renderTickets()" />
           </div>
+          <button class="btn btn-ghost hidden" id="topbar-switch-platform" onclick="backToPlatformSelect()" title="Switch platform">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+            Switch platform
+          </button>
           <button class="btn btn-ghost btn-icon" onclick="toggleInsights()" title="Toggle insights">
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 13.5V9M6 13.5V5M10 13.5V7.5M14 13.5V2.5"/></svg>
           </button>
@@ -1085,7 +1549,7 @@
         </div>
         <div class="form-group full">
           <div class="label-row">
-            <label class="field-label">Give an reply to student..(shown to student in their ticket portal)</label>
+            <label class="field-label">Any reply ? (shown to student in their ticket portal)</label>
             <span class="autosave-tag" id="autosave-tag">Saving…</span>
           </div>
           <input id="modal-note" type="text" placeholder="e.g. Forwarded to exam cell" oninput="modalEdit('note', this.value)" />
@@ -1119,6 +1583,7 @@
     </div>
   </div>
 </div>
+</div><!-- /#scale-root -->
 
 <script>
 /* ── Supabase ── */
@@ -1128,7 +1593,15 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const ADMIN_PIN = '5050';
 
-/* ── Follow-up Due configuration ── */
+function applyUIScale(){
+  const baseWidth = 1536;
+  let scale = window.innerWidth / baseWidth;
+  scale = Math.min(Math.max(scale, 0.72), 1.05);
+  document.documentElement.style.setProperty('--ui-scale', scale);
+}
+window.addEventListener('resize', applyUIScale);
+applyUIScale();
+
 const FOLLOWUP_WORKING_DAYS_7D = 7;
 const FOLLOWUP_WORKING_DAYS_3D = 3;
 const FOLLOWUP_CATEGORIES_7D = new Set([
@@ -1159,7 +1632,6 @@ const PRIORITY_LABEL = { high: 'High', medium: 'Medium', low: 'Low' };
 const PRIORITY_RANK  = { high: 0, medium: 1, low: 2 };
 function getPriority(t){ return t.priority || CATEGORY_PRIORITY_MAP[t.category] || 'medium'; }
 
-/* ── Region map ── */
 const REGION_DEFS = {
   chennai:      { label: 'Chennai',              kam: 'Shyam Kumar',   dot: 'dot-red' },
   karnakerala:  { label: 'Karnataka & Kerala',    kam: 'Praveen Rao',   dot: 'dot-amber' },
@@ -1268,7 +1740,49 @@ let modalDraft    = {};
 let modalLocked   = false;
 let kbdFocusIdx   = -1;
 let autosaveTimer = null;
-let avgResView    = 'overall'; // 'overall' | 'region' | 'priority'
+let avgResView    = 'overall';
+
+/* ── Auth / session state ── */
+let authRole      = 'admin';
+let sessionRole    = 'admin';
+let sessionCollege = null;
+let collegeContacts = [];
+
+/* ── Daily log state (added) ── */
+let dailyLogs = [];
+let dlogSaving = false;
+let dlogCalMonth = new Date();
+
+/* ── Review panel state (admin only, added) ── */
+let reviewLogs = [];
+let reviewCollege = null;
+let reviewCallFilter = 'all'; // 'all' | 'hard' | 'soft' | 'pending' | 'reviewed'
+let reviewCalMonth = new Date();
+
+/* ── College pending-review counts (for review-college dropdown, added) ── */
+let collegePendingCounts = {}; // { collegeName: pendingCount }
+
+/* ── Daily log categories (hard call = emailed, soft call = not) (added) ── */
+const DLOG_CATEGORIES = [
+  { key: 'syllabus',             label: 'Syllabus',                                        callType: 'hard' },
+  { key: 'mentor_performance',   label: 'Mentor Performance',                              callType: 'hard' },
+  { key: 'student_query',        label: 'Student Query',                                   callType: 'soft' },
+  { key: 'spoc_escalation',      label: 'Stakeholder / SPOC Escalations',                  callType: 'hard' },
+  { key: 'examinations',         label: 'Examinations',                                    callType: 'hard' },
+  { key: 'infrastructure',       label: 'Infrastructure',                                  callType: 'soft' },
+  { key: 'fee',                  label: 'Fee',                                             callType: 'soft' },
+  { key: 'disciplinary_student', label: 'Disciplinary Actions in Students',                 callType: 'hard' },
+  { key: 'disciplinary_mentor',  label: 'Disciplinary Actions in Mentors',                  callType: 'hard' },
+  { key: 'events',               label: 'Events',                                          callType: 'soft' },
+  { key: 'industrial_visit',     label: 'Industrial Visit',                                callType: 'soft' },
+  { key: 'data_submission',      label: 'Data Submissions / G-Sheet Updation',              callType: 'hard' },
+  { key: 'attendance',           label: 'Attendance',                                       callType: 'soft' },
+  { key: 'hostel',               label: 'Hostel',                                          callType: 'soft' },
+  { key: 'portal_technical',     label: 'Technical Issues in Portal',                       callType: 'hard' },
+  { key: 'placement_docs',       label: 'Placement / Internship, Certification & Documents',callType: 'soft' },
+  {key: 'Others',       label: 'Other Issues',callType: 'soft' },
+];
+const ESCALATION_EMAIL = 'escalations@faceprepcampus.in'; // TODO: replace with the real recipient address
 
 const $  = id => document.getElementById(id);
 const show = id => $(id).classList.remove('hidden');
@@ -1346,6 +1860,16 @@ function showToast(msg){
     if(e.key === 'Enter') submitPin();
   });
 })();
+
+/* Manager PIN: pressing Enter in the PIN field (or college dropdown) submits login */
+document.addEventListener('keydown', e => {
+  if(e.key !== 'Enter') return;
+  if(e.target.id === 'manager-pin-input' || e.target.id === 'manager-college-select'){
+    e.preventDefault();
+    submitManagerLogin();
+  }
+});
+
 function getOtpValue(){
   return Array.from(document.querySelectorAll('.otp-box')).map(b => b.value).join('');
 }
@@ -1355,24 +1879,162 @@ function clearOtp(err){
   if(err) setTimeout(() => boxes.forEach(b => b.classList.remove('shake-err')), 400);
   boxes[0]?.focus();
 }
+
+/* ── Role tabs ── */
+function setAuthRole(role){
+  authRole = role;
+  $('role-tab-admin').classList.toggle('active', role==='admin');
+  $('role-tab-manager').classList.toggle('active', role==='manager');
+  $('admin-login-block').classList.toggle('hidden', role!=='admin');
+  $('manager-login-block').classList.toggle('hidden', role!=='manager');
+  hide('pin-error');
+}
+
+function populateCollegeDropdown(){
+  const sel = $('manager-college-select');
+  if(!sel) return;
+  const names = collegeContacts.length
+    ? collegeContacts.map(c => c.college)
+    : COLLEGE_REGION_MAP.map(c => c.college);
+  const uniqueSorted = [...new Set(names)].sort((a,b) => a.localeCompare(b));
+  sel.innerHTML = uniqueSorted.length
+    ? '<option value="" disabled selected>Select your college</option>' +
+      uniqueSorted.map(name => `<option value="${escHTML(name)}">${escHTML(name)}</option>`).join('')
+    : '<option value="">No colleges configured yet</option>';
+}
+
+async function loadCollegeContactsForLogin(){
+  populateCollegeDropdown();
+  try{
+    const { data, error } = await sb.from('college_contacts').select('college, login_pin, senior_manager_name, campus_manager_name');
+    if(error) throw error;
+    collegeContacts = data || [];
+    populateCollegeDropdown();
+  }catch(e){
+    console.error('Could not load college_contacts (has the login_pin migration been run?):', e);
+  }
+}
+loadCollegeContactsForLogin();
+
+function submitLogin(){
+  if(authRole === 'admin') submitPin();
+  else submitManagerLogin();
+}
+
 function submitPin(){
   const pin = getOtpValue();
   const err = $('pin-error');
   if(pin.length < 4){ err.textContent='Enter all 4 digits.'; show('pin-error'); return; }
   if(pin !== ADMIN_PIN){ err.textContent='Incorrect PIN.'; show('pin-error'); clearOtp(true); return; }
   hide('pin-error');
+  sessionRole = 'admin';
+  sessionCollege = null;
+  /* Admins now also land on the platform-select screen: Ticketing or Review Panel. */
   hide('auth-screen');
+  showPlatformSelect();
+}
+
+function submitManagerLogin(){
+  const err = $('pin-error');
+  const college = $('manager-college-select').value;
+  const pin = ($('manager-pin-input').value || '').trim();
+  if(!college){ err.textContent='Select your college.'; show('pin-error'); return; }
+  if(!pin){ err.textContent='Enter your PIN.'; show('pin-error'); return; }
+  const rec = collegeContacts.find(c => c.college === college);
+  if(!rec || !rec.login_pin || String(rec.login_pin) !== pin){
+    err.textContent='Incorrect PIN for this college.';
+    show('pin-error');
+    $('manager-pin-input').value = '';
+    $('manager-pin-input').focus();
+    return;
+  }
+  hide('pin-error');
+  sessionRole = 'manager';
+  sessionCollege = college;
+  /* Campus / Senior managers land on the platform-select screen (Ticketing or Daily Log). */
+  hide('auth-screen');
+  showPlatformSelect();
+}
+
+/* ── Platform select (admin + campus/senior manager) ── */
+function showPlatformSelect(){
+  hide('admin-screen');
+  hide('dailylog-screen');
+  hide('review-panel-screen');
+  const isManager = sessionRole === 'manager';
+  $('platform-select-college-name').textContent = isManager && sessionCollege ? ' — ' + sessionCollege : '';
+  $('platform-tickets-desc').textContent = isManager
+    ? 'View and manage student help-desk tickets raised by your college.'
+    : 'View and manage student help-desk tickets across all colleges.';
+  $('platform-second-title').textContent = isManager ? 'Daily Activity Log' : 'Review Panel';
+  $('platform-second-desc').textContent = isManager
+    ? 'Log your daily activities and track your progress over time.'
+    : "Review campus managers' daily activity logs, college by college.";
+  show('platform-select-screen');
+  if(refreshTimer){ clearInterval(refreshTimer); refreshTimer = null; }
+}
+function selectPlatform(which){
+  hide('platform-select-screen');
+  if(which === 'tickets'){
+    enterDashboard();
+  } else if(which === 'dailylog'){
+    if(sessionRole === 'manager') enterDailyLog();
+    else enterReviewPanel();
+  }
+}
+function backToPlatformSelect(){
+  hide('admin-screen');
+  hide('dailylog-screen');
+  hide('review-panel-screen');
+  showPlatformSelect();
+}
+
+function enterDashboard(){
+  hide('platform-select-screen');
+  hide('dailylog-screen');
   show('admin-screen');
   buildRegionDropdown();
   buildPriorityDropdown();
+  applySessionUI();
   loadTickets();
+  if(refreshTimer) clearInterval(refreshTimer);
   refreshTimer = setInterval(loadTickets, 15000);
 }
+
+function applySessionUI(){
+  const isManager = sessionRole === 'manager';
+  $('grp-regions').classList.toggle('hidden', isManager);
+  $('regions-sec-label').classList.toggle('hidden', isManager);
+  $('dd-region').classList.toggle('hidden', isManager);
+  show('topbar-switch-platform');
+
+  const tag = $('session-tag');
+  if(isManager){
+    tag.innerHTML = `Viewing tickets for<br><b>${escHTML(sessionCollege)}</b>`;
+  } else {
+    tag.innerHTML = `<b>Admin</b> — all colleges`;
+  }
+}
+
+function collegeMatchesSession(ticketCollege){
+  if(!sessionCollege) return true;
+  const a = normalizeCollege(ticketCollege);
+  const b = normalizeCollege(sessionCollege);
+  if(!a || !b) return false;
+  return a === b || a.includes(b) || b.includes(a);
+}
+
 function logout(){
-  hide('admin-screen'); show('auth-screen');
+  hide('admin-screen'); hide('platform-select-screen'); hide('dailylog-screen'); hide('review-panel-screen');
+  show('auth-screen');
   clearOtp(false);
   hide('pin-error');
+  const pinInput = $('manager-pin-input'); if(pinInput) pinInput.value = '';
+  setAuthRole('admin');
   firstLoadDone = false; knownTicketIds = new Set();
+  sessionRole = 'admin'; sessionCollege = null;
+  dailyLogs = [];
+  reviewLogs = []; reviewCollege = null; reviewCallFilter = 'all';
   if(refreshTimer){ clearInterval(refreshTimer); refreshTimer = null; }
 }
 
@@ -1546,7 +2208,6 @@ function getFiltered(){
   return list;
 }
 
-/* ── Sparklines (last 7 days) ── */
 function buildSparkPath(counts, w, h){
   const max = Math.max(...counts, 1);
   const step = w / (counts.length - 1 || 1);
@@ -1576,7 +2237,6 @@ function renderSparklines(){
   };
 }
 
-/* ── Insights panel ── */
 function renderInsightBars(containerId, counts, colorMap, defaultColor){
   const el = $(containerId);
   const entries = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0,8);
@@ -1602,7 +2262,6 @@ function renderInsights(){
   renderInsightBars('insight-region', byRegion, regionColorMap, 'var(--violet)');
 }
 
-/* ── Avg resolution time (overall + region-wise + priority-wise) ── */
 function cycleAvgResView(){
   const order = ['overall', 'region', 'priority'];
   const idx = order.indexOf(avgResView);
@@ -1673,7 +2332,6 @@ function renderAvgResolution(){
   }
 }
 
-/* ── Stats ── */
 function renderStats(){
   const followUp3Count = tickets.filter(isFollowUpDue3).length;
   const followUp7Count = tickets.filter(isFollowUpDue7).length;
@@ -1721,7 +2379,6 @@ function renderChips(){
   $('active-chips').innerHTML = chips.join(' ');
 }
 
-/* ── Skeleton loading ── */
 function renderSkeleton(){
   const grid = $('ticket-grid');
   hide('empty-state');
@@ -1737,7 +2394,6 @@ function renderSkeleton(){
   grid.innerHTML = html;
 }
 
-/* ── Load ── */
 async function loadTickets(manual){
   if(!firstLoadDone) renderSkeleton();
 
@@ -1748,7 +2404,11 @@ async function loadTickets(manual){
   try {
     const { data, error } = await sb.from('tickets').select('*').order('created_at', { ascending: false });
     if(error) throw error;
-    const newData = data || [];
+    let newData = data || [];
+
+    if(sessionRole === 'manager' && sessionCollege){
+      newData = newData.filter(t => collegeMatchesSession(t.college));
+    }
 
     if(firstLoadDone){
       const newIds = newData.filter(t => !knownTicketIds.has(t.id));
@@ -1771,7 +2431,6 @@ async function loadTickets(manual){
   }
 }
 
-/* ── Empty state illustration ── */
 function emptyStateSvg(){
   return `<svg width="120" height="90" viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect x="15" y="20" width="90" height="58" rx="10" fill="var(--slate-soft)" stroke="var(--border)" stroke-width="1.5"/>
@@ -1786,7 +2445,6 @@ function emptyStateSvg(){
   </svg>`;
 }
 
-/* ── Render ticket cards ── */
 function renderTickets(){
   renderStats();
   renderChips();
@@ -1809,8 +2467,8 @@ grid.innerHTML = filtered.map((t,i) => {
     const rInfo = getRegionInfo(t.college);
     const prio  = getPriority(t);
     const reviewBadge = t.reviewed
-      ? `<span class="review-badge review-yes">✓ 1:1 done</span>`
-      : `<span class="review-badge review-no">☐ 1:1 pending</span>`;
+      ? `<span class="review-badge review-yes">✓ 1:1 Done</span>`
+      : `<span class="review-badge review-no">☐ 1:1 Pending</span>`;
     const slaFlag = isFollowUpDue(t) ? `<span class="sla-tag">⚑ Follow-up due</span>` : '';
     const closedTag = (t.status === 'resolved' && t.closed_by)
       ? `<span class="closed-by-tag">🔒 Closed by ${escHTML(t.closed_by)}</span>` : '';
@@ -1858,7 +2516,7 @@ grid.innerHTML = filtered.map((t,i) => {
 
   window._filteredCache = filtered;
 }
-/* ── Quick actions ── */
+
 async function quickSetStatus(id, status){
   const { error } = await sb.from('tickets').update({ status, updated_at: new Date().toISOString() }).eq('id', id);
   if(error){ console.error(error); showToast('Could not update ticket'); return; }
@@ -1867,7 +2525,6 @@ async function quickSetStatus(id, status){
   showToast('Ticket marked in progress');
 }
 
-/* ── Attachment lightbox (added) ── */
 function openAdminLightbox(url){
   if(!url) return;
   const box = document.createElement('div');
@@ -1880,7 +2537,6 @@ function openAdminLightbox(url){
   document.body.appendChild(box);
 }
 
-/* ── Keyboard navigation ── */
 document.addEventListener('keydown', e => {
   if($('ticket-modal') && !$('ticket-modal').classList.contains('hidden')){
     if(e.key === 'Escape') closeModal();
@@ -1909,7 +2565,6 @@ function updateKbdFocus(cards){
   if(c){ c.classList.add('kbd-focus'); c.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
 }
 
-/* ── CSV export ── */
 function exportCSV(){
   const list = window._filteredCache || tickets;
   if(!list.length){ showToast('No tickets to export'); return; }
@@ -1933,7 +2588,6 @@ function exportCSV(){
   showToast('CSV exported');
 }
 
-/* ── Modal ── */
 function buildTimeline(t){
   const items = [];
   items.push({ label: 'Ticket created', time: t.created_at, done: true });
@@ -2107,6 +2761,577 @@ async function saveModal(){
   } else {
     setTimeout(() => { hide('modal-saved'); closeModal(); }, 1200);
   }
+}
+
+/* ══════════════════════════════════════════════════════════
+   ── DAILY ACTIVITY LOG — Field Register (redesigned) ──
+   Requires a `daily_logs` table in Supabase:
+     id           uuid primary key default gen_random_uuid()
+     college      text not null
+     manager_name text
+     log_date     date not null default current_date
+     category     text
+     call_type    text            -- 'hard' or 'soft'
+     activity     text not null
+     progress_notes text
+     created_at   timestamptz not null default now()
+   ══════════════════════════════════════════════════════════ */
+function populateDlogCategorySelect(){
+  const sel = $('dlog-category');
+  if(!sel) return;
+  const hard = DLOG_CATEGORIES.filter(c => c.callType === 'hard');
+  const soft = DLOG_CATEGORIES.filter(c => c.callType === 'soft');
+  sel.innerHTML =
+    '<option value="">Select a category</option>' +
+    `<optgroup label="Hard Call — will be emailed">${hard.map(c => `<option value="${c.key}">${escHTML(c.label)}</option>`).join('')}</optgroup>` +
+    `<optgroup label="Soft Call">${soft.map(c => `<option value="${c.key}">${escHTML(c.label)}</option>`).join('')}</optgroup>`;
+}
+
+function onDlogCategoryChange(key){
+  const cat = DLOG_CATEGORIES.find(c => c.key === key);
+  const hint = $('dlog-call-hint');
+  if(!hint) return;
+  if(!cat){ hint.className = 'ledger-stamp-hint'; hint.innerHTML = ''; return; }
+  if(cat.callType === 'hard'){
+    hint.className = 'ledger-stamp-hint hard';
+    hint.innerHTML = '<span class="mini-stamp">✉</span><span>Hard call — an email goes to the regional coordinator</span>';
+  } else {
+    hint.className = 'ledger-stamp-hint soft';
+    hint.innerHTML = '<span class="mini-stamp">·</span><span>Soft call — no email needed</span>';
+  }
+}
+
+function sendHardCallEmail(cat, entry){
+  const subject = encodeURIComponent(`[Hard Call] ${cat.label} — ${sessionCollege}`);
+  const lines = [
+    `College: ${sessionCollege}`,
+    `Category: ${cat.label}`,
+    `Date: ${entry.date}`,
+    `Logged by: ${entry.name || '-'}`,
+    '',
+    'Activity:',
+    entry.activity,
+  ];
+  if(entry.progress) lines.push('', 'Progress / notes:', entry.progress);
+  const body = encodeURIComponent(lines.join('\n'));
+  window.open(`mailto:${ESCALATION_EMAIL}?subject=${subject}&body=${body}`, '_blank');
+}
+
+function enterDailyLog(){
+  hide('platform-select-screen');
+  hide('admin-screen');
+  show('dailylog-screen');
+  if(refreshTimer){ clearInterval(refreshTimer); refreshTimer = null; }
+  $('dlog-college-name').textContent = sessionCollege || '—';
+  $('dlog-college-name-crumb').textContent = sessionCollege || '—';
+  $('dlog-today-label').textContent = new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+
+  const today = new Date().toISOString().slice(0,10);
+  $('dlog-date').value = today;
+
+  const rec = collegeContacts.find(c => c.college === sessionCollege);
+  $('dlog-name').value = (rec && (rec.campus_manager_name || rec.senior_manager_name)) || '';
+
+  populateDlogCategorySelect();
+  $('dlog-category').value = '';
+  onDlogCategoryChange('');
+
+  dlogCalMonth = new Date();
+  loadDailyLogs();
+}
+
+async function loadDailyLogs(){
+  const listEl = $('dlog-entries');
+  listEl.innerHTML = '<div style="font-size:12.5px;color:var(--text-faint);padding:10px 0;">Loading…</div>';
+  try{
+    const { data, error } = await sb.from('daily_logs')
+      .select('*')
+      .eq('college', sessionCollege)
+      .order('log_date', { ascending: false })
+      .order('created_at', { ascending: false });
+    if(error) throw error;
+    dailyLogs = data || [];
+    renderDailyLogs();
+  }catch(e){
+    console.error('Could not load daily_logs (has the daily_logs table been created?):', e);
+    listEl.innerHTML = '';
+    show('dlog-empty');
+    $('dlog-empty').innerHTML = `<p>Couldn't load entries. Make sure the <b>daily_logs</b> table exists in Supabase.</p>`;
+  }
+}
+
+function updateLedgerMeta(){
+  const numEl = $('dlog-entry-no');
+  if(numEl) numEl.textContent = String(dailyLogs.length + 1).padStart(3,'0');
+}
+
+function renderDailyLogs(){
+  const listEl = $('dlog-entries');
+  updateLedgerMeta();
+  if(!dailyLogs.length){
+    listEl.innerHTML = '';
+    show('dlog-empty');
+    $('dlog-empty').innerHTML = '<p>No entries yet. Add your first daily log above.</p>';
+    renderDlogCalendar();
+    return;
+  }
+  hide('dlog-empty');
+  listEl.innerHTML = dailyLogs.slice(0, 10).map(l => {
+    const cat = DLOG_CATEGORIES.find(c => c.key === l.category);
+    const catLabel = cat ? cat.label : (l.category || 'Uncategorized');
+    const callType = l.call_type || (cat ? cat.callType : 'soft');
+    const dateStr = new Date(l.log_date).toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+    const statusHtml = l.reviewed
+      ? `<span class="ledger-row-status reviewed">✓ Reviewed${l.reviewed_by ? ' by '+escHTML(l.reviewed_by) : ''}</span>`
+      : `<span class="ledger-row-status pending">◔ Pending review</span>`;
+    return `
+    <div class="ledger-row">
+      <span class="ledger-stamp ${callType}"><span>${callType==='hard'?'Hard':'Soft'}</span><span>Call</span></span>
+      <div class="ledger-row-body">
+        <div class="ledger-row-top">
+          <span class="ledger-row-cat">${escHTML(catLabel)}</span>
+          <span class="ledger-row-date">${dateStr}</span>
+        </div>
+        <div class="ledger-row-activity">${escHTML(l.activity)}</div>
+        ${l.progress_notes ? `<div class="ledger-row-notes">${escHTML(l.progress_notes)}</div>` : ''}
+        <div class="ledger-row-foot">
+          <span class="ledger-row-logger">Logged by ${escHTML(l.manager_name||'—')}</span>
+          ${statusHtml}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  renderDlogCalendar();
+}
+
+/* ── Daily log's own activity calendar (added) ── */
+function dlogCalShift(delta){
+  dlogCalMonth = new Date(dlogCalMonth.getFullYear(), dlogCalMonth.getMonth()+delta, 1);
+  renderDlogCalendar();
+}
+function dlogCalToday(){
+  dlogCalMonth = new Date();
+  renderDlogCalendar();
+}
+function ymd(d){
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+function renderDlogCalendar(){
+  const label = $('dlog-cal-month-label');
+  if(label) label.textContent = dlogCalMonth.toLocaleDateString('en-IN',{month:'long',year:'numeric'});
+
+  const byDate = {};
+  dailyLogs.forEach(l => {
+    const key = String(l.log_date).slice(0,10);
+    (byDate[key] = byDate[key] || []).push(l);
+  });
+
+  const year = dlogCalMonth.getFullYear();
+  const month = dlogCalMonth.getMonth();
+  const firstOfMonth = new Date(year, month, 1);
+  let startOffset = firstOfMonth.getDay() - 1;
+  if(startOffset < 0) startOffset = 6;
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const daysInPrevMonth = new Date(year, month, 0).getDate();
+  const todayKey = ymd(new Date());
+
+  const cells = [];
+  for(let i=startOffset; i>0; i--){
+    cells.push({ date: new Date(year, month-1, daysInPrevMonth - i + 1), outside:true });
+  }
+  for(let d=1; d<=daysInMonth; d++){
+    cells.push({ date: new Date(year, month, d), outside:false });
+  }
+  while(cells.length % 7 !== 0 || cells.length < 42){
+    const last = cells[cells.length-1].date;
+    cells.push({ date: new Date(last.getFullYear(), last.getMonth(), last.getDate()+1), outside:true });
+  }
+
+  const grid = $('dlog-cal-grid');
+  if(!grid) return;
+  const maxShow = 3;
+  grid.innerHTML = cells.map(cell => {
+    const key = ymd(cell.date);
+    const dayEntries = byDate[key] || [];
+    const isToday = key === todayKey;
+    const pillsHtml = dayEntries.slice(0, maxShow).map(e => {
+      const cat = DLOG_CATEGORIES.find(c => c.key === e.category);
+      const catLabel = cat ? cat.label : (e.category || 'Uncategorized');
+      const callType = e.call_type || (cat ? cat.callType : 'soft');
+      return `<div class="review-cal-pill" title="${escHTML(catLabel)}">
+        <span class="cal-dot ${callType}"></span>
+        <span>${escHTML(catLabel)}</span>
+        ${e.reviewed ? '<span class="cal-check">✓</span>' : ''}
+      </div>`;
+    }).join('');
+    const moreHtml = dayEntries.length > maxShow ? `<div class="review-cal-more">+${dayEntries.length - maxShow} more</div>` : '';
+    return `<div class="review-cal-cell ${cell.outside ? 'outside' : ''} ${isToday ? 'is-today' : ''}" onclick="openDlogDayModal('${key}')">
+      <span class="review-cal-daynum">${cell.date.getDate()}</span>
+      ${pillsHtml}
+      ${moreHtml}
+    </div>`;
+  }).join('');
+}
+
+function openDlogDayModal(dateKey){
+  const dayEntries = dailyLogs.filter(l => String(l.log_date).slice(0,10) === dateKey);
+  if(!dayEntries.length) return;
+  const dateObj = new Date(dateKey + 'T00:00:00');
+  $('dlog-day-modal-title').textContent = dateObj.toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+  $('dlog-day-modal-meta').textContent = `${dayEntries.length} entr${dayEntries.length===1?'y':'ies'} · ${sessionCollege || ''}`;
+
+  $('dlog-day-modal-entries').innerHTML = dayEntries.map(l => {
+    const cat = DLOG_CATEGORIES.find(c => c.key === l.category);
+    const catLabel = cat ? cat.label : (l.category || 'Uncategorized');
+    const callType = l.call_type || (cat ? cat.callType : 'soft');
+    const badge = `<span class="dlog-cat-badge ${callType}">${callType === 'hard' ? '✉ Hard call' : 'Soft call'} · ${escHTML(catLabel)}</span>`;
+    const reviewBadge = l.reviewed
+      ? `<span class="review-badge review-yes">✓ Reviewed${l.reviewed_by ? ' by '+escHTML(l.reviewed_by) : ''}</span>`
+      : `<span class="review-badge review-no">☐ Review pending</span>`;
+    return `<div class="dlog-entry">
+      <div class="dlog-entry-top">
+        <span class="dlog-entry-date">${escHTML(l.manager_name||'')}</span>
+      </div>
+      <div style="margin-top:4px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;">${badge}${reviewBadge}</div>
+      <div class="dlog-entry-activity" style="margin-top:6px;">${escHTML(l.activity)}</div>
+      ${l.progress_notes ? `<div class="dlog-entry-progress">${escHTML(l.progress_notes)}</div>` : ''}
+    </div>`;
+  }).join('');
+
+  show('dlog-day-modal');
+  document.body.style.overflow = 'hidden';
+}
+function closeDlogDayModal(){
+  hide('dlog-day-modal');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape' && $('dlog-day-modal') && !$('dlog-day-modal').classList.contains('hidden')){
+    closeDlogDayModal();
+  }
+});
+
+async function saveDailyLog(){
+  if(dlogSaving) return;
+  const date = $('dlog-date').value;
+  const name = $('dlog-name').value.trim();
+  const categoryKey = $('dlog-category').value;
+  const activity = $('dlog-activity').value.trim();
+  const progress = $('dlog-progress').value.trim();
+
+  if(!date || !categoryKey || !activity){
+    showToast('Please select a category and add activity details');
+    return;
+  }
+
+  const cat = DLOG_CATEGORIES.find(c => c.key === categoryKey);
+  const callType = cat ? cat.callType : 'soft';
+
+  dlogSaving = true;
+  const saveBtn = $('dlog-save-btn');
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Filing…';
+  hide('dlog-saved');
+
+  const payload = {
+    college: sessionCollege,
+    manager_name: name || null,
+    log_date: date,
+    category: categoryKey,
+    call_type: callType,
+    activity: activity,
+    progress_notes: progress || null,
+  };
+
+  const { error } = await sb.from('daily_logs').insert(payload);
+
+  dlogSaving = false;
+  saveBtn.disabled = false;
+  saveBtn.textContent = 'File entry';
+
+  if(error){
+    console.error(error);
+    showToast('Could not save entry: ' + (error.message || 'check console'));
+    return;
+  }
+
+  $('dlog-activity').value = '';
+  $('dlog-progress').value = '';
+  $('dlog-category').value = '';
+  onDlogCategoryChange('');
+
+  const saved = $('dlog-saved');
+  saved.style.color = 'var(--green)';
+  saved.textContent = '✓ Saved';
+  show('dlog-saved');
+  setTimeout(() => hide('dlog-saved'), 1800);
+
+  if(callType === 'hard'){
+    sendHardCallEmail(cat, { date, name, activity, progress });
+  }
+
+  /* jump the calendar to the month of the entry just filed, so the new dot is visible immediately */
+  dlogCalMonth = new Date(date + 'T00:00:00');
+
+  loadDailyLogs();
+}
+
+  /* ══════════════════════════════════════════════════════════
+   ── REVIEW PANEL (admin only, added) ──
+   ══════════════════════════════════════════════════════════ */
+async function loadCollegePendingCounts(){
+  try{
+    const { data, error } = await sb.from('daily_logs').select('college, reviewed');
+    if(error) throw error;
+    const counts = {};
+    (data || []).forEach(l => {
+      if(!l.reviewed){
+        counts[l.college] = (counts[l.college] || 0) + 1;
+      }
+    });
+    collegePendingCounts = counts;
+  }catch(e){
+    console.error('Could not load pending review counts:', e);
+    collegePendingCounts = {};
+  }
+}
+
+function populateReviewCollegeSelect(){
+  const sel = $('review-college-select');
+  if(!sel) return;
+  const names = collegeContacts.length
+    ? collegeContacts.map(c => c.college)
+    : COLLEGE_REGION_MAP.map(c => c.college);
+  const uniqueSorted = [...new Set(names)].sort((a,b) => a.localeCompare(b));
+  const prevValue = sel.value;
+  sel.innerHTML = uniqueSorted.length
+    ? '<option value="" disabled selected>Select college</option>' +
+      uniqueSorted.map(name => {
+        const pending = collegePendingCounts[name] || 0;
+        const label = pending > 0 ? `${name} (${pending} pending)` : name;
+        return `<option value="${escHTML(name)}">${escHTML(label)}</option>`;
+      }).join('')
+    : '<option value="">No colleges configured yet</option>';
+  if(prevValue) sel.value = prevValue;
+}
+
+async function enterReviewPanel(){
+  hide('platform-select-screen');
+  hide('admin-screen');
+  hide('dailylog-screen');
+  show('review-panel-screen');
+  if(refreshTimer){ clearInterval(refreshTimer); refreshTimer = null; }
+
+  await loadCollegePendingCounts();
+  populateReviewCollegeSelect();
+  const sel = $('review-college-select');
+  reviewCollege = sel.value || null;
+  $('review-college-name').textContent = reviewCollege || '—';
+
+  reviewCallFilter = 'all';
+  $('review-filter-select').value = 'all';
+  reviewCalMonth = new Date();
+
+  if(reviewCollege) loadReviewLogs();
+  else {
+    reviewLogs = [];
+    renderReviewLogs();
+  }
+}
+
+function reviewCalShift(delta){
+  reviewCalMonth = new Date(reviewCalMonth.getFullYear(), reviewCalMonth.getMonth()+delta, 1);
+  renderReviewCalendar();
+}
+function reviewCalToday(){
+  reviewCalMonth = new Date();
+  renderReviewCalendar();
+}
+
+function renderReviewCalendar(){
+  const label = $('review-cal-month-label');
+  if(label) label.textContent = reviewCalMonth.toLocaleDateString('en-IN',{month:'long',year:'numeric'});
+
+  const filtered = getReviewFiltered();
+  const byDate = {};
+  filtered.forEach(l => {
+    const key = String(l.log_date).slice(0,10);
+    (byDate[key] = byDate[key] || []).push(l);
+  });
+
+  const year = reviewCalMonth.getFullYear();
+  const month = reviewCalMonth.getMonth();
+  const firstOfMonth = new Date(year, month, 1);
+  let startOffset = firstOfMonth.getDay() - 1;
+  if(startOffset < 0) startOffset = 6;
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const daysInPrevMonth = new Date(year, month, 0).getDate();
+  const todayKey = ymd(new Date());
+
+  const cells = [];
+  for(let i=startOffset; i>0; i--){
+    cells.push({ date: new Date(year, month-1, daysInPrevMonth - i + 1), outside:true });
+  }
+  for(let d=1; d<=daysInMonth; d++){
+    cells.push({ date: new Date(year, month, d), outside:false });
+  }
+  while(cells.length % 7 !== 0 || cells.length < 42){
+    const last = cells[cells.length-1].date;
+    cells.push({ date: new Date(last.getFullYear(), last.getMonth(), last.getDate()+1), outside:true });
+  }
+
+  const grid = $('review-cal-grid');
+  if(!grid) return;
+  const maxShow = 3;
+  grid.innerHTML = cells.map(cell => {
+    const key = ymd(cell.date);
+    const dayEntries = byDate[key] || [];
+    const isToday = key === todayKey;
+    const pillsHtml = dayEntries.slice(0, maxShow).map(e => {
+      const cat = DLOG_CATEGORIES.find(c => c.key === e.category);
+      const catLabel = cat ? cat.label : (e.category || 'Uncategorized');
+      const callType = e.call_type || (cat ? cat.callType : 'soft');
+      return `<div class="review-cal-pill" title="${escHTML(catLabel)}">
+        <span class="cal-dot ${callType}"></span>
+        <span>${escHTML(catLabel)}</span>
+        ${e.reviewed ? '<span class="cal-check">✓</span>' : ''}
+      </div>`;
+    }).join('');
+    const moreHtml = dayEntries.length > maxShow ? `<div class="review-cal-more">+${dayEntries.length - maxShow} more</div>` : '';
+    return `<div class="review-cal-cell ${cell.outside ? 'outside' : ''} ${isToday ? 'is-today' : ''}" onclick="openReviewDayModal('${key}')">
+      <span class="review-cal-daynum">${cell.date.getDate()}</span>
+      ${pillsHtml}
+      ${moreHtml}
+    </div>`;
+  }).join('');
+
+  if(!reviewCollege){
+    show('review-empty');
+    $('review-empty').innerHTML = '<p>Select a college to view its activity log.</p>';
+  } else if(!filtered.length){
+    show('review-empty');
+    $('review-empty').innerHTML = '<p>No entries found for this college / filter.</p>';
+  } else {
+    hide('review-empty');
+  }
+}
+
+function openReviewDayModal(dateKey){
+  const dayEntries = getReviewFiltered().filter(l => String(l.log_date).slice(0,10) === dateKey);
+  if(!dayEntries.length) return;
+  const dateObj = new Date(dateKey + 'T00:00:00');
+  $('review-day-modal-title').textContent = dateObj.toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+  $('review-day-modal-meta').textContent = `${dayEntries.length} entr${dayEntries.length===1?'y':'ies'} · ${reviewCollege || ''}`;
+
+  $('review-day-modal-entries').innerHTML = dayEntries.map(l => {
+    const cat = DLOG_CATEGORIES.find(c => c.key === l.category);
+    const catLabel = cat ? cat.label : (l.category || 'Uncategorized');
+    const callType = l.call_type || (cat ? cat.callType : 'soft');
+    const badge = `<span class="dlog-cat-badge ${callType}">${callType === 'hard' ? '✉ Hard call' : 'Soft call'} · ${escHTML(catLabel)}</span>`;
+    const reviewBadge = l.reviewed
+      ? `<span class="review-badge review-yes">✓ Reviewed by ${escHTML(l.reviewed_by||'admin')}</span>`
+      : `<span class="review-badge review-no">☐ Review pending</span>`;
+    const reviewBtn = !l.reviewed
+      ? `<button class="btn btn-primary" style="margin-top:10px;" onclick="markLogReviewed('${l.id}')">Mark reviewed</button>`
+      : `<div style="margin-top:8px;font-size:11px;color:var(--text-faint);">Reviewed on ${l.reviewed_at ? fmtAbs(l.reviewed_at) : '—'}</div>`;
+    return `<div class="dlog-entry">
+      <div class="dlog-entry-top">
+        <span class="dlog-entry-date">${escHTML(l.manager_name||'')}</span>
+      </div>
+      <div style="margin-top:4px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;">${badge}${reviewBadge}</div>
+      <div class="dlog-entry-activity" style="margin-top:6px;">${escHTML(l.activity)}</div>
+      ${l.progress_notes ? `<div class="dlog-entry-progress">${escHTML(l.progress_notes)}</div>` : ''}
+      ${reviewBtn}
+    </div>`;
+  }).join('');
+
+  show('review-day-modal');
+  document.body.style.overflow = 'hidden';
+}
+function closeReviewDayModal(){
+  hide('review-day-modal');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape' && $('review-day-modal') && !$('review-day-modal').classList.contains('hidden')){
+    closeReviewDayModal();
+  }
+});
+
+function onReviewCollegeChange(college){
+  reviewCollege = college;
+  $('review-college-name').textContent = college || '—';
+  loadReviewLogs();
+}
+
+function setReviewLogFilter(v){
+  reviewCallFilter = v;
+  renderReviewLogs();
+}
+
+async function loadReviewLogs(){
+  const listEl = $('review-cal-grid');
+  if(listEl) listEl.innerHTML = '<div style="font-size:12.5px;color:var(--text-faint);padding:10px;">Loading…</div>';
+  try{
+    const { data, error } = await sb.from('daily_logs')
+      .select('*')
+      .eq('college', reviewCollege)
+      .order('log_date', { ascending: false })
+      .order('created_at', { ascending: false });
+    if(error) throw error;
+    reviewLogs = data || [];
+    renderReviewLogs();
+  }catch(e){
+    console.error('Could not load daily_logs for review panel:', e);
+    show('review-empty');
+    $('review-empty').innerHTML = `<p>Couldn't load entries. Make sure the <b>daily_logs</b> table has the review columns (reviewed, reviewed_by, reviewed_at).</p>`;
+  }
+}
+
+function getReviewFiltered(){
+  let list = reviewLogs;
+  if(reviewCallFilter === 'hard')     list = list.filter(l => l.call_type === 'hard');
+  if(reviewCallFilter === 'soft')     list = list.filter(l => l.call_type === 'soft');
+  if(reviewCallFilter === 'pending')  list = list.filter(l => !l.reviewed);
+  if(reviewCallFilter === 'reviewed') list = list.filter(l => !!l.reviewed);
+  return list;
+}
+
+function renderReviewLogs(){
+  $('review-cnt-all').textContent     = reviewLogs.length;
+  $('review-cnt-hard').textContent    = reviewLogs.filter(l => l.call_type === 'hard').length;
+  $('review-cnt-pending').textContent = reviewLogs.filter(l => !l.reviewed).length;
+  renderReviewCalendar();
+}
+
+async function markLogReviewed(id){
+  const reviewerName = window.prompt('Enter your name to confirm this review:');
+  if(!reviewerName || !reviewerName.trim()){
+    showToast('Reviewer name is required');
+    return;
+  }
+  const payload = {
+    reviewed: true,
+    reviewed_by: reviewerName.trim(),
+    reviewed_at: new Date().toISOString()
+  };
+  const { error } = await sb.from('daily_logs').update(payload).eq('id', id);
+  if(error){
+    console.error(error);
+    showToast('Could not mark as reviewed: ' + (error.message || 'check console'));
+    return;
+  }
+  reviewLogs = reviewLogs.map(l => l.id === id ? { ...l, ...payload } : l);
+  renderReviewLogs();
+  if($('review-day-modal') && !$('review-day-modal').classList.contains('hidden')){
+    const updated = reviewLogs.find(l => l.id === id);
+    if(updated) openReviewDayModal(String(updated.log_date).slice(0,10));
+  }
+  showToast('Marked as reviewed');
+
+  loadCollegePendingCounts().then(populateReviewCollegeSelect);
 }
 </script>
 </body>
