@@ -1107,9 +1107,9 @@ body[data-theme="dark"] .platform-wrap::after  { background: #D85A30; opacity: 0
               <input id="dlog-date" type="date" />
             </div>
             <div class="form-group">
-              <label class="field-label">Logged by</label>
-              <input id="dlog-name" type="text" placeholder="Your name" />
-            </div>
+  <label class="field-label">Logged by</label>
+  <input id="dlog-name" type="text" placeholder="Your name" readonly />
+</div>
             <div class="form-group full">
               <label class="field-label">Category</label>
               <select id="dlog-category" onchange="onDlogCategoryChange(this.value)"></select>
@@ -2899,8 +2899,7 @@ $('dlog-date').min = today;   // safety net: even if unlocked, can't go earlier
 $('dlog-date').max = today;   // safety net: even if unlocked, can't go later
 
 const rec = collegeContacts.find(c => c.college === sessionCollege);
-$('dlog-name').value = (rec && (rec.campus_manager_name || rec.senior_manager_name)) || '';
-
+$('dlog-name').value = (rec && (rec.campus_manager_name || rec.senior_manager_name)) || sessionCollege || 'Campus Manager';
   populateDlogCategorySelect();
   $('dlog-category').value = '';
   onDlogCategoryChange('');
