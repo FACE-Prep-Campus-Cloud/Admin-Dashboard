@@ -2064,8 +2064,7 @@ function applySessionUI(){
   if(sessionRole === 'manager'){
     tag.innerHTML = `Viewing tickets for<br><b>${escHTML(sessionCollege)}</b>`;
   } else if(sessionRole === 'kam'){
-    const n = (sessionAllowedColleges||[]).length;
-    tag.innerHTML = `<b>${escHTML(sessionKamName)}</b> (KAM)<br>${n} college${n===1?'':'s'} in your region`;
+    tag.innerHTML = `<b>${escHTML(sessionKamName)}</b> (KAM)`;
   } else {
     tag.innerHTML = `<b>Admin</b> — all colleges`;
   }
