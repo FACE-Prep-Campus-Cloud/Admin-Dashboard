@@ -908,6 +908,35 @@ body[data-theme="dark"] .platform-wrap::after  { background: #D85A30; opacity: 0
     animation: none !important;
   }
 }
+  /* ── Video background for platform-select screen ── */
+.platform-bg-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* keep the "Welcome" heading + cards above the video */
+.platform-box { position: relative; z-index: 2; }
+
+/* replace the old purple/orange blobs with a soft dark scrim so white cards stand out */
+.platform-wrap::before,
+.platform-wrap::after {
+  display: none;
+}
+.platform-wrap {
+  background: #000; /* fallback while video loads */
+}
+.platform-wrap-scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(10,10,15,0.28);
+  z-index: 1;
+  pointer-events: none;
+}
 
 .review-calendar {
   border: none;
@@ -1027,7 +1056,12 @@ body[data-theme="dark"] .platform-wrap::after  { background: #D85A30; opacity: 0
 </div>
 
 <!-- ── PLATFORM SELECT (campus/senior manager only) ── -->
+<!-- ── PLATFORM SELECT (campus/senior manager only) ── -->
 <div id="platform-select-screen" class="hidden platform-wrap">
+  <video class="platform-bg-video" autoplay muted loop playsinline>
+    <source src="bg-waves.mp4" type="video/mp4">
+  </video>
+<div class="platform-wrap-scrim"></div>
   <div class="platform-box">
     <h1>Welcome<span id="platform-select-college-name"></span></h1>
     <p class="sub">Choose what you'd like to open.</p>
