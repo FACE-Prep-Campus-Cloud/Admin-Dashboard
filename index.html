@@ -2850,7 +2850,7 @@ function populateDlogCategorySelect(){
   const soft = DLOG_CATEGORIES.filter(c => c.callType === 'soft');
   sel.innerHTML =
     '<option value="">Select a category</option>' +
-    `<optgroup label="Hard Call — will be emailed">${hard.map(c => `<option value="${c.key}">${escHTML(c.label)}</option>`).join('')}</optgroup>` +
+    `<optgroup label="Hard Call — will be mailed to KAM">${hard.map(c => `<option value="${c.key}">${escHTML(c.label)}</option>`).join('')}</optgroup>` +
     `<optgroup label="Soft Call">${soft.map(c => `<option value="${c.key}">${escHTML(c.label)}</option>`).join('')}</optgroup>`;
 }
 
