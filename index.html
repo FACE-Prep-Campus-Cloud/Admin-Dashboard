@@ -1033,9 +1033,14 @@ body[data-theme="dark"] .platform-wrap::after  { background: #D85A30; opacity: 0
     <p class="sub">Choose what you'd like to open.</p>
     <div class="platform-cards">
       <button class="platform-card" onclick="selectPlatform('tickets')">
-        <div class="platform-icon p-blue">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h3a2 2 0 0 0 4 0h3a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2h-3a2 2 0 0 0-4 0H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/></svg>
-        </div>
+<div class="platform-icon p-blue">
+  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+    <g transform="rotate(-35 10 10)">
+      <path d="M4,6 L16,6 Q17,6 17,7 L17,8.3 A1.4,1.4 0 0 0 17,11 L17,13 Q17,14 16,14 L4,14 Q3,14 3,13 L3,11 A1.4,1.4 0 0 0 3,8.3 L3,7 Q3,6 4,6 Z"/>
+      <line x1="10" y1="7" x2="10" y2="13" stroke-dasharray="1 1.1"/>
+    </g>
+  </svg>
+</div>
         <h3>Ticketing Platform</h3>
         <p id="platform-tickets-desc">View and manage student help-desk tickets raised by your college.</p>
       </button>
