@@ -1914,7 +1914,8 @@ function populateKamDropdown(){
   const sel = $('kam-select');
   if(!sel) return;
   const kams = buildKamList();
-  sel.innerHTML = '<option value="__master__">Master Admin (All Colleges)</option>' +
+  sel.innerHTML = '<option value="" disabled selected>Select Login</option>' +
+    '<option value="__master__">Master Admin (All Colleges)</option>' +
     kams.map(k => `<option value="${escHTML(k.name)}">${escHTML(k.name)}</option>`).join('');
 }
 async function loadCollegeContactsForLogin(){
@@ -1942,6 +1943,7 @@ function submitKamLogin(){
   const err = $('pin-error');
   const sel = ($('kam-select').value || '').trim();
   const pin = ($('kam-pin-input').value || '').trim();
+  if(!sel){ err.textContent='Please select a login.'; show('pin-error'); return; }
   if(!pin){ err.textContent='Enter your PIN.'; show('pin-error'); return; }
 
   if(sel === '__master__'){
