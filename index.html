@@ -1915,9 +1915,8 @@ function populateKamDropdown(){
   if(!sel) return;
   const kams = buildKamList();
   sel.innerHTML = '<option value="__master__">Master Admin (All Colleges)</option>' +
-    kams.map(k => `<option value="${escHTML(k.name)}">${escHTML(k.name)} (${k.colleges.length} colleges)</option>`).join('');
+    kams.map(k => `<option value="${escHTML(k.name)}">${escHTML(k.name)}</option>`).join('');
 }
-
 async function loadCollegeContactsForLogin(){
   populateCollegeDropdown();
   populateKamDropdown();
