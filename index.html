@@ -999,13 +999,12 @@ body[data-theme="dark"] .platform-wrap::after  { background: #D85A30; opacity: 0
 
       <div id="admin-login-block">
         <div style="margin-bottom:14px">
-          <label class="field-label" style="text-align:center;display:block;">PIN</label>
-          <div class="otp-row" id="otp-row">
-            <input class="otp-box" type="password" inputmode="numeric" maxlength="1" data-idx="0" />
-            <input class="otp-box" type="password" inputmode="numeric" maxlength="1" data-idx="1" />
-            <input class="otp-box" type="password" inputmode="numeric" maxlength="1" data-idx="2" />
-            <input class="otp-box" type="password" inputmode="numeric" maxlength="1" data-idx="3" />
-          </div>
+          <label class="field-label">KAM</label>
+          <select id="kam-select"></select>
+        </div>
+        <div style="margin-bottom:14px">
+          <label class="field-label">PIN</label>
+          <input id="kam-pin-input" type="password" inputmode="numeric" maxlength="6" placeholder="Enter your PIN" />
         </div>
       </div>
 
@@ -1660,7 +1659,7 @@ const REGION_DEFS = {
   chennai:      { label: 'Chennai',              kam: 'Shyam Kumar',   dot: 'dot-red' },
   karnakerala:  { label: 'Karnataka & Kerala',    kam: 'Praveen Rao',   dot: 'dot-amber' },
   tamilnadu:    { label: 'Tamil Nadu',            kam: 'Guna Karthick', dot: 'dot-green' },
-  coimbatore:   { label: 'Coimbatore',            kam: 'KAM TBD', dot: 'dot-violet' },
+  coimbatore:   { label: 'Coimbatore',            kam: 'Guna Karthick', dot: 'dot-violet' },
 };
 const REGION_HEX = { chennai:'#DC2626', karnakerala:'#D9840C', tamilnadu:'#16A34A', coimbatore:'#7C3AED', unmapped:'#9AA1AC' };
 
@@ -1677,11 +1676,11 @@ const COLLEGE_REGION_MAP = [
   { college: 'Asian School of Business', region: 'karnakerala' },
   { college: 'S-VYASA University', region: 'karnakerala' },
   { college: 'Kamaraj College', region: 'tamilnadu' },
+  { college: "Kamaraj Women's College", region: 'tamilnadu' },
   { college: 'Noorul Islam Centre for Higher Education (NICHE)', region: 'tamilnadu' },
   { college: 'Sri Amaraavathi College of Arts & Science', region: 'tamilnadu' },
   { college: 'Bharathidasan College Of Arts & Science', region: 'tamilnadu' },
   { college: 'Nagarathinam Angalammal Arts and Science College', region: 'tamilnadu' },
-  { college: 'Muthayammal College of Arts and Science', region: 'tamilnadu' },
   { college: 'JOY University', region: 'tamilnadu' },
   { college: 'TERFs College of Arts and Science', region: 'tamilnadu' },
   { college: 'Sasurie College of Arts and Science', region: 'tamilnadu' },
@@ -1770,6 +1769,8 @@ let avgResView    = 'overall';
 let authRole      = 'admin';
 let sessionRole    = 'admin';
 let sessionCollege = null;
+let sessionAllowedColleges = null;
+let sessionKamName = null;
 let collegeContacts = [];
 
 /* ── Daily log state (added) ── */
@@ -1864,45 +1865,14 @@ function showToast(msg){
   }, 4200);
 }
 
-/* ── Auth (OTP boxes) ── */
-(function setupOtp(){
-  const boxes = () => Array.from(document.querySelectorAll('.otp-box'));
-  document.addEventListener('input', e => {
-    if(!e.target.classList.contains('otp-box')) return;
-    e.target.value = e.target.value.replace(/[^0-9]/g,'').slice(0,1);
-    e.target.classList.toggle('filled', !!e.target.value);
-    const all = boxes();
-    const idx = all.indexOf(e.target);
-    if(e.target.value && idx < all.length - 1) all[idx+1].focus();
-    if(e.target.value && idx === all.length - 1) submitPin();
-  });
-  document.addEventListener('keydown', e => {
-    if(!e.target.classList.contains('otp-box')) return;
-    const all = boxes();
-    const idx = all.indexOf(e.target);
-    if(e.key === 'Backspace' && !e.target.value && idx > 0){ all[idx-1].focus(); }
-    if(e.key === 'Enter') submitPin();
-  });
-})();
-
-/* Manager PIN: pressing Enter in the PIN field (or college dropdown) submits login */
+/* Manager / KAM PIN: pressing Enter in the PIN field (or select) submits login */
 document.addEventListener('keydown', e => {
   if(e.key !== 'Enter') return;
-  if(e.target.id === 'manager-pin-input' || e.target.id === 'manager-college-select'){
+  if(['manager-pin-input','manager-college-select','kam-pin-input','kam-select'].includes(e.target.id)){
     e.preventDefault();
-    submitManagerLogin();
+    submitLogin();
   }
 });
-
-function getOtpValue(){
-  return Array.from(document.querySelectorAll('.otp-box')).map(b => b.value).join('');
-}
-function clearOtp(err){
-  const boxes = Array.from(document.querySelectorAll('.otp-box'));
-  boxes.forEach(b => { b.value=''; b.classList.remove('filled'); if(err) b.classList.add('shake-err'); });
-  if(err) setTimeout(() => boxes.forEach(b => b.classList.remove('shake-err')), 400);
-  boxes[0]?.focus();
-}
 
 /* ── Role tabs ── */
 function setAuthRole(role){
@@ -1927,13 +1897,37 @@ function populateCollegeDropdown(){
     : '<option value="">No colleges configured yet</option>';
 }
 
+/* ── Build the list of KAMs (senior managers) from college_contacts ── */
+function buildKamList(){
+  const map = {};
+  collegeContacts.forEach(c => {
+    if(c.senior_manager_name){
+      if(!map[c.senior_manager_name]){
+        map[c.senior_manager_name] = { name: c.senior_manager_name, pin: c.senior_manager_pin, colleges: [] };
+      }
+      map[c.senior_manager_name].colleges.push(c.college);
+    }
+  });
+  return Object.values(map).sort((a,b) => a.name.localeCompare(b.name));
+}
+function populateKamDropdown(){
+  const sel = $('kam-select');
+  if(!sel) return;
+  const kams = buildKamList();
+  sel.innerHTML = '<option value="__master__">Master Admin (All Colleges)</option>' +
+    kams.map(k => `<option value="${escHTML(k.name)}">${escHTML(k.name)} (${k.colleges.length} colleges)</option>`).join('');
+}
+
 async function loadCollegeContactsForLogin(){
   populateCollegeDropdown();
+  populateKamDropdown();
   try{
-    const { data, error } = await sb.from('college_contacts').select('college, login_pin, senior_manager_name, campus_manager_name');
+    const { data, error } = await sb.from('college_contacts')
+      .select('college, login_pin, senior_manager_name, senior_manager_pin, campus_manager_name, campus_manager_pin, zone');
     if(error) throw error;
     collegeContacts = data || [];
     populateCollegeDropdown();
+    populateKamDropdown();
   }catch(e){
     console.error('Could not load college_contacts (has the login_pin migration been run?):', e);
   }
@@ -1941,19 +1935,46 @@ async function loadCollegeContactsForLogin(){
 loadCollegeContactsForLogin();
 
 function submitLogin(){
-  if(authRole === 'admin') submitPin();
+  if(authRole === 'admin') submitKamLogin();
   else submitManagerLogin();
 }
 
-function submitPin(){
-  const pin = getOtpValue();
+function submitKamLogin(){
   const err = $('pin-error');
-  if(pin.length < 4){ err.textContent='Enter all 4 digits.'; show('pin-error'); return; }
-  if(pin !== ADMIN_PIN){ err.textContent='Incorrect PIN.'; show('pin-error'); clearOtp(true); return; }
+  const sel = ($('kam-select').value || '').trim();
+  const pin = ($('kam-pin-input').value || '').trim();
+  if(!pin){ err.textContent='Enter your PIN.'; show('pin-error'); return; }
+
+  if(sel === '__master__'){
+    if(pin !== ADMIN_PIN){
+      err.textContent='Incorrect PIN.'; show('pin-error');
+      $('kam-pin-input').value=''; $('kam-pin-input').focus();
+      return;
+    }
+    hide('pin-error');
+    sessionRole = 'admin';
+    sessionCollege = null;
+    sessionAllowedColleges = null;
+    sessionKamName = null;
+    hide('auth-screen');
+    showPlatformSelect();
+    return;
+  }
+
+  const kams = buildKamList();
+  const rec = kams.find(k => k.name === sel);
+  if(!rec || !rec.pin || String(rec.pin) !== pin){
+    err.textContent='Incorrect PIN for this KAM.';
+    show('pin-error');
+    $('kam-pin-input').value = '';
+    $('kam-pin-input').focus();
+    return;
+  }
   hide('pin-error');
-  sessionRole = 'admin';
+  sessionRole = 'kam';
+  sessionKamName = rec.name;
+  sessionAllowedColleges = rec.colleges.slice();
   sessionCollege = null;
-  /* Admins now also land on the platform-select screen: Ticketing or Review Panel. */
   hide('auth-screen');
   showPlatformSelect();
 }
@@ -1965,7 +1986,8 @@ function submitManagerLogin(){
   if(!college){ err.textContent='Select your college.'; show('pin-error'); return; }
   if(!pin){ err.textContent='Enter your PIN.'; show('pin-error'); return; }
   const rec = collegeContacts.find(c => c.college === college);
-  if(!rec || !rec.login_pin || String(rec.login_pin) !== pin){
+  const expectedPin = rec ? (rec.campus_manager_pin || rec.login_pin) : null;
+  if(!rec || !expectedPin || String(expectedPin) !== pin){
     err.textContent='Incorrect PIN for this college.';
     show('pin-error');
     $('manager-pin-input').value = '';
@@ -1975,21 +1997,28 @@ function submitManagerLogin(){
   hide('pin-error');
   sessionRole = 'manager';
   sessionCollege = college;
+  sessionAllowedColleges = null;
+  sessionKamName = null;
   /* Campus / Senior managers land on the platform-select screen (Ticketing or Daily Log). */
   hide('auth-screen');
   showPlatformSelect();
 }
 
-/* ── Platform select (admin + campus/senior manager) ── */
+/* ── Platform select (admin + KAM + campus manager) ── */
 function showPlatformSelect(){
   hide('admin-screen');
   hide('dailylog-screen');
   hide('review-panel-screen');
   const isManager = sessionRole === 'manager';
-  $('platform-select-college-name').textContent = isManager && sessionCollege ? ' — ' + sessionCollege : '';
+  const isKam = sessionRole === 'kam';
+  $('platform-select-college-name').textContent = isManager && sessionCollege
+    ? ' — ' + sessionCollege
+    : (isKam && sessionKamName ? ' — ' + sessionKamName : '');
   $('platform-tickets-desc').textContent = isManager
     ? 'View and manage student help-desk tickets raised by your college.'
-    : 'View and manage student help-desk tickets across all colleges.';
+    : isKam
+      ? 'View and manage student help-desk tickets raised by colleges in your region.'
+      : 'View and manage student help-desk tickets across all colleges.';
   $('platform-second-title').textContent = isManager ? 'Daily Activity Log' : 'Review Panel';
   $('platform-second-desc').textContent = isManager
     ? 'Log your daily activities and track your progress over time.'
@@ -2026,37 +2055,50 @@ function enterDashboard(){
 }
 
 function applySessionUI(){
-  const isManager = sessionRole === 'manager';
-  $('grp-regions').classList.toggle('hidden', isManager);
-  $('regions-sec-label').classList.toggle('hidden', isManager);
-  $('dd-region').classList.toggle('hidden', isManager);
+  const isRestricted = sessionRole === 'manager' || sessionRole === 'kam';
+  $('grp-regions').classList.toggle('hidden', isRestricted);
+  $('regions-sec-label').classList.toggle('hidden', isRestricted);
+  $('dd-region').classList.toggle('hidden', isRestricted);
   show('topbar-switch-platform');
 
   const tag = $('session-tag');
-  if(isManager){
+  if(sessionRole === 'manager'){
     tag.innerHTML = `Viewing tickets for<br><b>${escHTML(sessionCollege)}</b>`;
+  } else if(sessionRole === 'kam'){
+    const n = (sessionAllowedColleges||[]).length;
+    tag.innerHTML = `<b>${escHTML(sessionKamName)}</b> (KAM)<br>${n} college${n===1?'':'s'} in your region`;
   } else {
     tag.innerHTML = `<b>Admin</b> — all colleges`;
   }
 }
 
 function collegeMatchesSession(ticketCollege){
-  if(!sessionCollege) return true;
   const a = normalizeCollege(ticketCollege);
-  const b = normalizeCollege(sessionCollege);
-  if(!a || !b) return false;
-  return a === b || a.includes(b) || b.includes(a);
+  if(!a) return sessionRole !== 'manager' && sessionRole !== 'kam';
+  if(sessionRole === 'manager' && sessionCollege){
+    const b = normalizeCollege(sessionCollege);
+    if(!b) return false;
+    return a === b || a.includes(b) || b.includes(a);
+  }
+  if(sessionRole === 'kam' && sessionAllowedColleges){
+    return sessionAllowedColleges.some(c => {
+      const b = normalizeCollege(c);
+      if(!b) return false;
+      return a === b || a.includes(b) || b.includes(a);
+    });
+  }
+  return true;
 }
 
 function logout(){
   hide('admin-screen'); hide('platform-select-screen'); hide('dailylog-screen'); hide('review-panel-screen');
   show('auth-screen');
-  clearOtp(false);
   hide('pin-error');
   const pinInput = $('manager-pin-input'); if(pinInput) pinInput.value = '';
+  const kamPin = $('kam-pin-input'); if(kamPin) kamPin.value = '';
   setAuthRole('admin');
   firstLoadDone = false; knownTicketIds = new Set();
-  sessionRole = 'admin'; sessionCollege = null;
+  sessionRole = 'admin'; sessionCollege = null; sessionAllowedColleges = null; sessionKamName = null;
   dailyLogs = [];
   reviewLogs = []; reviewCollege = null; reviewCallFilter = 'all';
   if(refreshTimer){ clearInterval(refreshTimer); refreshTimer = null; }
@@ -2430,7 +2472,7 @@ async function loadTickets(manual){
     if(error) throw error;
     let newData = data || [];
 
-    if(sessionRole === 'manager' && sessionCollege){
+    if(sessionRole === 'manager' || sessionRole === 'kam'){
       newData = newData.filter(t => collegeMatchesSession(t.college));
     }
 
@@ -3125,9 +3167,13 @@ async function loadCollegePendingCounts(){
 function populateReviewCollegeSelect(){
   const sel = $('review-college-select');
   if(!sel) return;
-  const names = collegeContacts.length
+  let names = collegeContacts.length
     ? collegeContacts.map(c => c.college)
     : COLLEGE_REGION_MAP.map(c => c.college);
+  if(sessionRole === 'kam' && sessionAllowedColleges){
+    const allowedNorm = sessionAllowedColleges.map(normalizeCollege);
+    names = names.filter(n => allowedNorm.includes(normalizeCollege(n)));
+  }
   const uniqueSorted = [...new Set(names)].sort((a,b) => a.localeCompare(b));
   const prevValue = sel.value;
   sel.innerHTML = uniqueSorted.length
