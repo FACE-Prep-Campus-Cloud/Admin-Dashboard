@@ -1151,10 +1151,13 @@ body[data-theme="dark"] .platform-wrap::after  { background: #D85A30; opacity: 0
       <h3>Which college's activity log?</h3>
       <div class="form-grid" style="margin-bottom:0;">
         <div class="form-group">
-          <label class="field-label">College</label>
-          <select id="review-college-select" onchange="onReviewCollegeChange(this.value)"></select>
-        </div>
-        <div class="form-group">
+  <label class="field-label">Date</label>
+  <input id="dlog-date" type="date" />
+</div>
+<div class="form-group">
+  <label class="field-label">Logged by</label>
+  <input id="dlog-name" type="text" placeholder="Your name" />
+</div>
           <label class="field-label">Show</label>
           <select id="review-filter-select" onchange="setReviewLogFilter(this.value)">
             <option value="all">All entries</option>
@@ -2890,11 +2893,13 @@ function enterDailyLog(){
   $('dlog-college-name-crumb').textContent = sessionCollege || '—';
   $('dlog-today-label').textContent = new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
 
-  const today = new Date().toISOString().slice(0,10);
-  $('dlog-date').value = today;
+const today = new Date().toISOString().slice(0,10);
+$('dlog-date').value = today;
+$('dlog-date').min = today;   // safety net: even if unlocked, can't go earlier
+$('dlog-date').max = today;   // safety net: even if unlocked, can't go later
 
-  const rec = collegeContacts.find(c => c.college === sessionCollege);
-  $('dlog-name').value = (rec && (rec.campus_manager_name || rec.senior_manager_name)) || '';
+const rec = collegeContacts.find(c => c.college === sessionCollege);
+$('dlog-name').value = (rec && (rec.campus_manager_name || rec.senior_manager_name)) || '';
 
   populateDlogCategorySelect();
   $('dlog-category').value = '';
