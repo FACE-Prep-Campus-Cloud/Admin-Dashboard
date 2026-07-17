@@ -933,6 +933,7 @@ body[data-theme="dark"] .ledger-card { background-image:
   .ticket-grid { grid-template-columns: 1fr; }
   .ledger-head { flex-direction: column; }
   .ledger-meta { text-align: left; }
+  #review-stats-row { grid-template-columns: repeat(2, 1fr) !important; }
 }
 
 @media print {
@@ -1214,7 +1215,7 @@ body[data-theme="dark"] .ledger-card { background-image:
       </div>
     </div>
 
-    <div class="stats-row" style="grid-template-columns:repeat(3,1fr);" id="review-stats-row">
+    <div class="stats-row" style="grid-template-columns:repeat(6,1fr);" id="review-stats-row">
       <div class="stat-card" style="cursor:default;">
         <div class="stat-icon i-slate"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1.5" y="1.5" width="13" height="13" rx="2"/><line x1="4.5" y1="5.5" x2="11.5" y2="5.5"/><line x1="4.5" y1="8" x2="11.5" y2="8"/></svg></div>
         <div class="stat-body">
@@ -1230,10 +1231,31 @@ body[data-theme="dark"] .ledger-card { background-image:
         </div>
       </div>
       <div class="stat-card" style="cursor:default;">
+        <div class="stat-icon i-slate"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/></svg></div>
+        <div class="stat-body">
+          <div class="s-lbl">Soft call</div>
+          <div class="s-val" id="review-cnt-soft">0</div>
+        </div>
+      </div>
+      <div class="stat-card" style="cursor:default;">
         <div class="stat-icon i-amber"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><path d="M8 4v4l2.5 2.5"/></svg></div>
         <div class="stat-body">
           <div class="s-lbl">Pending review</div>
           <div class="s-val" id="review-cnt-pending">0</div>
+        </div>
+      </div>
+      <div class="stat-card" style="cursor:default;">
+        <div class="stat-icon i-green"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><path d="M5.5 8.2 7.2 10 10.5 6"/></svg></div>
+        <div class="stat-body">
+          <div class="s-lbl">Reviewed</div>
+          <div class="s-val" id="review-cnt-reviewed">0</div>
+        </div>
+      </div>
+      <div class="stat-card" style="cursor:default;">
+        <div class="stat-icon i-violet"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><path d="M8 4.5v3.5l2.2 1.3"/></svg></div>
+        <div class="stat-body">
+          <div class="s-lbl">Review rate</div>
+          <div class="s-val" id="review-cnt-rate">0%</div>
         </div>
       </div>
     </div>
@@ -3458,9 +3480,20 @@ function getReviewFiltered(){
 }
 
 function renderReviewLogs(){
-  $('review-cnt-all').textContent     = reviewLogs.length;
-  $('review-cnt-hard').textContent    = reviewLogs.filter(l => l.call_type === 'hard').length;
-  $('review-cnt-pending').textContent = reviewLogs.filter(l => !l.reviewed).length;
+  const total    = reviewLogs.length;
+  const hard     = reviewLogs.filter(l => l.call_type === 'hard').length;
+  const soft     = reviewLogs.filter(l => l.call_type === 'soft').length;
+  const reviewed = reviewLogs.filter(l => !!l.reviewed).length;
+  const pending  = total - reviewed;
+  const rate     = total ? Math.round((reviewed/total)*100) : 0;
+
+  $('review-cnt-all').textContent      = total;
+  $('review-cnt-hard').textContent     = hard;
+  $('review-cnt-soft').textContent     = soft;
+  $('review-cnt-pending').textContent  = pending;
+  $('review-cnt-reviewed').textContent = reviewed;
+  $('review-cnt-rate').textContent     = rate + '%';
+
   renderReviewCalendar();
 }
 
