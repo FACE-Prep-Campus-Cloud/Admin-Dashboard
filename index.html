@@ -2105,11 +2105,12 @@ function initPlatformCardTilt(){
   });
 }
 function selectPlatform(which){
+  hide('platform-select-screen');
   if(which === 'tickets'){
-    enterDashboard();               // ticketing, scoped by sessionAllowedColleges
+    enterDashboard();
   } else if(which === 'dailylog'){
     if(sessionRole === 'manager') enterDailyLog();
-    else enterReviewPanel();        // KAM and admin both land here — review panel, not daily log
+    else enterReviewPanel();
   }
 }
 function backToPlatformSelect(){
