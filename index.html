@@ -215,6 +215,18 @@ input, select, textarea {
 input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-soft); }
 input::placeholder { color: var(--text-faint); }
 input:disabled, select:disabled { background: var(--slate-soft); color: var(--text-faint); cursor: not-allowed; }
+/* ── Make Daily Log's Date / Logged-by fields obviously editable ── */
+#dlog-date, #dlog-name {
+  cursor: text;
+  background: var(--card);
+}
+#dlog-date:hover, #dlog-name:hover {
+  border-color: #C7CCD3;
+}
+#dlog-date:focus, #dlog-name:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px var(--blue-soft);
+}
 .otp-row { display: flex; gap: 9px; justify-content: center; }
 .otp-box {
   width: 48px; height: 54px; text-align: center; font-size: 20px; font-weight: 700;
@@ -243,7 +255,8 @@ body[data-theme="dark"] .auth-remember { color: rgba(255,255,255,0.65); }
   background: rgba(20,21,26,0.05); color: var(--text); font-size: 12px; font-weight: 700;
   cursor: pointer; transition: background .15s, color .15s, border-color .15s; text-align: center;
 }
-.role-tab.active { background: #0EA5A4; color: #fff; border-color: #0EA5A4; }  body[data-theme="dark"] .role-tab { border-color: rgba(255,255,255,0.28); background: rgba(255,255,255,0.1); color: #fff; }
+.role-tab.active { background: #0EA5A4; color: #fff; border-color: #0EA5A4; }
+body[data-theme="dark"] .role-tab { border-color: rgba(255,255,255,0.28); background: rgba(255,255,255,0.1); color: #fff; }
 body[data-theme="dark"] .role-tab.active { background: #fff; color: #14151A; border-color: #fff; }
 #session-tag {
   font-size: 11.5px; color: var(--text-light); padding: 8px 18px; border-bottom: 1px solid var(--border);
@@ -1003,9 +1016,6 @@ body[data-theme="dark"] .btn-primary.btn-auth{ background:#fff !important; color
 <div id="scale-root">
 <div class="toast-stack" id="toast-stack"></div>
 <!-- ── AUTH (Glass on blur) ── -->
-  
- 
-<!-- ── AUTH (Glass on blur) ── -->
 <div id="auth-screen" class="auth-wrap">
   <div class="auth-blob b1"></div>
   <div class="auth-blob b2"></div>
@@ -1021,7 +1031,7 @@ body[data-theme="dark"] .btn-primary.btn-auth{ background:#fff !important; color
     <div class="auth-panel">
       <div class="auth-header">
         <h1>FACE Prep Campus Help Desk</h1>
-        <p>Sign in to manage campus tickets.</p>
+        <p>Sign in to manage campus tickets & .</p>
       </div>
       <div class="auth-role-toggle">
         <button type="button" class="role-tab active" id="role-tab-admin" onclick="setAuthRole('admin')">KAM</button>
