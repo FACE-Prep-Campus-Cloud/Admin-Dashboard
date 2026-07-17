@@ -1026,6 +1026,56 @@ body[data-theme="dark"] .ledger-card { background-image:
 
 .review-cal-pill .cal-dot.hard,
 .review-cal-pill .cal-dot.soft { background: #2DD9A8; }
+
+  /* ===== Sky/cloud sign-in restyle ===== */
+.auth-wrap {
+  background: linear-gradient(180deg, #BFE0F5 0%, #D8ECFA 35%, #EAF4FB 65%, #F7FBFE 100%) !important;
+}
+body[data-theme="dark"] .auth-wrap {
+  background: linear-gradient(180deg, #0B1220 0%, #101826 40%, #141B22 100%) !important;
+}
+.auth-blob, .auth-grid-overlay { display: none !important; }
+.auth-wrap::before {
+  content:''; position:absolute; left:0; right:0; bottom:-40px; height:240px; pointer-events:none;
+  background: radial-gradient(ellipse 60% 100% at 20% 100%, rgba(255,255,255,0.95), transparent 60%),
+              radial-gradient(ellipse 50% 100% at 60% 100%, rgba(255,255,255,0.9), transparent 55%),
+              radial-gradient(ellipse 70% 100% at 90% 100%, rgba(255,255,255,0.85), transparent 60%);
+}
+body[data-theme="dark"] .auth-wrap::before { opacity: 0.05; }
+
+.auth-corner-brand { position:absolute; top:22px; left:26px; display:flex; align-items:center; gap:9px; z-index:2; }
+.auth-corner-brand .mark { width:34px;height:34px;border-radius:10px;background:#14151A;display:flex;align-items:center;justify-content:center; }
+.auth-corner-brand .mark svg{ width:18px;height:18px;stroke:#fff; }
+.auth-corner-brand span{ font-family:'Poppins','Inter',sans-serif;font-weight:800;font-size:15px;color:#14151A; }
+body[data-theme="dark"] .auth-corner-brand span{ color:#fff; }
+
+.auth-avatar {
+  width:64px;height:64px;border-radius:18px;background:#14151A;border:none;
+  margin-bottom:-32px; box-shadow:0 10px 24px -8px rgba(20,21,26,0.4);
+}
+.auth-avatar svg{ stroke:#fff;width:24px;height:24px; }
+body[data-theme="dark"] .auth-avatar{ background:#fff; }
+body[data-theme="dark"] .auth-avatar svg{ stroke:#14151A; }
+
+.auth-panel {
+  background: rgba(255,255,255,0.85) !important;
+  backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgba(255,255,255,0.6) !important;
+  border-radius: 28px !important;
+  box-shadow: 0 24px 60px -20px rgba(20,60,110,0.25) !important;
+}
+body[data-theme="dark"] .auth-panel{ background: rgba(20,22,28,0.88) !important; border-color: rgba(255,255,255,0.08) !important; }
+.auth-panel::before{ display:none !important; }
+
+.auth-header h1 { font-size:22px !important; }
+.auth-header p { font-size:13.5px !important; }
+
+.btn-primary.btn-auth {
+  background:#14151A !important; text-transform:none !important; letter-spacing:0 !important;
+  font-weight:700 !important; border-radius:14px !important; padding:14px 16px !important;
+}
+.btn-primary.btn-auth:hover{ background:#000 !important; }
+body[data-theme="dark"] .btn-primary.btn-auth{ background:#fff !important; color:#14151A !important; }
 </style>
 </head>
 <body>
@@ -1034,6 +1084,12 @@ body[data-theme="dark"] .ledger-card { background-image:
 
 <!-- ── AUTH (Glass on blur) ── -->
 <div id="auth-screen" class="auth-wrap">
+  <div class="auth-blob b1"></div>
+  <div id="auth-screen" class="auth-wrap">
+  <div class="auth-corner-brand">
+    <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
+    <span>FACE Prep</span>
+  </div>
   <div class="auth-blob b1"></div>
   <div class="auth-blob b2"></div>
   <div class="auth-blob b3"></div>
