@@ -46,9 +46,9 @@
 
 body[data-theme="dark"] {
   --bg: #0F1115;
-  --card: #171A21;
-  --border: #262B35;
-  --border-soft: #1F232B;
+  --card: #1B1F27;
+  --border: #2A303B;
+  --border-soft: #232833;
   --text: #EDEEF2;
   --text-light: #9AA1AC;
   --text-faint: #6B7280;
@@ -461,7 +461,7 @@ body[data-theme="dark"] .auth-footnote { color: rgba(255,255,255,0.45); }
 .s-val { font-size: 19px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
 .s-sub { display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; color: var(--text-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .s-sub.warn { color: var(--red); font-weight: 600; }
-.stat-spark { flex-shrink: 0; opacity: 0.9; }
+.stat-spark { flex-shrink: 0; opacity: 0.9; margin-left: auto; }
 
 .avgres-card { flex-direction: column; align-items: stretch; gap: 8px; }
 .avgres-top { display: flex; flex-direction: row; align-items: center; gap: 10px; width: 100%; }
@@ -524,12 +524,12 @@ body[data-theme="dark"] .auth-footnote { color: rgba(255,255,255,0.45); }
   overflow: visible;
   box-shadow: var(--shadow-sm);
   cursor: pointer;
-  transition: box-shadow .12s, transform .12s, outline-color .1s;
+  transition: box-shadow .15s, transform .15s, outline-color .1s;
   position: relative;
   outline: 2px solid transparent; outline-offset: 2px;
    height: 165px;
 }
-.ticket-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.ticket-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
 .ticket-card.is-closed { opacity: 0.88; }
 .ticket-card.kbd-focus { outline-color: var(--blue); box-shadow: var(--shadow-md); transform: translateY(-1px); }
 
@@ -537,6 +537,13 @@ body[data-theme="dark"] .auth-footnote { color: rgba(255,255,255,0.45); }
 .ticket-edge.high   { background: var(--red); }
 .ticket-edge.medium { background: var(--amber); }
 .ticket-edge.low    { background: var(--text-faint); }
+
+.ticket-card.prio-ribbon-high::before {
+  content: 'URGENT';
+  position: absolute; top: 12px; right: -30px; width: 130px; padding: 3px 0; text-align: center;
+  background: var(--red); color: #fff; font-size: 9.5px; font-weight: 800; letter-spacing: 0.08em;
+  transform: rotate(40deg); box-shadow: 0 2px 6px rgba(220,38,38,0.35); z-index: 3; pointer-events: none;
+}
 
 .ticket-main {
   flex: 1; min-width: 0;
@@ -548,7 +555,8 @@ body[data-theme="dark"] .auth-footnote { color: rgba(255,255,255,0.45); }
 .ticket-top-left { display: flex; align-items: center; gap: 7px; min-width: 0; flex-wrap: wrap; }
 .ticket-id-row { display: flex; align-items: flex-start; gap: 10px; }
 .ticket-subject {
-  font-size: 14.5px; font-weight: 700; line-height: 1.3; color: var(--text);
+  font-family: 'Poppins', 'Inter', sans-serif;
+  font-size: 14.5px; font-weight: 700; line-height: 1.32; color: var(--text); letter-spacing: -0.01em;
   overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
 }
 .ticket-student { font-size: 12.5px; color: var(--text-faint); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 2px; }
@@ -559,10 +567,10 @@ body[data-theme="dark"] .auth-footnote { color: rgba(255,255,255,0.45); }
 .closed-by-tag { font-size: 11.5px; color: var(--green); font-weight: 600; white-space: nowrap; }
 
 .ticket-quick-actions {
-  position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; opacity: 0; transform: translateY(-4px);
-  transition: opacity .14s, transform .14s; z-index: 2;
+  position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; opacity: 0; transform: translateY(-6px) scale(0.92);
+  transition: opacity .18s, transform .22s cubic-bezier(.34,1.56,.64,1); z-index: 2;
 }
-.ticket-card:hover .ticket-quick-actions { opacity: 1; transform: translateY(0); }
+.ticket-card:hover .ticket-quick-actions { opacity: 1; transform: translateY(0) scale(1); }
 .qa-btn {
   width: 27px; height: 27px; border-radius: 8px; border: 1px solid var(--border); background: var(--card);
   display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-light);
@@ -574,19 +582,31 @@ body[data-theme="dark"] .auth-footnote { color: rgba(255,255,255,0.45); }
 .ticket-stub {
   width: 92px; flex-shrink: 0;
   background:#F1EAE3;
-  border-left: 1.5px dashed var(--border);
+  border-left: none;
   border-radius: 0 14px 14px 0;
   position: relative;
   display: flex; flex-direction: column; align-items: center; justify-content: space-between;
   padding: 11px 6px 10px;
   gap: 8px;
+  -webkit-mask-image: radial-gradient(circle 5px at 0 0, transparent 5px, black 5.5px),
+                       radial-gradient(circle 5px at 0 24px, transparent 5px, black 5.5px),
+                       radial-gradient(circle 5px at 0 48px, transparent 5px, black 5.5px),
+                       radial-gradient(circle 5px at 0 72px, transparent 5px, black 5.5px),
+                       radial-gradient(circle 5px at 0 96px, transparent 5px, black 5.5px),
+                       radial-gradient(circle 5px at 0 120px, transparent 5px, black 5.5px),
+                       radial-gradient(circle 5px at 0 144px, transparent 5px, black 5.5px),
+                       linear-gradient(black, black);
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-composite: source-over;
+  mask-image: linear-gradient(black, black);
 }
-.ticket-stub::before, .ticket-stub::after {
-  content: ''; position: absolute; left: -9px; width: 17px; height: 17px; border-radius: 50%;
-  background: var(--bg); border: 1px solid var(--border);
+.ticket-stub::before {
+  content: '';
+  position: absolute; left: 0; top: 6px; bottom: 6px; width: 0;
+  border-left: 1.5px dashed rgba(20,21,26,0.28);
 }
-.ticket-stub::before { top: -9px; }
-.ticket-stub::after  { bottom: -9px; }
+body[data-theme="dark"] .ticket-stub::before { border-left-color: rgba(255,255,255,0.22); }
+body[data-theme="dark"] .ticket-stub { background: #241E18; }
 
 .ticket-roll {
   writing-mode: vertical-rl;
@@ -597,6 +617,7 @@ body[data-theme="dark"] .auth-footnote { color: rgba(255,255,255,0.45); }
   letter-spacing: 0.06em;
   color: #8A6D3B;
 }
+body[data-theme="dark"] .ticket-roll { color: #D8B27A; }
 
 .empty-state { padding: 54px 24px; text-align: center; color: var(--text-light); font-size: 14px; }
 .empty-state svg { margin-bottom: 14px; opacity: 0.7; }
@@ -625,7 +646,7 @@ body[data-theme="dark"] .auth-footnote { color: rgba(255,255,255,0.45); }
 }
 .modal-box { background: var(--card); border: 1px solid var(--border); border-radius: 18px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); position: relative; }
 .modal-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 22px 22px 0; }
-.modal-title { font-size: 18px; font-weight: 700; line-height: 1.3; letter-spacing: -0.01em; }
+.modal-title { font-family: 'Poppins','Inter',sans-serif; font-size: 18px; font-weight: 700; line-height: 1.3; letter-spacing: -0.01em; }
 .modal-meta  { font-size: 12.5px; color: var(--text-light); margin-top: 5px; }
 .modal-close {
   width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 9px;
@@ -729,52 +750,69 @@ body[data-theme="dark"] .resolve-burst { background: rgba(0,0,0,0.0); }
 .ticket-attach-flag { display:inline-flex; align-items:center; gap:3px; font-size:11px; color: var(--text-faint); }
 
 /* ══════════════════════════════════════════════════════════
-   ── PLATFORM SELECT (redesigned — no longer plain white) ──
+   ── PLATFORM SELECT (redesigned — no video, layered mesh) ──
    ══════════════════════════════════════════════════════════ */
 .platform-wrap {
   min-height: calc(100vh / var(--ui-scale)); display: flex; align-items: center; justify-content: center; padding: 24px;
   position: relative; overflow: hidden;
-  background: linear-gradient(160deg, #EEF1FA 0%, #F4F5F7 45%, #FDF6EE 100%);
+  background:
+    radial-gradient(ellipse 900px 560px at 12% -8%, rgba(124,58,237,0.16), transparent 60%),
+    radial-gradient(ellipse 820px 620px at 92% 108%, rgba(52,87,232,0.14), transparent 60%),
+    radial-gradient(ellipse 700px 500px at 50% 50%, rgba(22,163,74,0.06), transparent 65%),
+    linear-gradient(155deg, #EEF1FA 0%, #F4F5F7 45%, #FBF7EF 100%);
 }
-body[data-theme="dark"] .platform-wrap { background: linear-gradient(160deg, #0F1115 0%, #14161C 60%, #14131A 100%); }
+body[data-theme="dark"] .platform-wrap {
+  background:
+    radial-gradient(ellipse 900px 560px at 12% -8%, rgba(124,58,237,0.22), transparent 60%),
+    radial-gradient(ellipse 820px 620px at 92% 108%, rgba(52,87,232,0.18), transparent 60%),
+    radial-gradient(ellipse 700px 500px at 50% 50%, rgba(52,208,124,0.07), transparent 65%),
+    linear-gradient(155deg, #0F1115 0%, #14161C 60%, #14131A 100%);
+}
 
 .platform-wrap::before,
 .platform-wrap::after {
-  content: ''; position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.45; pointer-events: none;
+  content: ''; position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4; pointer-events: none;
   animation: blobFloat 20s ease-in-out infinite;
 }
 .platform-wrap::before { width: 420px; height: 420px; top: -120px; left: -100px; background: #C4B5FD; }
 .platform-wrap::after  { width: 460px; height: 460px; bottom: -140px; right: -100px; background: #FBCFB0; animation-duration: 24s; animation-delay: -6s; }
-body[data-theme="dark"] .platform-wrap::before { background: #4C1D95; opacity: 0.35; }
-body[data-theme="dark"] .platform-wrap::after  { background: #D85A30; opacity: 0.3; }
+body[data-theme="dark"] .platform-wrap::before { background: #4C1D95; opacity: 0.3; }
+body[data-theme="dark"] .platform-wrap::after  { background: #D85A30; opacity: 0.24; }
+
+.platform-wrap-scrim { display: none; }
 
 .platform-box { width: 100%; max-width: 720px; text-align: center; position: relative; z-index: 1; animation: authRise .65s cubic-bezier(.16,1,.3,1) both; }
-.platform-box h1 { font-family: 'Poppins','Inter',sans-serif; font-size: 26px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.01em; }
+.platform-eyebrow {
+  display: inline-flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 700; letter-spacing: 0.09em;
+  text-transform: uppercase; color: var(--violet); background: var(--violet-soft); padding: 5px 12px; border-radius: 999px;
+  margin-bottom: 16px;
+}
+.platform-box h1 { font-family: 'Poppins','Inter',sans-serif; font-size: 28px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.015em; }
 .platform-box p.sub { font-size: 14px; color: var(--text-light); margin-bottom: 34px; }
 
-.platform-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+.platform-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; perspective: 1200px; }
 .platform-card {
   background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 34px 24px;
-  cursor: pointer; box-shadow: var(--shadow-md); transition: box-shadow .18s, transform .18s, border-color .18s;
+  cursor: pointer; box-shadow: var(--shadow-md); transition: box-shadow .2s, border-color .2s;
   display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center;
-  position: relative; overflow: hidden;
+  position: relative; overflow: hidden; transform-style: preserve-3d; will-change: transform;
 }
 .platform-card::before {
   content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity .2s;
   background: radial-gradient(circle at 50% -10%, rgba(52,87,232,0.10), transparent 60%);
 }
-.platform-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-5px); border-color: rgba(52,87,232,0.3); }
+.platform-card:hover { box-shadow: var(--shadow-lg); border-color: rgba(52,87,232,0.3); }
 .platform-card:hover::before { opacity: 1; }
 .platform-icon {
   width: 64px; height: 64px; border-radius: 18px; display: flex; align-items: center; justify-content: center;
-  color: #fff; box-shadow: 0 10px 24px -8px rgba(20,21,26,0.35); transition: transform .18s;
+  color: #fff; box-shadow: 0 10px 24px -8px rgba(20,21,26,0.35); transition: transform .18s; transform: translateZ(30px);
 }
-.platform-card:hover .platform-icon { transform: scale(1.08) rotate(-3deg); }
+.platform-card:hover .platform-icon { transform: translateZ(30px) scale(1.08) rotate(-3deg); }
 .platform-icon.p-blue { background: linear-gradient(135deg, var(--blue), var(--violet)); }
 .platform-icon.p-green { background: linear-gradient(135deg, var(--green), #0EA5A4); }
 .platform-icon svg { width: 28px; height: 28px; }
-.platform-card h3 { font-size: 16.5px; font-weight: 700; position: relative; }
-.platform-card p { font-size: 12.5px; color: var(--text-light); line-height: 1.55; position: relative; }
+.platform-card h3 { font-family: 'Poppins','Inter',sans-serif; font-size: 17px; font-weight: 700; position: relative; transform: translateZ(20px); }
+.platform-card p { font-size: 12.5px; color: var(--text-light); line-height: 1.55; position: relative; transform: translateZ(15px); }
 .platform-back { margin-top: 30px; position: relative; z-index: 1; }
 @media (max-width: 640px) { .platform-cards { grid-template-columns: 1fr; } }
 
@@ -813,10 +851,18 @@ body[data-theme="dark"] .platform-wrap::after  { background: #D85A30; opacity: 0
 /* ── FIELD REGISTER — Daily Activity Log redesign (added) ── */
 .ledger-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; border-bottom: 2px solid var(--text); padding-bottom: 14px; margin-bottom: 24px; }
 .ledger-eyebrow { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint); font-weight: 700; }
-.ledger-title { font-size: 20px; font-weight: 800; letter-spacing: -0.01em; color: var(--text); margin-top: 3px; }
+.ledger-title { font-family: 'Poppins','Inter',sans-serif; font-size: 21px; font-weight: 800; letter-spacing: -0.01em; color: var(--text); margin-top: 3px; }
 .ledger-meta { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-light); text-align: right; line-height: 1.7; white-space: nowrap; flex-shrink: 0; }
 
-.ledger-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px; margin-bottom: 30px; box-shadow: var(--shadow-sm); }
+.ledger-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px; margin-bottom: 30px; box-shadow: var(--shadow-sm);
+  position: relative; background-image:
+    radial-gradient(circle at 22% 18%, rgba(20,21,26,0.025) 0, transparent 40%),
+    radial-gradient(circle at 78% 62%, rgba(20,21,26,0.02) 0, transparent 45%);
+}
+body[data-theme="dark"] .ledger-card { background-image:
+    radial-gradient(circle at 22% 18%, rgba(255,255,255,0.02) 0, transparent 40%),
+    radial-gradient(circle at 78% 62%, rgba(255,255,255,0.018) 0, transparent 45%); }
 .ledger-card-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-faint); margin-bottom: 16px; }
 
 .ledger-stamp-hint { display: flex; align-items: center; gap: 8px; margin-top: 9px; font-size: 12px; font-weight: 600; }
@@ -836,8 +882,8 @@ body[data-theme="dark"] .platform-wrap::after  { background: #D85A30; opacity: 0
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   font-size: 8.5px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; line-height: 1.3;
 }
-.ledger-stamp.hard { border-color: var(--amber); color: var(--amber); transform: rotate(-6deg); }
-.ledger-stamp.soft { border-color: var(--text-faint); color: var(--text-faint); transform: rotate(5deg); }
+.ledger-stamp.hard { border-color: var(--amber); color: var(--amber); }
+.ledger-stamp.soft { border-color: var(--text-faint); color: var(--text-faint); }
 
 .ledger-row-body { flex: 1; min-width: 0; }
 .ledger-row-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
@@ -907,35 +953,6 @@ body[data-theme="dark"] .platform-wrap::after  { background: #D85A30; opacity: 0
   .platform-wrap::before, .platform-wrap::after, .platform-box {
     animation: none !important;
   }
-}
-  /* ── Video background for platform-select screen ── */
-.platform-bg-video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: 0;
-  pointer-events: none;
-}
-
-/* keep the "Welcome" heading + cards above the video */
-.platform-box { position: relative; z-index: 2; }
-
-/* replace the old purple/orange blobs with a soft dark scrim so white cards stand out */
-.platform-wrap::before,
-.platform-wrap::after {
-  display: none;
-}
-.platform-wrap {
-  background: #000; /* fallback while video loads */
-}
-.platform-wrap-scrim {
-  position: absolute;
-  inset: 0;
-  background: rgba(10,10,15,0.28);
-  z-index: 1;
-  pointer-events: none;
 }
 
 .review-calendar {
@@ -1056,16 +1073,12 @@ body[data-theme="dark"] .platform-wrap::after  { background: #D85A30; opacity: 0
 </div>
 
 <!-- ── PLATFORM SELECT (campus/senior manager only) ── -->
-<!-- ── PLATFORM SELECT (campus/senior manager only) ── -->
 <div id="platform-select-screen" class="hidden platform-wrap">
-  <video class="platform-bg-video" autoplay muted loop playsinline>
-    <source src="bg-waves.mp4" type="video/mp4">
-  </video>
-<div class="platform-wrap-scrim"></div>
   <div class="platform-box">
+    <span class="platform-eyebrow">FACE Prep Campus</span>
     <h1>Welcome<span id="platform-select-college-name"></span></h1>
     <p class="sub">Choose what you'd like to open.</p>
-    <div class="platform-cards">
+    <div class="platform-cards" id="platform-cards">
       <button class="platform-card" onclick="selectPlatform('tickets')">
 <div class="platform-icon p-blue">
   <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
@@ -1459,6 +1472,7 @@ body[data-theme="dark"] .platform-wrap::after  { background: #D85A30; opacity: 0
               <div class="s-val" id="cnt-all">0</div>
               <div class="s-sub">All submitted requests</div>
             </div>
+            <svg class="stat-spark" id="spark-all" width="52" height="28"></svg>
           </button>
           <button class="stat-card" data-filter="open" onclick="setStatusFilter('open')">
             <div class="stat-icon i-red"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><line x1="8" y1="5" x2="8" y2="8.5"/><circle cx="8" cy="10.5" r="0.4" fill="currentColor"/></svg></div>
@@ -1467,6 +1481,7 @@ body[data-theme="dark"] .platform-wrap::after  { background: #D85A30; opacity: 0
               <div class="s-val" id="cnt-open">0</div>
               <div class="s-sub warn" id="cnt-open-sub">0 follow-up due</div>
             </div>
+            <svg class="stat-spark" id="spark-open" width="52" height="28"></svg>
           </button>
           <button class="stat-card" data-filter="progress" onclick="setStatusFilter('progress')">
             <div class="stat-icon i-amber"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><path d="M8 4v4l2.5 2.5"/></svg></div>
@@ -1483,6 +1498,7 @@ body[data-theme="dark"] .platform-wrap::after  { background: #D85A30; opacity: 0
               <div class="s-val" id="cnt-res">0</div>
               <div class="s-sub">Closed out tickets</div>
             </div>
+            <svg class="stat-spark" id="spark-res" width="52" height="28"></svg>
           </button>
           <div class="stat-card avgres-card" id="avgres-stat-card" style="cursor:pointer;" onclick="cycleAvgResView()" title="Click to switch between overall, region-wise and priority-wise average resolution time">
             <div class="avgres-top">
@@ -1961,8 +1977,8 @@ async function loadCollegeContactsForLogin(){
   populateCollegeDropdown();
   populateKamDropdown();
   try{
-   const { data, error } = await sb.from('college_contacts')
-  .select('college, login_pin, senior_manager_name, senior_manager_pin, senior_manager_email, campus_manager_name, campus_manager_pin, campus_manager_email, zone');
+    const { data, error } = await sb.from('college_contacts')
+      .select('college, login_pin, senior_manager_name, senior_manager_pin, campus_manager_name, campus_manager_pin, zone');
     if(error) throw error;
     collegeContacts = data || [];
     populateCollegeDropdown();
@@ -2064,7 +2080,29 @@ function showPlatformSelect(){
     ? 'Log your daily activities and track your progress over time.'
     : "Review campus managers' daily activity logs, college by college.";
   show('platform-select-screen');
+  initPlatformCardTilt();
   if(refreshTimer){ clearInterval(refreshTimer); refreshTimer = null; }
+}
+
+/* ── Subtle 3D tilt-on-hover for the platform-select cards ── */
+function initPlatformCardTilt(){
+  const cards = document.querySelectorAll('#platform-cards .platform-card');
+  cards.forEach(card => {
+    if(card._tiltBound) return;
+    card._tiltBound = true;
+    const maxTilt = 7;
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width;
+      const py = (e.clientY - r.top) / r.height;
+      const rx = (0.5 - py) * maxTilt * 2;
+      const ry = (px - 0.5) * maxTilt * 2;
+      card.style.transform = `translateY(-5px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'translateY(0) rotateX(0) rotateY(0)';
+    });
+  });
 }
 function selectPlatform(which){
   hide('platform-select-screen');
@@ -2333,13 +2371,18 @@ function renderSparklines(){
       if(cdiff >= 0 && cdiff < days) resolvedCounts[days-1-cdiff]++;
     }
   });
-  const dark = document.body.getAttribute('data-theme') === 'dark';
   const drawInto = (id, counts, color) => {
     const el = $(id); if(!el) return;
     const w = 52, h = 28;
     const pts = buildSparkPath(counts, w, h);
-    el.innerHTML = `<polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>`;
+    const areaPts = `0,${h} ${pts} ${w},${h}`;
+    el.innerHTML = `
+      <polyline points="${areaPts}" fill="${color}" opacity="0.12" stroke="none"/>
+      <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/>`;
   };
+  drawInto('spark-all',  createdCounts,  getComputedStyle(document.body).getPropertyValue('--text-faint').trim() || '#9AA1AC');
+  drawInto('spark-open', createdCounts,  getComputedStyle(document.body).getPropertyValue('--red').trim() || '#DC2626');
+  drawInto('spark-res',  resolvedCounts, getComputedStyle(document.body).getPropertyValue('--green').trim() || '#16A34A');
 }
 
 function renderInsightBars(containerId, counts, colorMap, defaultColor){
@@ -2578,13 +2621,14 @@ grid.innerHTML = filtered.map((t,i) => {
     const closedTag = (t.status === 'resolved' && t.closed_by)
       ? `<span class="closed-by-tag">🔒 Closed by ${escHTML(t.closed_by)}</span>` : '';
     const attachFlag = t.image_url ? `<span class="ticket-attach-flag">📎 Attachment</span>` : '';
+    const ribbonClass = (prio === 'high' && t.status !== 'resolved') ? ' prio-ribbon-high' : '';
     const quickActions = t.status !== 'resolved' ? `
       <div class="ticket-quick-actions">
         ${t.status==='open' ? `<button class="qa-btn" title="Start progress" onclick="event.stopPropagation();quickSetStatus('${t.id}','progress')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 8h8M9 4l4 4-4 4"/></svg></button>` : ''}
         <button class="qa-btn" title="Open ticket" onclick="event.stopPropagation();openModal('${t.id}')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3.5H3a1 1 0 0 0-1 1v8.5a1 1 0 0 0 1 1h8.5a1 1 0 0 0 1-1V10M9 3.5h3.5V7M12.5 3.5 7 9"/></svg></button>
       </div>` : '';
 
-    return `<div class="ticket-card ${t.status==='resolved'?'is-closed':''}" data-idx="${i}" onclick="openModal('${t.id}')">
+    return `<div class="ticket-card ${t.status==='resolved'?'is-closed':''}${ribbonClass}" data-idx="${i}" onclick="openModal('${t.id}')">
       <div class="ticket-edge ${prio}"></div>
       ${quickActions}
       <div class="ticket-main">
@@ -2907,12 +2951,6 @@ function onDlogCategoryChange(key){
 }
 
 function sendHardCallEmail(cat, entry){
-  const rec = collegeContacts.find(c => c.college === sessionCollege);
-  const to = rec && rec.senior_manager_email;
-  if(!to){
-    showToast('No senior manager email on file for this college — entry saved, but no email sent');
-    return;
-  }
   const subject = encodeURIComponent(`[Hard Call] ${cat.label} — ${sessionCollege}`);
   const lines = [
     `College: ${sessionCollege}`,
@@ -2925,7 +2963,7 @@ function sendHardCallEmail(cat, entry){
   ];
   if(entry.progress) lines.push('', 'Progress / notes:', entry.progress);
   const body = encodeURIComponent(lines.join('\n'));
-  window.open(`mailto:${to}?subject=${subject}&body=${body}`, '_blank');
+  window.open(`mailto:${ESCALATION_EMAIL}?subject=${subject}&body=${body}`, '_blank');
 }
 
 function enterDailyLog(){
@@ -2995,9 +3033,10 @@ function renderDailyLogs(){
     const statusHtml = l.reviewed
       ? `<span class="ledger-row-status reviewed">✓ Reviewed${l.reviewed_by ? ' by '+escHTML(l.reviewed_by) : ''}</span>`
       : `<span class="ledger-row-status pending">◔ Pending review</span>`;
+    const stampRot = (((l.id ? l.id.toString().charCodeAt(0) : dailyLogs.indexOf(l)) % 7) - 3);
     return `
     <div class="ledger-row">
-      <span class="ledger-stamp ${callType}"><span>${callType==='hard'?'Hard':'Soft'}</span><span>Call</span></span>
+      <span class="ledger-stamp ${callType}" style="transform:rotate(${stampRot}deg);"><span>${callType==='hard'?'Hard':'Soft'}</span><span>Call</span></span>
       <div class="ledger-row-body">
         <div class="ledger-row-top">
           <span class="ledger-row-cat">${escHTML(catLabel)}</span>
@@ -3179,7 +3218,6 @@ async function saveDailyLog(){
   show('dlog-saved');
   setTimeout(() => hide('dlog-saved'), 1800);
 
-
 if(callType === 'hard'){
     sb.functions.invoke('notify-hardcall', {
       body: {
@@ -3191,7 +3229,8 @@ if(callType === 'hard'){
         progress_notes: progress,
       }
     }).catch(e => console.error('notify-hardcall failed', e));
-  } 
+  }
+
   /* jump the calendar to the month of the entry just filed, so the new dot is visible immediately */
   dlogCalMonth = new Date(date + 'T00:00:00');
 
