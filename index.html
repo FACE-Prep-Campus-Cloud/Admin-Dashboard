@@ -1961,8 +1961,8 @@ async function loadCollegeContactsForLogin(){
   populateCollegeDropdown();
   populateKamDropdown();
   try{
-    const { data, error } = await sb.from('college_contacts')
-      .select('college, login_pin, senior_manager_name, senior_manager_pin, campus_manager_name, campus_manager_pin, zone');
+   const { data, error } = await sb.from('college_contacts')
+  .select('college, login_pin, senior_manager_name, senior_manager_pin, senior_manager_email, campus_manager_name, campus_manager_pin, campus_manager_email, zone');
     if(error) throw error;
     collegeContacts = data || [];
     populateCollegeDropdown();
@@ -2907,6 +2907,12 @@ function onDlogCategoryChange(key){
 }
 
 function sendHardCallEmail(cat, entry){
+  const rec = collegeContacts.find(c => c.college === sessionCollege);
+  const to = rec && rec.senior_manager_email;
+  if(!to){
+    showToast('No senior manager email on file for this college — entry saved, but no email sent');
+    return;
+  }
   const subject = encodeURIComponent(`[Hard Call] ${cat.label} — ${sessionCollege}`);
   const lines = [
     `College: ${sessionCollege}`,
@@ -2919,7 +2925,7 @@ function sendHardCallEmail(cat, entry){
   ];
   if(entry.progress) lines.push('', 'Progress / notes:', entry.progress);
   const body = encodeURIComponent(lines.join('\n'));
-  window.open(`mailto:${ESCALATION_EMAIL}?subject=${subject}&body=${body}`, '_blank');
+  window.open(`mailto:${to}?subject=${subject}&body=${body}`, '_blank');
 }
 
 function enterDailyLog(){
@@ -3173,10 +3179,19 @@ async function saveDailyLog(){
   show('dlog-saved');
   setTimeout(() => hide('dlog-saved'), 1800);
 
-  if(callType === 'hard'){
-    sendHardCallEmail(cat, { date, name, activity, progress });
-  }
 
+if(callType === 'hard'){
+    sb.functions.invoke('notify-hardcall', {
+      body: {
+        college: sessionCollege,
+        category_label: cat.label,
+        log_date: date,
+        manager_name: name,
+        activity,
+        progress_notes: progress,
+      }
+    }).catch(e => console.error('notify-hardcall failed', e));
+  } 
   /* jump the calendar to the month of the entry just filed, so the new dot is visible immediately */
   dlogCalMonth = new Date(date + 'T00:00:00');
 
