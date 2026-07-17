@@ -1978,7 +1978,7 @@ async function loadCollegeContactsForLogin(){
   populateKamDropdown();
   try{
     const { data, error } = await sb.from('college_contacts')
-      .select('college, login_pin, senior_manager_name, senior_manager_pin, campus_manager_name, campus_manager_pin, zone');
+      .select('college,senior_manager_name, senior_manager_pin, campus_manager_name, campus_manager_pin, zone');
     if(error) throw error;
     collegeContacts = data || [];
     populateCollegeDropdown();
@@ -2042,7 +2042,7 @@ function submitManagerLogin(){
   if(!college){ err.textContent='Select your college.'; show('pin-error'); return; }
   if(!pin){ err.textContent='Enter your PIN.'; show('pin-error'); return; }
   const rec = collegeContacts.find(c => c.college === college);
-  const expectedPin = rec ? (rec.campus_manager_pin || rec.login_pin) : null;
+const expectedPin = rec ? rec.campus_manager_pin : null;
   if(!rec || !expectedPin || String(expectedPin) !== pin){
     err.textContent='Incorrect PIN for this college.';
     show('pin-error');
