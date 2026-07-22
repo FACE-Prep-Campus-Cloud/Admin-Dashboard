@@ -2721,6 +2721,7 @@ let classroomSnaps = [];
 let snapSelectedFile = null;
 let snapSaving = false;
 let snapReviewCollege = null;
+let snapCollegePendingCounts = {};
 let snapLocation = null; 
  let csnapCalMonth = new Date();
  // { lat, lng, accuracy } captured when the photo is taken
@@ -4291,10 +4292,27 @@ async function enterClassroomSnap(){
      'snap-skill-development','snap-student-engagement','snap-tasks-followup',
      'snap-session-plan-adherence','snap-study-material-sharing','snap-notes'
     ].forEach(id => { const el = $(id); if(el) el.value = ''; });
-  } else {
+} else {
+    await loadSnapCollegePendingCounts();
     populateSnapCollegeSelect();
   }
   loadClassroomSnaps();
+}
+ async function loadSnapCollegePendingCounts(){
+  try{
+    const { data, error } = await sb.from('classroom_snaps').select('college, reviewed');
+    if(error) throw error;
+    const counts = {};
+    (data || []).forEach(s => {
+      if(!s.reviewed){
+        counts[s.college] = (counts[s.college] || 0) + 1;
+      }
+    });
+    snapCollegePendingCounts = counts;
+  }catch(e){
+    console.error('Could not load classroom_snaps pending counts:', e);
+    snapCollegePendingCounts = {};
+  }
 }
 
 function populateSnapCollegeSelect(){
@@ -4306,8 +4324,15 @@ function populateSnapCollegeSelect(){
     names = names.filter(n => allowedNorm.includes(normalizeCollege(n)));
   }
   const uniqueSorted = [...new Set(names)].sort((a,b) => a.localeCompare(b));
+  const prevValue = sel.value;
   sel.innerHTML = '<option value="">All colleges</option>' +
-    uniqueSorted.map(n => `<option value="${escHTML(n)}">${escHTML(n)}</option>`).join('');
+    uniqueSorted.map(n => {
+      const pending = snapCollegePendingCounts[n] || 0;
+      const label = pending > 0 ? `${n} — ${pending} pending` : n;
+      const style = pending > 0 ? ' style="color:#DC2626;font-weight:600;"' : '';
+      return `<option value="${escHTML(n)}"${style}>${escHTML(label)}</option>`;
+    }).join('');
+  if(prevValue) sel.value = prevValue;
   snapReviewCollege = sel.value || null;
 }
 
