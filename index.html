@@ -2622,6 +2622,16 @@ const COLLEGE_REGION_MAP = [
 function normalizeCollege(s){
   return String(s||'').toLowerCase().replace(/['’]/g, '').replace(/[().,&-]/g, ' ').replace(/\s+/g, ' ').trim();
 }
+
+ const COLLEGE_STOPWORDS = new Set([
+  'college','university','institute','school','centre','center','deemed','autonomous',
+  'arts','science','women','men','and','for','the','of','higher','education','group',
+  'institutions','research','foundation','national','study','world'
+]);
+function meaningfulWords(str){
+  return str.split(' ').filter(w => w.length > 2 && !COLLEGE_STOPWORDS.has(w));
+}
+ 
 const REGION_LOOKUP = COLLEGE_REGION_MAP.map(e => ({ norm: normalizeCollege(e.college), region: e.region, original: e.college }));
 function resolveRegion(collegeName){
   const norm = normalizeCollege(collegeName);
@@ -2630,15 +2640,16 @@ function resolveRegion(collegeName){
   if(hit) return hit.region;
   hit = REGION_LOOKUP.find(e => norm.includes(e.norm) || e.norm.includes(norm));
   if(hit) return hit.region;
-  const normWords = new Set(norm.split(' ').filter(w => w.length > 2));
+  const normWords = new Set(meaningfulWords(norm));
   let best = null, bestScore = 0;
   REGION_LOOKUP.forEach(e => {
-    const entryWords = e.norm.split(' ').filter(w => w.length > 2);
+    const entryWords = meaningfulWords(e.norm);
+    if(!entryWords.length) return;
     const overlap = entryWords.filter(w => normWords.has(w)).length;
-    const score = overlap / Math.max(entryWords.length, 1);
+    const score = overlap / entryWords.length;
     if(score > bestScore){ bestScore = score; best = e; }
   });
-  if(best && bestScore >= 0.6) return best.region;
+  if(best && bestScore === 1) return best.region; // require full match of distinctive words
   return null;
 }
 function getRegionInfo(collegeName){
@@ -2721,7 +2732,6 @@ let classroomSnaps = [];
 let snapSelectedFile = null;
 let snapSaving = false;
 let snapReviewCollege = null;
-let snapCollegePendingCounts = {};
 let snapLocation = null; 
  let csnapCalMonth = new Date();
  // { lat, lng, accuracy } captured when the photo is taken
@@ -3175,15 +3185,15 @@ function collegeMatchesSession(ticketCollege){
   const a = normalizeCollege(ticketCollege);
   if(!a) return sessionRole !== 'manager' && sessionRole !== 'kam';
 
-  function fuzzyMatch(b){
-    if(!b) return false;
-    if(a === b || a.includes(b) || b.includes(a)) return true;
-    const aWords = new Set(a.split(' ').filter(w => w.length > 2));
-    const bWords = b.split(' ').filter(w => w.length > 2);
-    if(!bWords.length) return false;
-    const overlap = bWords.filter(w => aWords.has(w)).length;
-    return (overlap / bWords.length) >= 0.6;
-  }
+function fuzzyMatch(b){
+  if(!b) return false;
+  if(a === b) return true;
+  const aWords = new Set(meaningfulWords(a));
+  const bWords = meaningfulWords(b);
+  if(!bWords.length) return false;
+  const overlap = bWords.filter(w => aWords.has(w)).length;
+  return overlap === bWords.length;
+}
 
   if(sessionRole === 'manager' && sessionCollege){
     return fuzzyMatch(normalizeCollege(sessionCollege));
@@ -4292,27 +4302,10 @@ async function enterClassroomSnap(){
      'snap-skill-development','snap-student-engagement','snap-tasks-followup',
      'snap-session-plan-adherence','snap-study-material-sharing','snap-notes'
     ].forEach(id => { const el = $(id); if(el) el.value = ''; });
-} else {
-    await loadSnapCollegePendingCounts();
+  } else {
     populateSnapCollegeSelect();
   }
   loadClassroomSnaps();
-}
- async function loadSnapCollegePendingCounts(){
-  try{
-    const { data, error } = await sb.from('classroom_snaps').select('college, reviewed');
-    if(error) throw error;
-    const counts = {};
-    (data || []).forEach(s => {
-      if(!s.reviewed){
-        counts[s.college] = (counts[s.college] || 0) + 1;
-      }
-    });
-    snapCollegePendingCounts = counts;
-  }catch(e){
-    console.error('Could not load classroom_snaps pending counts:', e);
-    snapCollegePendingCounts = {};
-  }
 }
 
 function populateSnapCollegeSelect(){
@@ -4324,15 +4317,8 @@ function populateSnapCollegeSelect(){
     names = names.filter(n => allowedNorm.includes(normalizeCollege(n)));
   }
   const uniqueSorted = [...new Set(names)].sort((a,b) => a.localeCompare(b));
-  const prevValue = sel.value;
   sel.innerHTML = '<option value="">All colleges</option>' +
-    uniqueSorted.map(n => {
-      const pending = snapCollegePendingCounts[n] || 0;
-      const label = pending > 0 ? `${n} — ${pending} pending` : n;
-      const style = pending > 0 ? ' style="color:#DC2626;font-weight:600;"' : '';
-      return `<option value="${escHTML(n)}"${style}>${escHTML(label)}</option>`;
-    }).join('');
-  if(prevValue) sel.value = prevValue;
+    uniqueSorted.map(n => `<option value="${escHTML(n)}">${escHTML(n)}</option>`).join('');
   snapReviewCollege = sel.value || null;
 }
 
